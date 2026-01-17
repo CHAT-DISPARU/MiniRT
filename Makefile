@@ -6,7 +6,7 @@
 #    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/01/17 18:38:15 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/01/17 18:45:27 by gajanvie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,7 @@ LIB_MATH := ./srcs/lib_math/gajanvielib_math.a
 LIBFT = ./srcs/libft/libft.a
 LIBFT_DIR = srcs/libft
 
-SRCS := 
+SRCS := $(SRC_DIR)main.c
 
 
 OBJ := $(patsubst $(SRC_DIR)%.c, $(BUILD_DIR)%.o, $(SRCS))
