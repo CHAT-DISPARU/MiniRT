@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
+#    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/01/17 18:45:27 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/01/18 12:27:56 by titan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,10 @@ LIB_MATH_DIR := srcs/lib_math
 LIB_MATH := ./srcs/lib_math/gajanvielib_math.a
 LIBFT = ./srcs/libft/libft.a
 LIBFT_DIR = srcs/libft
+LIB = MacroLibX
+LIB_URL = https://github.com/seekrs/MacroLibX.git
+MLX_DIR = MacroLibX
+MLX = $(MLX_DIR)/libmlx.so
 
 SRCS := $(SRC_DIR)main.c
 
@@ -47,16 +51,24 @@ HEADERS := includes/
 
 CC := cc
 
-FLAGS := -Wall -Werror -Wextra -g
+FLAGS := -Wall -Werror -Wextra -g -I MacroLibX/includes
 
-all: header ${NAME}
+all: $(LIB) header ${NAME}
 
 header:
-
+	@echo " ____ ____ ____ ____ ____ ____ "
+	@echo "||M |||i |||n |||i |||R |||T ||"
+	@echo "||__|||__|||__|||__|||__|||__||"
+	@echo "|/__\|/__\|/__\|/__\|/__\|/__\|"
 
 $(NAME): $(LIBFT) $(LIB_MATH) ${OBJ}
 	@echo "$(TEXT_NEON_GREEN)✅ Compilation of MiniRT finished !$(RESET)"
-	@${CC} -o ${NAME} -I ${HEADERS} ${OBJ} ${LIBFT} $(LIB_MATH) ${FLAGS} -lm
+	@${CC} -o ${NAME} -I ${HEADERS} ${OBJ} ${LIBFT} $(MLX) $(LIB_MATH) ${FLAGS} -lm -lSDL2
+
+$(LIB):
+	@git clone https://github.com/seekrs/MacroLibX.git -b v2.2.2 MacroLibX --depth=1
+	@$(MAKE) --no-print-directory -C MacroLibX -j
+	@echo "$(GREEN)✅ Importation of MacroLibX finished!$(NC)"
 
 ${BUILD_DIR}%.o: ${SRC_DIR}%.c
 	@mkdir -p $(dir $@)
@@ -80,8 +92,10 @@ fclean: clean
 	@echo "$(TEXT_NEON_RED)🧨 MiniRT deleted$(RESET)"
 	@make --no-print-directory -C $(LIBFT_DIR) fclean
 	@make --no-print-directory -C $(LIB_MATH_DIR) fclean
+	@rm -rf $(LIB)
 	@rm -f ${NAME}
 
 re: fclean all
+re_bonus:	fclean bonus
 
-.PHONY: clean fclean re all
+.PHONY: clean fclean re all libft header
