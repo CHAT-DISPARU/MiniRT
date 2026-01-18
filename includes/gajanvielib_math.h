@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   gajanvielib_math.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 17:50:56 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/17 17:52:01 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/18 13:39:06 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GAJANVIELIB_MAT_H
-# define GAJANVIELIB_MAT_H
+#ifndef GAJANVIELIB_MATH_H
+# define GAJANVIELIB_MATH_H
 
 # include <math.h>
 
