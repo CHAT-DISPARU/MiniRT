@@ -3,42 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/18 14:05:10 by titan            ###   ########.fr       */
+/*   Updated: 2026/01/19 16:05:01 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt.h>
-
-unsigned int	get_random_color(void)
-{
-	unsigned int	r;
-	unsigned int	g;
-	unsigned int	b;
-
-	r = rand() % 256;
-	g = rand() % 256;
-	b = rand() % 256;
-	return (r << 24 | g << 16 | b << 8 | 0xFF);
-}
-
-unsigned int	lerp_color(unsigned int c1, unsigned int c2, float t)
-{
-	t_lerp_color	lerp;
-
-	lerp.r1 = (c1 >> 24) & 0xFF;
-	lerp.g1 = (c1 >> 16) & 0xFF;
-	lerp.b1 = (c1 >> 8) & 0xFF;
-	lerp.r2 = (c2 >> 24) & 0xFF;
-	lerp.g2 = (c2 >> 16) & 0xFF;
-	lerp.b2 = (c2 >> 8) & 0xFF;
-	lerp.r = (unsigned char)(lerp.r1 + t * (lerp.r2 - lerp.r1));
-	lerp.g = (unsigned char)(lerp.g1 + t * (lerp.g2 - lerp.g1));
-	lerp.b = (unsigned char)(lerp.b1 + t * (lerp.b2 - lerp.b1));
-	return ((lerp.r << 24) | (lerp.g << 16) | (lerp.b << 8) | 0xFF);
-}
 
 void	clean_exit(t_data *data, int exit_code)
 {
@@ -62,7 +34,7 @@ void	key_up(int key, void *param)
 
 	data = (t_data *)param;
 	if (key >= 0 && key < 512)
-		data->key_table[key] = 1;
+		data->key_table[key] = 0;
 }
 
 void	key_down(int key, void *param)
@@ -73,19 +45,8 @@ void	key_down(int key, void *param)
 	data = (t_data *)param;
 	if (key == 41)
 		mlx_loop_end(data->mlx);
-	if (key == 6)
-	{
-		data->color_start = get_random_color();
-		data->color_end = get_random_color();
-		render(data);
-	}
-	if (key == 68)
-	{
-		data->is_full = !data->is_full;
-		mlx_set_window_fullscreen(data->mlx, data->win, data->is_full);
-	}
 	if (key >= 0 && key < 512)
-		data->key_table[key] = 0;
+		data->key_table[key] = 1;
 }
 
 void	window_hook(int event, void *param)
@@ -102,33 +63,87 @@ void	window_hook(int event, void *param)
 	}
 }
 
+/*
+	D direction O origine t inconue
+
+	Ray(t) = o + t * D;
+
+
+	tous les points f d'une sphere
+
+	
+
+	||f - c|| = r²; longeur vecteur au carre est strictement egual au produit scalire de lui meme
+	(f - c) * (f - c) = r²
+	((O + t * D) - C) * ((O + t * D) - C) = r²
+	(OC + TD) * (OC + TD) = r²
+
+	(a + b)² = a² + 2ab + b²
+
+	(OC * OC) + 2(OC * TD) + TD² = r²
+	(OC * OC) + 2t(OC * D) + t²(D * D) = r²
+	(OC * OC) + 2t(OC * D) + t²(D * D) - r² = 0
+*/
+
+bool	hit_sphere(t_vec3 sphere_center, double radius, t_ray r)
+{
+	t_vec3	ocenter;
+	double	a;
+	double	b;
+	double	c;
+	double	dis;
+
+	ocenter = vec_sub(r.origin, sphere_center);
+	a = vec_dot(r.dir, r.dir);
+	b = 2.0 * vec_dot(ocenter, r.dir);
+	c = vec_dot(ocenter, ocenter) - (radius * radius);
+	dis = (b * b) - (4 * a * c);
+	if (dis < 0)
+		return (false);
+	return (true);
+}
+
 void	render(t_data *data)
 {
-	int				y;
-	int				x;
-	int				idx;
-	unsigned int	current_color;
-	double			ratio;
+	int			y;
+	int			x;
+	double		u;
+	double		v;
+	t_ray		ray;
+	int			idx;
+	double		aspect_ratio = (double)data->width / (double)data->height;
+	double		viewport_height = 2;
+	double		viewport_width = aspect_ratio * viewport_height;
+	double		dis_cam_viewp = 1;
 
-	mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFFFFFFFF});
-	if (!data->win || !data->img || !data->pixels)
-		return ;
 	y = 0;
+	data->test_sphere.center.x = -1;
+	data->test_sphere.center.y = 0;
+	data->test_sphere.center.z = -10;
+	data->test_sphere.radius = 2;
+	mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFFFFFFFF});
 	while (y < data->height)
 	{
-		ratio = (double)y / (double)data->height;
-		current_color = lerp_color(data->color_start, data->color_end, ratio);
 		x = 0;
 		while (x < data->width)
 		{
+			u = (double)x / (data->width - 1);
+			v = (double)y / (data->height - 1);
+			ray.origin = data->camera_origin;
+			ray.dir.x = (u * viewport_width) - (viewport_width / 2);
+			ray.dir.y = (viewport_height / 2) - (v * viewport_height);
+			ray.dir.z = -dis_cam_viewp;
+			ray.dir = vec_normalize(ray.dir);
 			idx = y * data->width + x;
-			data->pixels[idx].rgba = current_color;
+			if (hit_sphere(data->test_sphere.center, data->test_sphere.radius, ray))
+				data->pixels[idx].rgba = 0x847E08FF;
+			else
+				data->pixels[idx].rgba = 0x000000FF;
 			x++;
 		}
 		y++;
 	}
-	mlx_set_image_region(data->mlx, data->img, 0, 0,
-		data->width, data->height, data->pixels);
+	mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
 	mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
 }
 
@@ -153,6 +168,39 @@ int	resize_win(t_data *data)
 	return (0);
 }
 
+void	update(void *param)
+{
+	t_data	*data;
+
+	data = (t_data *)param;
+	if (data->key_table[68] && !data->old_key_table[68])
+	{
+		data->is_full = !data->is_full;
+		mlx_set_window_fullscreen(data->mlx, data->win, data->is_full);
+	}
+	if (data->key_table[82])
+	{
+		data->camera_origin.y += 0.5;
+		render(data);
+	}
+	if (data->key_table[81])
+	{
+		data->camera_origin.y -= 0.5;
+		render(data);
+	}
+	if (data->key_table[80])
+	{
+		data->camera_origin.x -= 0.5;
+		render(data);
+	}
+	if (data->key_table[79])
+	{
+		data->camera_origin.x += 0.5;
+		render(data);
+	}
+	ft_memcpy(data->old_key_table, data->key_table, sizeof(data->key_table));
+}
+
 int	main(void)
 {
 	t_data					*data;
@@ -169,8 +217,8 @@ int	main(void)
 	data->height = HEIGHT;
 	data->is_full = false;
 	srand(time(NULL));
-	data->color_start = 0x000000FF;
-	data->color_end = 0xFFFFFFFF;
+	ft_memset(data->key_table, 0, sizeof(data->key_table));
+	ft_bzero(&data->camera_origin, sizeof(data->camera_origin));
 	data->mlx = mlx_init();
 	if (!data->mlx)
 		clean_exit(data, 1);
@@ -187,6 +235,7 @@ int	main(void)
 	mlx_on_event(data->mlx, data->win, MLX_KEYDOWN, key_down, data);
 	mlx_on_event(data->mlx, data->win, MLX_KEYUP, key_up, data);
 	mlx_on_event(data->mlx, data->win, MLX_WINDOW_EVENT, window_hook, data);
+	mlx_add_loop_hook(data->mlx, update, data);
 	mlx_loop(data->mlx);
 	clean_exit(data, 0);
 	return (0);
