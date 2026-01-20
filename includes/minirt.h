@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/19 15:57:12 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/20 16:39:31 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,21 @@
 
 # define WIDTH		1500
 # define HEIGHT		1000
+# define PI			3.14159265358979323846
+
+typedef struct s_camera
+{
+	t_vec3	origin;
+	t_vec3	dir;
+	double	fov;
+}				t_camera;
+
+typedef struct s_hit_r
+{
+	t_vec3	p;
+	t_vec3	normal;
+	double	t;
+}				t_hit_r;
 
 typedef struct s_ray
 {
@@ -38,10 +53,15 @@ typedef struct s_ray
 
 typedef struct s_sphere
 {
-	t_vec3	center;
-	double	radius;
-	t_color	color;
+	t_mat4	transform;
+	t_mat4	inverse_transform;
 }				t_sphere;
+
+typedef struct s_plane
+{
+	t_mat4		transform;
+	t_mat4		inverse_transform;
+}				t_plane;
 
 typedef struct s_data
 {
@@ -54,8 +74,7 @@ typedef struct s_data
 	bool			is_full;
 	int				key_table[512];
 	int				old_key_table[512];
-	t_mat4			camera_to_world;
-	t_vec3			camera_origin;
+	t_camera		cam;
 	t_sphere		test_sphere;
 }				t_data;
 

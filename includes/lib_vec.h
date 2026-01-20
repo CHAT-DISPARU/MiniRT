@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 17:24:37 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/17 18:07:25 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/19 16:43:12 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ t_vec3	vec_mult(t_vec3 v1, t_vec3 v2);
 double	vec_len(t_vec3 v);
 double	vec_len_sq(t_vec3 v);
 t_vec3	vec_normalize(t_vec3 v);
-double	vec_dot(t_vec3 v1, t_vec3 v2);
+double	vec_dot_scal(t_vec3 v1, t_vec3 v2);
 t_vec3	vec_cross(t_vec3 v1, t_vec3 v2);
 t_vec3	vec_reflect(t_vec3 v, t_vec3 n);
 t_vec3	vec_min(t_vec3 v1, t_vec3 v2);

@@ -6,13 +6,13 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 17:34:12 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/19 16:03:20 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/20 08:55:35 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <lib_vec.h>
 
-double	vec_dot(t_vec3 v1, t_vec3 v2)
+double	vec_dot_scal(t_vec3 v1, t_vec3 v2)
 {
 	return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
 }
