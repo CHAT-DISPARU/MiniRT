@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 17:22:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/17 18:27:11 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/19 16:44:14 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@ t_mat4	mat4_view(t_vec3 from, t_vec3 to, t_vec3 up)
 	view.m[2][0] = -forward.x;
 	view.m[2][1] = -forward.y;
 	view.m[2][2] = -forward.z;
-	view.m[0][3] = -vec_dot(left, from);
-	view.m[1][3] = -vec_dot(true_up, from);
-	view.m[2][3] = vec_dot(forward, from);
+	view.m[0][3] = -vec_dot_scal(left, from);
+	view.m[1][3] = -vec_dot_scal(true_up, from);
+	view.m[2][3] = vec_dot_scal(forward, from);
 	return (view);
 }
