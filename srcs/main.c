@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/20 16:57:37 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/21 15:39:11 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,10 +142,7 @@ bool	hit_plane(t_plane *pl, t_ray ray, t_hit_r *rec)
 
 	Ray(t) = o + t * D;
 
-
 	tous les point f d'une sphere
-
-	
 
 	||f - c|| = r²; longeur vecteur au carre est strictement egual au produit scalire de lui meme
 	(f - c) * (f - c) = r²
@@ -153,6 +150,7 @@ bool	hit_plane(t_plane *pl, t_ray ray, t_hit_r *rec)
 	(OC + TD) * (OC + TD) = r²
 
 	(a + b)² = a² + 2ab + b²
+	t = -l_ray.origin.y / denom;
 
 	(OC * OC) + 2(OC * TD) + TD² = r²
 	(OC * OC) + 2t(OC * D) + t²(D * D) = r²
@@ -177,7 +175,11 @@ bool	hit_sphere(t_sphere *sp, t_ray ray, t_hit_r *rec)
 		return (false);
 	double t = (-b - sqrt(delta)) / (a);
 	if (t < 0.001)
-		return (false);
+	{
+		t = (-b + sqrt(delta)) / (a);
+		if (t < 0.001)
+			return (false);
+	}
 	rec->t = t;
 	rec->p = vec_add(ray.origin, vec_scale(ray.dir, t));
 	t_vec3 local_hit = vec_add(l_ray.origin, vec_scale(l_ray.dir, t));
@@ -185,6 +187,35 @@ bool	hit_sphere(t_sphere *sp, t_ray ray, t_hit_r *rec)
 	rec->normal = mat4_mult_vec3(&sp->transform, local_normal, 0);
 	rec->normal = vec_normalize(rec->normal);
 	return (true);
+}
+
+bool	hit_someting(t_data *data, t_ray ray, t_hit_r *rec, t_plane *floor)
+{
+	bool	hit;
+	double	closest;
+	t_hit_r	tmp_rec;
+
+	hit = false;
+	closest = INFINITY;
+	if (hit_sphere(&data->test_sphere, ray, &tmp_rec))
+	{
+		if (tmp_rec.t < closest)
+		{
+			hit = true;
+			*rec = tmp_rec;
+			closest = tmp_rec.t;
+		}
+	}
+	if (hit_plane(floor, ray, rec))
+	{
+		if (tmp_rec.t < closest)
+		{
+			hit = true;
+			*rec = tmp_rec;
+			closest = tmp_rec.t;
+		}
+	}
+	return (hit);
 }
 
 /*
@@ -241,7 +272,7 @@ void	render(t_data *data)
 			ray.dir = mat4_mult_vec3(&cam_matrix, local_dir, 0.0);
 			ray.dir = vec_normalize(ray.dir);
 			idx = y * data->width + x;
-			if (hit_sphere(&data->test_sphere, ray, &rec) || hit_plane(&floor, ray, &rec))
+			if (hit_someting(data, ray, &rec, &floor))
 			{
 				double r = (rec.normal.x + 1.0) * 0.5;
    				double g = (rec.normal.y + 1.0) * 0.5;
@@ -287,6 +318,7 @@ t_vec3	get_right_vector(t_vec3 dir)
 	t_vec3	up_guide = {0, 1, 0};
 	t_vec3	right;
 
+	// protection gimbal lock
 	if (fabs(vec_dot_scal(dir, up_guide)) > 0.99)
 		up_guide = (t_vec3){1, 0, 0};
 	right = vec_normalize(vec_cross(dir, up_guide));
@@ -299,34 +331,45 @@ void	update(void *param)
 	t_mat4	rot_mtx;
 	t_vec3	forward;
 	t_vec3	right;
-	double	speed = 0.5;
-	double	rot_speed = 0.05;
 
 	data = (t_data *)param;
 	// rotaton
 	forward = data->cam.dir;
 	right = get_right_vector(forward);
+	if (data->key_table[224] && !data->old_key_table[224])
+	{
+		if (data->speed == 0.5)
+		{
+			data->speed = 2;
+			data->rot_speed = 0.2;
+		}
+		else
+		{
+			data->speed = 0.5;
+			data->rot_speed = 0.05;
+		}
+	}
 	if (data->key_table[82])
 	{
-		mat4_rotate_axis(&rot_mtx, right, rot_speed);
+		mat4_rotate_axis(&rot_mtx, right, data->rot_speed);
 		data->cam.dir = mat4_mult_vec3(&rot_mtx, data->cam.dir, 0.0);
 		render(data);
 	}
 	if (data->key_table[81])
 	{
-		mat4_rotate_axis(&rot_mtx, right, -rot_speed);
+		mat4_rotate_axis(&rot_mtx, right, -data->rot_speed);
 		data->cam.dir = mat4_mult_vec3(&rot_mtx, data->cam.dir, 0.0);
 		render(data);
 	}
 	if (data->key_table[80])
 	{
-		mat4_rotate_axis(&rot_mtx, (t_vec3){0, 1, 0}, rot_speed);
+		mat4_rotate_axis(&rot_mtx, (t_vec3){0, 1, 0}, data->rot_speed);
 		data->cam.dir = mat4_mult_vec3(&rot_mtx, data->cam.dir, 0.0);
 		render(data);
 	}
 	if (data->key_table[79])
 	{
-		mat4_rotate_axis(&rot_mtx, (t_vec3){0, 1, 0}, -rot_speed);
+		mat4_rotate_axis(&rot_mtx, (t_vec3){0, 1, 0}, -data->rot_speed);
 		data->cam.dir = mat4_mult_vec3(&rot_mtx, data->cam.dir, 0.0);
 		render(data);
 	}
@@ -336,34 +379,35 @@ void	update(void *param)
 	//mouvemnt
 	if (data->key_table[26])
 	{
-		data->cam.origin = vec_add(data->cam.origin, vec_scale(forward, speed));
+		data->cam.origin = vec_add(data->cam.origin, vec_scale(forward, data->speed));
 		render(data);
 	}
 	if (data->key_table[22]) 
 	{
-		data->cam.origin = vec_sub(data->cam.origin, vec_scale(forward, speed));
+		data->cam.origin = vec_sub(data->cam.origin, vec_scale(forward, data->speed));
 		render(data);
 	}
 	if (data->key_table[4]) 
 	{
-		data->cam.origin = vec_sub(data->cam.origin, vec_scale(right, speed));
+		data->cam.origin = vec_sub(data->cam.origin, vec_scale(right, data->speed));
 		render(data);
 	}
 	if (data->key_table[7]) 
 	{
-		data->cam.origin = vec_add(data->cam.origin, vec_scale(right, speed));
+		data->cam.origin = vec_add(data->cam.origin, vec_scale(right, data->speed));
 		render(data);
 	}
 	if (data->key_table[44])
 	{
-		data->cam.origin.y += speed;
+		data->cam.origin.y += data->speed;
 		render(data);
 	}
 	if (data->key_table[225])
 	{
-		data->cam.origin.y -= speed;
+		data->cam.origin.y -= data->speed;
 		render(data);
 	}
+	/*
 	if (data->key_table[46])
 	{
 		data->cam.fov -= 2;
@@ -377,7 +421,7 @@ void	update(void *param)
 		if (data->cam.fov > 179)
 			data->cam.fov = 179;
 		render(data);
-	}
+	}*/
 	ft_memcpy(data->old_key_table, data->key_table, sizeof(data->key_table));
 }
 
@@ -401,6 +445,8 @@ int	main(void)
 	data->cam.origin = (t_vec3){0, 0, 5};
 	data->cam.dir = (t_vec3){0, 0, -1};
 	data->cam.fov = 70;
+	data->speed = 0.5;
+	data->rot_speed = 0.05;
 	data->mlx = mlx_init();
 	if (!data->mlx)
 		clean_exit(data, 1);
