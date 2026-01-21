@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/20 16:39:31 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/21 14:16:32 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ typedef struct s_data
 	int				old_key_table[512];
 	t_camera		cam;
 	t_sphere		test_sphere;
+	double			speed;
+	double			rot_speed;
 }				t_data;
 
 int		resize_win(t_data *data);
