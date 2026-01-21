@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/21 15:39:11 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/21 16:40:26 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,14 @@
 	0  0  0​  1​​
 */
 
-t_mat4	look_at(t_vec3 o, t_vec3 dir)
+t_mat4	look_at(t_vec3 o, t_vec3 dir, t_vec3 up_guide)
 {
 	t_vec3	f = vec_normalize(vec_scale(dir, -1));
 	t_vec3	r;
-	t_vec3	up_guide = {0, 1, 0};
 	t_vec3	u;
 	t_mat4	m;
 	if (fabs(vec_dot_scal(f, up_guide)) > 0.99)
-		up_guide = (t_vec3){1, 0, 0};
+		up_guide = vec_add(up_guide, (t_vec3){0.1, 0, 0});
 	r = vec_normalize(vec_cross(up_guide, f));
 	u = vec_cross(f, r);
 	mat4_initial(&m);
@@ -206,7 +205,7 @@ bool	hit_someting(t_data *data, t_ray ray, t_hit_r *rec, t_plane *floor)
 			closest = tmp_rec.t;
 		}
 	}
-	if (hit_plane(floor, ray, rec))
+	if (hit_plane(floor, ray, &tmp_rec))
 	{
 		if (tmp_rec.t < closest)
 		{
@@ -243,10 +242,10 @@ void	render(t_data *data)
 	t_mat4	sphere_matrix;
 	t_mat4	trans_plane;
 	t_plane	floor;
-	t_mat4	cam_matrix = look_at(data->cam.origin, data->cam.dir);
+	t_mat4	cam_matrix = look_at(data->cam.origin, data->cam.dir, data->cam.up_guide);
 
 	mat4_initial(&trans_mtx);
-	mat4_translation(&trans_mtx, (t_vec3){0, 0, -10}); //pos
+	mat4_translation(&trans_mtx, (t_vec3){0, -2, -10}); //pos
 	mat4_initial(&scale_mtx);
 	mat4_scal(&scale_mtx, (t_vec3){2, 2, 2}); // Rayon de 2
 	mat4_initial(&trans_plane);
@@ -331,8 +330,10 @@ void	update(void *param)
 	t_mat4	rot_mtx;
 	t_vec3	forward;
 	t_vec3	right;
+	bool	movded;
 
 	data = (t_data *)param;
+	movded = false;
 	// rotaton
 	forward = data->cam.dir;
 	right = get_right_vector(forward);
@@ -353,25 +354,41 @@ void	update(void *param)
 	{
 		mat4_rotate_axis(&rot_mtx, right, data->rot_speed);
 		data->cam.dir = mat4_mult_vec3(&rot_mtx, data->cam.dir, 0.0);
-		render(data);
+		movded = true;
 	}
 	if (data->key_table[81])
 	{
 		mat4_rotate_axis(&rot_mtx, right, -data->rot_speed);
 		data->cam.dir = mat4_mult_vec3(&rot_mtx, data->cam.dir, 0.0);
-		render(data);
+		movded = true;
 	}
 	if (data->key_table[80])
 	{
 		mat4_rotate_axis(&rot_mtx, (t_vec3){0, 1, 0}, data->rot_speed);
 		data->cam.dir = mat4_mult_vec3(&rot_mtx, data->cam.dir, 0.0);
-		render(data);
+		movded = true;
 	}
 	if (data->key_table[79])
 	{
 		mat4_rotate_axis(&rot_mtx, (t_vec3){0, 1, 0}, -data->rot_speed);
 		data->cam.dir = mat4_mult_vec3(&rot_mtx, data->cam.dir, 0.0);
-		render(data);
+		movded = true;
+	}
+	if (data->key_table[47])
+	{
+		mat4_rotate_axis(&rot_mtx, data->cam.dir, data->rot_speed);
+		data->cam.dir = mat4_mult_vec3(&rot_mtx, data->cam.dir, 0.0);
+        data->cam.up_guide = mat4_mult_vec3(&rot_mtx, data->cam.up_guide, 0.0);
+        data->cam.up_guide = vec_normalize(data->cam.up_guide);
+		movded = true;
+	}
+	if (data->key_table[48])
+	{
+		mat4_rotate_axis(&rot_mtx, data->cam.dir, -data->rot_speed);
+		data->cam.dir = mat4_mult_vec3(&rot_mtx, data->cam.dir, 0.0);
+        data->cam.up_guide = mat4_mult_vec3(&rot_mtx, data->cam.up_guide, 0.0);
+        data->cam.up_guide = vec_normalize(data->cam.up_guide);
+		movded = true;
 	}
 	if (data->key_table[82] || data->key_table[81] || 
 		data->key_table[80] || data->key_table[79])
@@ -380,32 +397,32 @@ void	update(void *param)
 	if (data->key_table[26])
 	{
 		data->cam.origin = vec_add(data->cam.origin, vec_scale(forward, data->speed));
-		render(data);
+		movded = true;
 	}
 	if (data->key_table[22]) 
 	{
 		data->cam.origin = vec_sub(data->cam.origin, vec_scale(forward, data->speed));
-		render(data);
+		movded = true;
 	}
 	if (data->key_table[4]) 
 	{
 		data->cam.origin = vec_sub(data->cam.origin, vec_scale(right, data->speed));
-		render(data);
+		movded = true;
 	}
 	if (data->key_table[7]) 
 	{
 		data->cam.origin = vec_add(data->cam.origin, vec_scale(right, data->speed));
-		render(data);
+		movded = true;
 	}
 	if (data->key_table[44])
 	{
 		data->cam.origin.y += data->speed;
-		render(data);
+		movded = true;
 	}
 	if (data->key_table[225])
 	{
 		data->cam.origin.y -= data->speed;
-		render(data);
+		movded = true;
 	}
 	/*
 	if (data->key_table[46])
@@ -413,15 +430,17 @@ void	update(void *param)
 		data->cam.fov -= 2;
 		if (data->cam.fov < 1)
 			data->cam.fov = 1;
-		render(data);
+		movded = true;
 	}
 	if (data->key_table[45])
 	{
 		data->cam.fov += 2;
 		if (data->cam.fov > 179)
 			data->cam.fov = 179;
-		render(data);
+		movded = true;
 	}*/
+	if (movded)
+		render(data);
 	ft_memcpy(data->old_key_table, data->key_table, sizeof(data->key_table));
 }
 
@@ -445,6 +464,7 @@ int	main(void)
 	data->cam.origin = (t_vec3){0, 0, 5};
 	data->cam.dir = (t_vec3){0, 0, -1};
 	data->cam.fov = 70;
+	data->cam.up_guide = (t_vec3){0, 1, 0};
 	data->speed = 0.5;
 	data->rot_speed = 0.05;
 	data->mlx = mlx_init();

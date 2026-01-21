@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/21 14:16:32 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/21 16:20:52 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ typedef struct s_camera
 {
 	t_vec3	origin;
 	t_vec3	dir;
+	t_vec3	up_guide;
 	double	fov;
 }				t_camera;
 
