@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/21 16:20:52 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/26 16:57:26 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 
 # define WIDTH		1500
 # define HEIGHT		1000
+# define S_PER_PIXS	10
 # define PI			3.14159265358979323846
 
 typedef struct s_camera
@@ -45,6 +46,12 @@ typedef struct s_hit_r
 	t_vec3	normal;
 	double	t;
 }				t_hit_r;
+
+typedef struct s_square
+{
+	t_mat4		transform;
+	t_mat4		inverse_transform;
+}				t_square;
 
 typedef struct s_ray
 {
@@ -64,6 +71,12 @@ typedef struct s_plane
 	t_mat4		inverse_transform;
 }				t_plane;
 
+typedef struct s_cylinder
+{
+	t_mat4		transform;
+	t_mat4		inverse_transform;
+}				t_cylinder;
+
 typedef struct s_data
 {
 	int				width;
@@ -79,6 +92,8 @@ typedef struct s_data
 	t_sphere		test_sphere;
 	double			speed;
 	double			rot_speed;
+	t_square		rectangle;
+	int				s_per_pixs;
 }				t_data;
 
 int		resize_win(t_data *data);
