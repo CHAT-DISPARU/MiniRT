@@ -6,7 +6,7 @@
 #    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/01/19 16:44:59 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/01/22 14:19:54 by gajanvie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,7 +51,7 @@ HEADERS := includes/
 
 CC := cc
 
-FLAGS := -Wall -Werror -Wextra -g -I MacroLibX/includes
+FLAGS := -Wall -Werror -Wextra -g -I MacroLibX/includes -O3 -ffast-math
 
 all: $(LIB) header ${NAME}
 

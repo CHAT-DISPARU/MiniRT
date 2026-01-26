@@ -6,11 +6,16 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/21 16:40:26 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/26 18:18:29 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt.h>
+
+double	rand_double(void)
+{
+	return ((double)rand() / (double)RAND_MAX);
+}
 
 /*
 	​Rx ​Ux Fx ​Tx​​
@@ -101,6 +106,89 @@ void	window_hook(int event, void *param)
 }
 
 /*
+	x(t) = d0t + o0
+	y(t) = d1t + o1
+	z(t) = d2t + o2
+
+
+	r(t) = O + TD
+
+	y² + z² = r²
+
+	D(d0, d1, d2)
+	O(o0, o1, o2)
+
+	(d1t + O1)² + (d2t + o2)²= r²
+	d1t² + 2(d1t * o1) + o1² + d2t² + 2(d2t * o2) + o2² - r² = 0
+	t²(d1 + d2) + 2t(d1 * o1 + d2 * o2) + 2o2² - r²
+*/
+
+bool	hit_cylinder(t_cylinder *cy, t_ray ray, t_hit_r *rec)
+{
+	t_ray	l_ray;
+	double	a;
+	double	b;
+	double	c;
+	double	delta;
+	double	t;
+
+	l_ray.origin = mat4_mult_vec3(&cy->inverse_transform, ray.origin, 1.0);
+	l_ray.dir = mat4_mult_vec3(&cy->inverse_transform, ray.dir, 0.0);
+	a = (l_ray.dir.y * l_ray.dir.y) + (l_ray.dir.z * l_ray.dir.z);
+	b = ((l_ray.origin.y * l_ray.dir.y) + (l_ray.origin.z * l_ray.dir.z));
+	c = (l_ray.origin.y * l_ray.origin.y) + (l_ray.origin.z * l_ray.origin.z) - 1.0;
+	delta = (b * b) - (a * c);
+	if (delta < 0)
+		return (false);
+	t = (-b - sqrt(delta)) / (a);
+	if (t < 0.001)
+	{
+		t = (-b + sqrt(delta)) / (a);
+		if (t < 0.001)
+			return (false);
+	}
+	rec->t = t;
+	rec->p = vec_add(l_ray.origin, vec_scale(l_ray.dir, t));
+	if (fabs(rec->p.x) > 1.0 || fabs(rec->p.z) > 1.0)
+		return (false);
+	rec->p = vec_add(ray.origin, vec_scale(ray.dir, t));
+	t_vec3 local_hit = vec_add(l_ray.origin, vec_scale(l_ray.dir, t));
+	t_vec3 local_normal = local_hit;
+	local_normal.x = 0;
+	rec->normal = mat4_mult_vec3(&cy->transform, local_normal, 0.0);
+	rec->normal = vec_normalize(rec->normal);
+	return (true);
+}
+
+bool	hit_square(t_square *sq, t_ray ray, t_hit_r *rec)
+{
+	t_ray	l_ray;
+	double	t;
+	double	denom;
+	t_vec3	p;
+
+	l_ray.origin = mat4_mult_vec3(&sq->inverse_transform, ray.origin, 1.0);
+	l_ray.dir = mat4_mult_vec3(&sq->inverse_transform, ray.dir, 0.0);
+	denom = l_ray.dir.y;
+	if (fabs(denom) < 0.00001)
+		return (false);
+	t = -l_ray.origin.y / denom;
+	if (t < 0.001)
+		return (false);
+	p = vec_add(l_ray.origin, vec_scale(l_ray.dir, t));
+	if (fabs(p.x) > 1.0 || fabs(p.z) > 1.0)
+		return (false);
+	rec->t = t;
+	rec->p = vec_add(ray.origin, vec_scale(ray.dir, t));
+	t_vec3 local_normal = {0, 1, 0};
+	rec->normal = mat4_mult_vec3(&sq->transform, local_normal, 0.0);
+	rec->normal = vec_normalize(rec->normal);
+	if (vec_dot_scal(ray.dir, rec->normal) > 0)
+		rec->normal = vec_scale(rec->normal, -1.0);
+	return (true);
+}
+
+/*
 	rayon = t*D + O
 
 	plan : y = 0
@@ -188,7 +276,7 @@ bool	hit_sphere(t_sphere *sp, t_ray ray, t_hit_r *rec)
 	return (true);
 }
 
-bool	hit_someting(t_data *data, t_ray ray, t_hit_r *rec, t_plane *floor)
+bool	hit_someting(t_data *data, t_ray ray, t_hit_r *rec, t_plane *floor, t_cylinder *cy)
 {
 	bool	hit;
 	double	closest;
@@ -214,6 +302,24 @@ bool	hit_someting(t_data *data, t_ray ray, t_hit_r *rec, t_plane *floor)
 			closest = tmp_rec.t;
 		}
 	}
+	if (hit_square(&data->rectangle, ray, &tmp_rec))
+	{
+		if (tmp_rec.t < closest)
+		{
+			hit = true;
+			*rec = tmp_rec;
+			closest = tmp_rec.t;
+		}
+	}
+	if (hit_cylinder(cy, ray, &tmp_rec))
+	{
+		if (tmp_rec.t < closest)
+		{
+			hit = true;
+			*rec = tmp_rec;
+			closest = tmp_rec.t;
+		}
+	}
 	return (hit);
 }
 
@@ -225,34 +331,62 @@ void	render(t_data *data)
 {
 	int			y;
 	int			x;
+	int			s;
 	double		u;
 	double		v;
 	t_ray		ray;
 	t_vec3      local_dir;
 	int			idx;
 	t_hit_r		rec;
+	t_vec3		color_acc;
+	t_vec3		final_color;
+	t_vec3		sample_color;
+
 	// ecran de c mort 
 	double		fov_radians = data->cam.fov * (PI / 180.0);
 	double		focal_length = 1.0;
 	double		viewport_height = 2.0 * tan(fov_radians / 2.0) * focal_length;
 	double		aspect_ratio = (double)data->width / (double)data->height;
 	double		viewport_width = aspect_ratio * viewport_height;
-	t_mat4	trans_mtx;
+
+	t_mat4	trans_sp_mtx;
+	t_mat4	trans_cy_mtx;
 	t_mat4	scale_mtx;
 	t_mat4	sphere_matrix;
 	t_mat4	trans_plane;
+	t_mat4	rectangle_r;
+	t_mat4	rectangle_t;
+	t_mat4	rectangle_s;
+	t_mat4	final_rec;
+	t_mat4	final_cy;
+	t_cylinder	cy;
 	t_plane	floor;
 	t_mat4	cam_matrix = look_at(data->cam.origin, data->cam.dir, data->cam.up_guide);
+	t_vec3	cam_origin = mat4_mult_vec3(&cam_matrix, (t_vec3){0,0,0}, 1.0);
 
-	mat4_initial(&trans_mtx);
-	mat4_translation(&trans_mtx, (t_vec3){0, -2, -10}); //pos
+	mat4_initial(&trans_sp_mtx);
+	mat4_translation(&trans_sp_mtx, (t_vec3){0, 0, -10}); //pos
+	mat4_initial(&trans_cy_mtx);
+	mat4_translation(&trans_cy_mtx, (t_vec3){0, 40, -10});
 	mat4_initial(&scale_mtx);
 	mat4_scal(&scale_mtx, (t_vec3){2, 2, 2}); // Rayon de 2
 	mat4_initial(&trans_plane);
-	mat4_translation(&trans_plane, (t_vec3){0, -2, 0});
+	mat4_translation(&trans_plane, (t_vec3){0, -3, 0});
 	floor.transform = trans_plane;
 	floor.inverse_transform = mat4_inverse(&trans_plane);
-	sphere_matrix = mat4_mult(&trans_mtx, &scale_mtx);
+	mat4_initial(&rectangle_s);
+	mat4_scal(&rectangle_s, (t_vec3){5, 1, 2.5});
+	mat4_rotate_x(&rectangle_r, PI * 0.5);
+	mat4_initial(&rectangle_t);
+	mat4_translation(&rectangle_t, (t_vec3){0, 0, -20});
+	final_rec = mat4_mult(&rectangle_r, &rectangle_s);
+	final_rec = mat4_mult(&rectangle_t, &final_rec);
+	data->rectangle.transform = final_rec;
+	data->rectangle.inverse_transform = mat4_inverse(&final_rec);
+	sphere_matrix = mat4_mult(&trans_sp_mtx, &scale_mtx);
+	final_cy = mat4_mult(&trans_cy_mtx, &scale_mtx);
+	cy.transform = final_cy;
+	cy.inverse_transform = mat4_inverse(&final_cy);
 	data->test_sphere.inverse_transform = mat4_inverse(&sphere_matrix);
 	data->test_sphere.transform = sphere_matrix;
 	mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
@@ -262,27 +396,43 @@ void	render(t_data *data)
 		x = 0;
 		while (x < data->width)
 		{
-			u = (double)x / (data->width - 1);
-			v = (double)y / (data->height - 1);
-			local_dir.x = (u * viewport_width) - (viewport_width / 2);
-			local_dir.y = (viewport_height / 2) - (v * viewport_height);
-			local_dir.z = -focal_length;
-			ray.origin = mat4_mult_vec3(&cam_matrix, (t_vec3){0,0,0}, 1.0);
-			ray.dir = mat4_mult_vec3(&cam_matrix, local_dir, 0.0);
-			ray.dir = vec_normalize(ray.dir);
-			idx = y * data->width + x;
-			if (hit_someting(data, ray, &rec, &floor))
+			color_acc = (t_vec3){0, 0, 0};
+			s = 0;
+			while (s < data->s_per_pixs)
 			{
-				double r = (rec.normal.x + 1.0) * 0.5;
-   				double g = (rec.normal.y + 1.0) * 0.5;
-				double b = (rec.normal.z + 1.0) * 0.5;
-				int ir = (int)(255.99 * r);
-				int ig = (int)(255.99 * g);
-				int ib = (int)(255.99 * b);
-				data->pixels[idx].rgba = (ir << 24) | (ig << 16) | (ib << 8) | 0xFF;
+				if (data->s_per_pixs == 1)
+				{
+					u = ((double)x + 0.5) / (data->width - 1);
+					v = ((double)y + 0.5) / (data->height - 1);
+				}
+				else
+				{
+					u = ((double)x + rand_double()) / (data->width - 1);
+					v = ((double)y + rand_double()) / (data->height - 1);
+				}
+				local_dir.x = (u * viewport_width) - (viewport_width / 2);
+				local_dir.y = (viewport_height / 2) - (v * viewport_height);
+				local_dir.z = -focal_length;
+				ray.origin = cam_origin;
+				ray.dir = mat4_mult_vec3(&cam_matrix, local_dir, 0.0);
+				ray.dir = vec_normalize(ray.dir);
+				if (hit_someting(data, ray, &rec, &floor, &cy))
+				{
+					sample_color.x = (rec.normal.x + 1.0) * 0.5;
+					sample_color.y = (rec.normal.y + 1.0) * 0.5;
+					sample_color.z = (rec.normal.z + 1.0) * 0.5;
+				}
+				else
+					sample_color = (t_vec3){0, 0, 0};
+				color_acc = vec_add(color_acc, sample_color);
+				s++;
 			}
-			else
-				data->pixels[idx].rgba = 0x000000FF;
+			final_color = vec_scale(color_acc, 1.0 / data->s_per_pixs);
+			int ir = (int)(255.999 * final_color.x);
+			int ig = (int)(255.999 * final_color.y);
+			int ib = (int)(255.999 * final_color.z);
+			idx = y * data->width + x;
+			data->pixels[idx].rgba = (ir << 24) | (ig << 16) | (ib << 8) | 0xFF;
 			x++;
 		}
 		y++;
@@ -337,6 +487,26 @@ void	update(void *param)
 	// rotaton
 	forward = data->cam.dir;
 	right = get_right_vector(forward);
+	if (data->key_table[30] && !data->old_key_table[30])
+	{
+		movded = true;
+		data->s_per_pixs = 1;
+	}
+	if (data->key_table[31] && !data->old_key_table[31])
+	{
+		movded = true;
+		data->s_per_pixs = 3;
+	}
+	if (data->key_table[32] && !data->old_key_table[32])
+	{
+		movded = true;
+		data->s_per_pixs = 5;
+	}
+	if (data->key_table[33] && !data->old_key_table[33])
+	{
+		movded = true;
+		data->s_per_pixs = S_PER_PIXS;
+	}
 	if (data->key_table[224] && !data->old_key_table[224])
 	{
 		if (data->speed == 0.5)
@@ -378,16 +548,16 @@ void	update(void *param)
 	{
 		mat4_rotate_axis(&rot_mtx, data->cam.dir, data->rot_speed);
 		data->cam.dir = mat4_mult_vec3(&rot_mtx, data->cam.dir, 0.0);
-        data->cam.up_guide = mat4_mult_vec3(&rot_mtx, data->cam.up_guide, 0.0);
-        data->cam.up_guide = vec_normalize(data->cam.up_guide);
+		data->cam.up_guide = mat4_mult_vec3(&rot_mtx, data->cam.up_guide, 0.0);
+		data->cam.up_guide = vec_normalize(data->cam.up_guide);
 		movded = true;
 	}
 	if (data->key_table[48])
 	{
 		mat4_rotate_axis(&rot_mtx, data->cam.dir, -data->rot_speed);
 		data->cam.dir = mat4_mult_vec3(&rot_mtx, data->cam.dir, 0.0);
-        data->cam.up_guide = mat4_mult_vec3(&rot_mtx, data->cam.up_guide, 0.0);
-        data->cam.up_guide = vec_normalize(data->cam.up_guide);
+		data->cam.up_guide = mat4_mult_vec3(&rot_mtx, data->cam.up_guide, 0.0);
+		data->cam.up_guide = vec_normalize(data->cam.up_guide);
 		movded = true;
 	}
 	if (data->key_table[82] || data->key_table[81] || 
@@ -440,7 +610,13 @@ void	update(void *param)
 		movded = true;
 	}*/
 	if (movded)
+	{
+		//int old = data->s_per_pixs;
+
+		//data->s_per_pixs = 1;
 		render(data);
+		//data->s_per_pixs = old;
+	}
 	ft_memcpy(data->old_key_table, data->key_table, sizeof(data->key_table));
 }
 
@@ -459,6 +635,7 @@ int	main(void)
 	data->width = WIDTH;
 	data->height = HEIGHT;
 	data->is_full = false;
+	data->s_per_pixs = 1;
 	srand(time(NULL));
 	ft_memset(data->key_table, 0, sizeof(data->key_table));
 	data->cam.origin = (t_vec3){0, 0, 5};
