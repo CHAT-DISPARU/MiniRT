@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 16:34:42 by gajanvie          #+#    #+#             */
-/*   Updated: 2025/11/04 18:44:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2025/11/25 18:05:50 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ void	ft_lstclear(t_list **lst)
 	while (current)
 	{
 		tmp = current->next;
+		if (current->content)
+			free(current->content);
 		ft_lstdelone(current);
 		current = tmp;
 	}

@@ -1,38 +1,51 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_itoa.c                                          :+:      :+:    :+:   */
+/*   ft_print_hex.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/14 10:52:19 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/27 17:20:32 by gajanvie         ###   ########.fr       */
+/*   Created: 2025/10/16 22:14:31 by gajanvie          #+#    #+#             */
+/*   Updated: 2025/11/06 16:39:25 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_printf.h"
 
-char	*ft_itoa(int num)
+char	*ft_xtoa(unsigned int num, int upper)
 {
-	static char	buf[12];
+	static char	buf[17];
 	char		*cursor;
 	char		c;
-	long int	nb;
 
 	cursor = &buf[sizeof(buf) - 1];
 	*cursor-- = 0;
-	nb = num;
-	while (nb)
+	while (num)
 	{
-		c = nb % 10;
-		if (nb < 0)
-			c = -nb % 10;
-		*cursor-- = c + '0';
-		if (nb > -10 && nb < 0)
-			*cursor-- = '-';
-		nb /= 10;
+		c = num % 16;
+		if (c >= 10)
+			c += ('a' - '0') - 10 - (32 * upper);
+		c += '0';
+		*cursor-- = c;
+		num >>= 4;
 	}
 	if (cursor == &buf[sizeof(buf) - 2])
 		*cursor-- = '0';
 	return (++cursor);
+}
+
+int	ft_print_lhex(t_values val)
+{
+	char	*result;
+
+	result = ft_xtoa(val.u_value, 0);
+	return (ft_putstr(result, 1));
+}
+
+int	ft_print_uhex(t_values val)
+{
+	char	*result;
+
+	result = ft_xtoa(val.u_value, 1);
+	return (ft_putstr(result, 1));
 }

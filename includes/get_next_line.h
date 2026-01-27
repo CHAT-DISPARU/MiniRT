@@ -1,23 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/13 12:02:59 by gajanvie          #+#    #+#             */
-/*   Updated: 2025/10/15 17:16:33 by gajanvie         ###   ########.fr       */
+/*   Created: 2025/10/17 15:47:28 by gajanvie          #+#    #+#             */
+/*   Updated: 2025/11/26 09:24:53 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
 
-size_t	ft_strlen(const char *s)
-{
-	size_t	i;		
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 42
+# endif
 
-	i = 0;
-	while (s[i] != '\0')
-		i ++;
-	return (i);
-}
+# include <stdlib.h>
+# include <unistd.h>
+# include <libft.h>
+
+char	*ft_strchr(const char *s, int c);
+char	*ft_strjoin_gnl(char *s1, char *s2);
+char	*get_next_line(int fd, int i);
+
+#endif
