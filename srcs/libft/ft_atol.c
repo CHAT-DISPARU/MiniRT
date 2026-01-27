@@ -1,26 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atoll.c                                         :+:      :+:    :+:   */
+/*   ft_atol.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ntome <ntome@42angouleme.fr>               +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/12 20:30:59 by ntome             #+#    #+#             */
-/*   Updated: 2025/12/12 20:37:52 by ntome            ###   ########.fr       */
+/*   Created: 2025/10/13 22:30:50 by gajanvie          #+#    #+#             */
+/*   Updated: 2025/11/13 14:56:55 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-long long int	ft_atoll(const char *nptr)
+long	ft_atol(const char *nptr)
 {
-	int				sign;
-	long long int	result;
+	int		sign;
+	long	result;
 
 	sign = 1;
 	result = 0;
-	while ((*nptr >= 9 && *nptr <= 13) || *nptr == ' ')
-		nptr++;
 	if (*nptr == '-')
 	{
 		sign = -1;

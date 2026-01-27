@@ -1,23 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strcmp.c                                        :+:      :+:    :+:   */
+/*   ft_print_char.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/13 14:19:55 by titan             #+#    #+#             */
-/*   Updated: 2025/12/13 14:28:44 by titan            ###   ########.fr       */
+/*   Created: 2025/10/16 21:00:36 by gajanvie          #+#    #+#             */
+/*   Updated: 2025/10/17 19:02:52 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_printf.h"
 
-int	ft_strcmp(const char *s1, const char *s2)
+int	ft_print_char(t_values val)
 {
-	size_t	i;
+	int	lenght;
 
-	i = 0;
-	while (s1[i] && s1[i] == s2[i])
-		i++;
-	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+	lenght = write(1, &val.s_value, 1);
+	return (lenght);
 }

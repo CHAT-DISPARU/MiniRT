@@ -1,23 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_print_percent.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/13 12:02:59 by gajanvie          #+#    #+#             */
-/*   Updated: 2025/10/15 17:16:33 by gajanvie         ###   ########.fr       */
+/*   Created: 2025/10/16 22:13:16 by gajanvie          #+#    #+#             */
+/*   Updated: 2025/10/17 11:02:08 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-size_t	ft_strlen(const char *s)
+int	ft_print_percent(void)
 {
-	size_t	i;		
-
-	i = 0;
-	while (s[i] != '\0')
-		i ++;
-	return (i);
+	write(1, "%", 1);
+	return (1);
 }

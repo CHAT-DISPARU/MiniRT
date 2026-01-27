@@ -20,7 +20,7 @@ void	*ft_calloc(size_t nmemb, size_t size)
 		return (NULL);
 	if (nmemb == 0 || size == 0)
 	{
-		tab = malloc(0);
+		tab = (unsigned char *)malloc(0);
 		return (tab);
 	}
 	tab = (unsigned char *)malloc(nmemb * size);

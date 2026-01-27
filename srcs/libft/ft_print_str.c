@@ -1,23 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_print_str.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/13 12:02:59 by gajanvie          #+#    #+#             */
-/*   Updated: 2025/10/15 17:16:33 by gajanvie         ###   ########.fr       */
+/*   Created: 2025/10/16 21:54:06 by gajanvie          #+#    #+#             */
+/*   Updated: 2025/11/06 16:39:39 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-size_t	ft_strlen(const char *s)
+int	ft_print_str(t_values val)
 {
-	size_t	i;		
+	int	lenght;
 
-	i = 0;
-	while (s[i] != '\0')
-		i ++;
-	return (i);
+	if (val.s_value == NULL)
+	{
+		ft_putstr("(null)", 1);
+		return (6);
+	}
+	lenght = ft_strlen(val.s_value);
+	ft_putstr(val.s_value, 1);
+	return (lenght);
 }

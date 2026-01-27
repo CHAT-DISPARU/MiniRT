@@ -6,11 +6,87 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/26 18:18:29 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/27 17:26:14 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt.h>
+
+void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
+{
+	if (exit_code != EXIT_SUCCESS)
+		ft_putstr_fd(mess_eror, 2);
+	if (i > 0)
+	{
+		ft_putstr_fd("line : ", 2);
+		ft_putstr_fd(ft_itoa(i), 2);
+		ft_putstr_fd("\n", 2);
+	}
+	if (!data)
+		exit(exit_code);
+	if (data->img)
+		mlx_destroy_image(data->mlx, data->img);
+	if (data->win)
+		mlx_destroy_window(data->mlx, data->win);
+	if (data->mlx)
+		mlx_destroy_context(data->mlx);
+	if (data->pixels)
+		free(data->pixels);
+	free(data);
+	exit(exit_code);
+}
+
+void	set_a(t_data *data, char *line)
+{
+	(void)data;
+	(void)line;
+	return ;
+}
+
+void	set_l(t_data *data, char *line)
+{
+	(void)data;
+	(void)line;
+	return ;
+}
+
+void	set_c(t_data *data, char *line)
+{
+	data->cam.origin = (t_vec3){0, 0, 5};
+	data->cam.dir = (t_vec3){0, 0, -1};
+	data->cam.fov = 70;
+}
+
+void	read_file(t_data *data, char *filename)
+{
+	int		fd;
+	int		i;
+	char	*line;
+
+	i = 1;
+	fd = open(filename, O_RDONLY);
+	line = get_next_line(fd, 0);
+	while (line)
+	{
+		if (line[0] == 'A')
+			set_a(data, line + 1);
+		else if (line[0] == 'C')
+			set_c(data, line + 1);
+		else if (line[0] == 'L')
+			set_l(data, line + 1);
+		else if (!ft_strncmp("sp", data, 2))
+			set_sp(data, line + 2);
+		else if (!ft_strncmp("pl", data, 2))
+			set_pl(data, line + 2);
+		else if (!ft_strncmp("cy", data, 2))
+			set_cy(data, line + 2);
+		else
+			clean_exit(data, EXIT_FAILURE, "Wrong identifier\n", i);
+		free(line);
+		line = get_next_line(fd, 0);
+		i++;
+	}
+}
 
 double	rand_double(void)
 {
@@ -54,22 +130,6 @@ t_mat4	look_at(t_vec3 o, t_vec3 dir, t_vec3 up_guide)
 	return (m);
 }
 
-void	clean_exit(t_data *data, int exit_code)
-{
-	if (!data)
-		exit(exit_code);
-	if (data->img)
-		mlx_destroy_image(data->mlx, data->img);
-	if (data->win)
-		mlx_destroy_window(data->mlx, data->win);
-	if (data->mlx)
-		mlx_destroy_context(data->mlx);
-	if (data->pixels)
-		free(data->pixels);
-	free(data);
-	exit(exit_code);
-}
-
 void	key_up(int key, void *param)
 {
 	t_data	*data;
@@ -105,6 +165,25 @@ void	window_hook(int event, void *param)
 	}
 }
 
+bool	hit_border_cy(t_ray ray, double x_plane, double *t_out)
+{
+	double	t;
+	double	y;
+	double	z;
+
+	if (fabs(ray.dir.x) < 0.0001)
+		return (false);
+	t = (x_plane - ray.origin.x) / ray.dir.x;
+	if (t < 0.001)
+		return (false);
+	y = ray.origin.y + t * ray.dir.y;
+	z = ray.origin.z + t * ray.dir.z;
+	if ((y * y + z * z) > 1.0)
+		return (false);
+	*t_out = t;
+	return (true);
+}
+
 /*
 	x(t) = d0t + o0
 	y(t) = d1t + o1
@@ -123,12 +202,14 @@ void	window_hook(int event, void *param)
 	t²(d1 + d2) + 2t(d1 * o1 + d2 * o2) + 2o2² - r²
 */
 
-bool	hit_cylinder(t_cylinder *cy, t_ray ray, t_hit_r *rec)
+bool	hit_cylinder(t_obj *cy, t_ray ray, t_hit_r *rec)
 {
 	t_ray	l_ray;
 	double	a;
 	double	b;
 	double	c;
+	double	closest_t = INFINITY;
+	int		hit_zone = 0;
 	double	delta;
 	double	t;
 
@@ -138,29 +219,69 @@ bool	hit_cylinder(t_cylinder *cy, t_ray ray, t_hit_r *rec)
 	b = ((l_ray.origin.y * l_ray.dir.y) + (l_ray.origin.z * l_ray.dir.z));
 	c = (l_ray.origin.y * l_ray.origin.y) + (l_ray.origin.z * l_ray.origin.z) - 1.0;
 	delta = (b * b) - (a * c);
-	if (delta < 0)
-		return (false);
-	t = (-b - sqrt(delta)) / (a);
-	if (t < 0.001)
+	if (delta >= 0)
 	{
-		t = (-b + sqrt(delta)) / (a);
-		if (t < 0.001)
-			return (false);
+		t = (-b - sqrt(delta)) / (a);
+		if (t > 0.001)
+		{
+			double hit_x = l_ray.origin.x + t * l_ray.dir.x;
+			if (hit_x >= -1.0 && hit_x <= 1.0)
+			{
+				closest_t = t;
+				hit_zone = 1;
+			}
+		}
+		if (hit_zone == 0)
+		{
+			t = (-b + sqrt(delta)) / a;
+			if (t > 0.001)
+			{
+				double hit_x = l_ray.origin.x + t * l_ray.dir.x;
+				if (hit_x >= -1.0 && hit_x <= 1.0)
+				{
+					closest_t = t;
+					hit_zone = 1;
+				}
+			}
+		}
 	}
-	rec->t = t;
-	rec->p = vec_add(l_ray.origin, vec_scale(l_ray.dir, t));
-	if (fabs(rec->p.x) > 1.0 || fabs(rec->p.z) > 1.0)
+	if (hit_border_cy(l_ray, 1.0, &t))
+	{
+		if (t < closest_t)
+		{
+			hit_zone = 2;
+			closest_t = t;
+		}
+	}
+	if (hit_border_cy(l_ray, -1.0, &t))
+	{
+		if (t < closest_t)
+		{
+			hit_zone = 3;
+			closest_t = t;
+		}
+	}
+	if (hit_zone == 0)
 		return (false);
-	rec->p = vec_add(ray.origin, vec_scale(ray.dir, t));
-	t_vec3 local_hit = vec_add(l_ray.origin, vec_scale(l_ray.dir, t));
-	t_vec3 local_normal = local_hit;
-	local_normal.x = 0;
+	rec->t = closest_t;
+	rec->p = vec_add(l_ray.origin, vec_scale(l_ray.dir, closest_t));
+	rec->p = vec_add(ray.origin, vec_scale(ray.dir, closest_t));
+	t_vec3 local_normal;
+	if (hit_zone == 1)
+	{
+		local_normal = vec_add(l_ray.origin, vec_scale(l_ray.dir, closest_t));
+		local_normal.x = 0;
+	}
+	else if (hit_zone == 2)
+		local_normal = (t_vec3){1, 0, 0};
+	else
+		local_normal = (t_vec3){-1, 0, 0};
 	rec->normal = mat4_mult_vec3(&cy->transform, local_normal, 0.0);
 	rec->normal = vec_normalize(rec->normal);
 	return (true);
 }
 
-bool	hit_square(t_square *sq, t_ray ray, t_hit_r *rec)
+bool	hit_square(t_obj *sq, t_ray ray, t_hit_r *rec)
 {
 	t_ray	l_ray;
 	double	t;
@@ -200,7 +321,7 @@ bool	hit_square(t_square *sq, t_ray ray, t_hit_r *rec)
 	t = -O /D
 */
 
-bool	hit_plane(t_plane *pl, t_ray ray, t_hit_r *rec)
+bool	hit_plane(t_obj *pl, t_ray ray, t_hit_r *rec)
 {
 	t_ray	l_ray;
 	double	t;
@@ -244,7 +365,7 @@ bool	hit_plane(t_plane *pl, t_ray ray, t_hit_r *rec)
 	(OC * OC) + 2t(OC * D) + t²(D * D) - r² = 0
 */
 
-bool	hit_sphere(t_sphere *sp, t_ray ray, t_hit_r *rec)
+bool	hit_sphere(t_obj *sp, t_ray ray, t_hit_r *rec)
 {
 	t_ray	l_ray;
 	double  a;
@@ -276,49 +397,37 @@ bool	hit_sphere(t_sphere *sp, t_ray ray, t_hit_r *rec)
 	return (true);
 }
 
-bool	hit_someting(t_data *data, t_ray ray, t_hit_r *rec, t_plane *floor, t_cylinder *cy)
+static void	init_t_calc_f(t_calc_f *functions)
+{
+	functions[CALC_SQ] = hit_square;
+	functions[CALC_CY] = hit_cylinder;
+	functions[CALC_PL] = hit_plane;
+	functions[CALC_SP] = hit_sphere;
+}
+
+bool	hit_someting(t_data *data, t_ray ray, t_hit_r *rec)
 {
 	bool	hit;
 	double	closest;
+	t_obj	*objs;
 	t_hit_r	tmp_rec;
+	static t_calc_f functions[FLAG_MAX];
 
 	hit = false;
+	objs = data->objs;
 	closest = INFINITY;
-	if (hit_sphere(&data->test_sphere, ray, &tmp_rec))
+	while (objs)
 	{
-		if (tmp_rec.t < closest)
+		if (functions[objs->type])
 		{
-			hit = true;
-			*rec = tmp_rec;
-			closest = tmp_rec.t;
+			if (tmp_rec.t < closest)
+			{
+				hit = true;
+				*rec = tmp_rec;
+				closest = tmp_rec.t;
+			}
 		}
-	}
-	if (hit_plane(floor, ray, &tmp_rec))
-	{
-		if (tmp_rec.t < closest)
-		{
-			hit = true;
-			*rec = tmp_rec;
-			closest = tmp_rec.t;
-		}
-	}
-	if (hit_square(&data->rectangle, ray, &tmp_rec))
-	{
-		if (tmp_rec.t < closest)
-		{
-			hit = true;
-			*rec = tmp_rec;
-			closest = tmp_rec.t;
-		}
-	}
-	if (hit_cylinder(cy, ray, &tmp_rec))
-	{
-		if (tmp_rec.t < closest)
-		{
-			hit = true;
-			*rec = tmp_rec;
-			closest = tmp_rec.t;
-		}
+		objs = objs->next;
 	}
 	return (hit);
 }
@@ -343,52 +452,8 @@ void	render(t_data *data)
 	t_vec3		sample_color;
 
 	// ecran de c mort 
-	double		fov_radians = data->cam.fov * (PI / 180.0);
-	double		focal_length = 1.0;
-	double		viewport_height = 2.0 * tan(fov_radians / 2.0) * focal_length;
-	double		aspect_ratio = (double)data->width / (double)data->height;
-	double		viewport_width = aspect_ratio * viewport_height;
-
-	t_mat4	trans_sp_mtx;
-	t_mat4	trans_cy_mtx;
-	t_mat4	scale_mtx;
-	t_mat4	sphere_matrix;
-	t_mat4	trans_plane;
-	t_mat4	rectangle_r;
-	t_mat4	rectangle_t;
-	t_mat4	rectangle_s;
-	t_mat4	final_rec;
-	t_mat4	final_cy;
-	t_cylinder	cy;
-	t_plane	floor;
 	t_mat4	cam_matrix = look_at(data->cam.origin, data->cam.dir, data->cam.up_guide);
 	t_vec3	cam_origin = mat4_mult_vec3(&cam_matrix, (t_vec3){0,0,0}, 1.0);
-
-	mat4_initial(&trans_sp_mtx);
-	mat4_translation(&trans_sp_mtx, (t_vec3){0, 0, -10}); //pos
-	mat4_initial(&trans_cy_mtx);
-	mat4_translation(&trans_cy_mtx, (t_vec3){0, 40, -10});
-	mat4_initial(&scale_mtx);
-	mat4_scal(&scale_mtx, (t_vec3){2, 2, 2}); // Rayon de 2
-	mat4_initial(&trans_plane);
-	mat4_translation(&trans_plane, (t_vec3){0, -3, 0});
-	floor.transform = trans_plane;
-	floor.inverse_transform = mat4_inverse(&trans_plane);
-	mat4_initial(&rectangle_s);
-	mat4_scal(&rectangle_s, (t_vec3){5, 1, 2.5});
-	mat4_rotate_x(&rectangle_r, PI * 0.5);
-	mat4_initial(&rectangle_t);
-	mat4_translation(&rectangle_t, (t_vec3){0, 0, -20});
-	final_rec = mat4_mult(&rectangle_r, &rectangle_s);
-	final_rec = mat4_mult(&rectangle_t, &final_rec);
-	data->rectangle.transform = final_rec;
-	data->rectangle.inverse_transform = mat4_inverse(&final_rec);
-	sphere_matrix = mat4_mult(&trans_sp_mtx, &scale_mtx);
-	final_cy = mat4_mult(&trans_cy_mtx, &scale_mtx);
-	cy.transform = final_cy;
-	cy.inverse_transform = mat4_inverse(&final_cy);
-	data->test_sphere.inverse_transform = mat4_inverse(&sphere_matrix);
-	data->test_sphere.transform = sphere_matrix;
 	mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
 	y = 0;
 	while (y < data->height)
@@ -410,13 +475,13 @@ void	render(t_data *data)
 					u = ((double)x + rand_double()) / (data->width - 1);
 					v = ((double)y + rand_double()) / (data->height - 1);
 				}
-				local_dir.x = (u * viewport_width) - (viewport_width / 2);
-				local_dir.y = (viewport_height / 2) - (v * viewport_height);
-				local_dir.z = -focal_length;
+				local_dir.x = (u * data->view_port.viewport_width) - (data->view_port.viewport_width / 2);
+				local_dir.y = (data->view_port.viewport_height / 2) - (v * data->view_port.viewport_height);
+				local_dir.z = -data->view_port.focal_length;
 				ray.origin = cam_origin;
 				ray.dir = mat4_mult_vec3(&cam_matrix, local_dir, 0.0);
 				ray.dir = vec_normalize(ray.dir);
-				if (hit_someting(data, ray, &rec, &floor, &cy))
+				if (hit_someting(data, ray, &rec))
 				{
 					sample_color.x = (rec.normal.x + 1.0) * 0.5;
 					sample_color.y = (rec.normal.y + 1.0) * 0.5;
@@ -620,6 +685,32 @@ void	update(void *param)
 	ft_memcpy(data->old_key_table, data->key_table, sizeof(data->key_table));
 }
 
+void	init_data(t_data *data, mlx_window_create_info info)
+{
+	data->width = WIDTH;
+	data->height = HEIGHT;
+	data->is_full = false;
+	data->s_per_pixs = 1;
+	srand(time(NULL));
+	ft_memset(data->key_table, 0, sizeof(data->key_table));
+	data->cam.up_guide = (t_vec3){0, 1, 0};
+	data->speed = 0.5;
+	data->rot_speed = 0.05;
+	data->mlx = mlx_init();
+	if (!data->mlx)
+		clean_exit(data, 1, "Error init MLX\n", 0);
+	data->view_port.fov_radians = data->cam.fov * (PI / 180.0);
+	data->view_port.focal_length = 1.0;
+	data->view_port.viewport_height = 2.0 * tan(data->view_port.fov_radians / 2.0) * data->view_port.focal_length;
+	data->view_port.aspect_ratio = (double)data->width / (double)data->height;
+	data->view_port.viewport_width = data->view_port.aspect_ratio * data->view_port.viewport_height;
+	data->win = mlx_new_window(data->mlx, &info);
+	if (!data->win)
+		clean_exit(data, 1, "Error Malloc MLX\n", 0);
+	if (resize_win(data) != 0)
+		clean_exit(data, 1, "Error Malloc MLX\n", 0);
+}
+
 int	main(void)
 {
 	t_data					*data;
@@ -632,36 +723,18 @@ int	main(void)
 		perror("Malloc fail");
 		return (1);
 	}
-	data->width = WIDTH;
-	data->height = HEIGHT;
-	data->is_full = false;
-	data->s_per_pixs = 1;
-	srand(time(NULL));
-	ft_memset(data->key_table, 0, sizeof(data->key_table));
-	data->cam.origin = (t_vec3){0, 0, 5};
-	data->cam.dir = (t_vec3){0, 0, -1};
-	data->cam.fov = 70;
-	data->cam.up_guide = (t_vec3){0, 1, 0};
-	data->speed = 0.5;
-	data->rot_speed = 0.05;
-	data->mlx = mlx_init();
-	if (!data->mlx)
-		clean_exit(data, 1);
 	info.title = "MiniRT";
 	info.width = WIDTH;
 	info.height = HEIGHT;
 	info.is_resizable = true;
-	data->win = mlx_new_window(data->mlx, &info);
-	if (!data->win)
-		clean_exit(data, 1);
-	if (resize_win(data) != 0)
-		clean_exit(data, 1);
+	init_data(data, info);
+	read_file(data, "caca");
 	mlx_set_fps_goal(data->mlx, 60);
 	mlx_on_event(data->mlx, data->win, MLX_KEYDOWN, key_down, data);
 	mlx_on_event(data->mlx, data->win, MLX_KEYUP, key_up, data);
 	mlx_on_event(data->mlx, data->win, MLX_WINDOW_EVENT, window_hook, data);
 	mlx_add_loop_hook(data->mlx, update, data);
 	mlx_loop(data->mlx);
-	clean_exit(data, 0);
+	clean_exit(data, 0, NULL, 0);
 	return (0);
 }
