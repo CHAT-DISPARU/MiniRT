@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/27 17:01:34 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/28 10:56:19 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,15 +71,15 @@ typedef struct s_obj
 	int				type;
 	t_mat4			transform;
 	t_mat4			inverse_transform;
-	struct t_obj	*next;
 	mlx_color		color;
+	struct s_obj	*next;
 }				t_obj;
 
 typedef struct s_light
 {
 	int				type;
 	double			ratio;
-	struct t_light	*next;
+	struct s_light	*next;
 	mlx_color		color;
 }				t_light;
 
@@ -120,7 +120,7 @@ typedef struct s_data
 	t_view_p		view_port;
 }				t_data;
 
-typedef int	(*t_calc_f)(t_obj obj, t_ray ray, t_hit_r *rec);
+typedef bool	(*t_calc_f)(t_obj *obj, t_ray ray, t_hit_r *rec);
 int		resize_win(t_data *data);
 void	render(t_data *data);
 
