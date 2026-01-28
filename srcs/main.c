@@ -6,14 +6,33 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/27 17:26:14 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/28 11:42:01 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt.h>
 
+void	ft_objadd_back(t_obj **lst, t_obj *new)
+{
+	t_obj	*current;
+
+	if (!lst)
+		return ;
+	if (!*lst)
+	{
+		*lst = new;
+		return ;
+	}
+	current = *lst;
+	while (current->next)
+		current = current->next;
+	current->next = new;
+}
+
 void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 {
+	t_obj	*tmp;
+
 	if (exit_code != EXIT_SUCCESS)
 		ft_putstr_fd(mess_eror, 2);
 	if (i > 0)
@@ -21,6 +40,12 @@ void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 		ft_putstr_fd("line : ", 2);
 		ft_putstr_fd(ft_itoa(i), 2);
 		ft_putstr_fd("\n", 2);
+	}
+	while (data->objs)
+	{
+		tmp = data->objs->next;
+		free(data->objs);
+		data->objs = tmp;
 	}
 	if (!data)
 		exit(exit_code);
@@ -40,24 +65,121 @@ void	set_a(t_data *data, char *line)
 {
 	(void)data;
 	(void)line;
-	return ;
 }
 
 void	set_l(t_data *data, char *line)
 {
 	(void)data;
 	(void)line;
-	return ;
+}
+
+void	set_sp(t_data *data, char *line)
+{
+	t_obj	*new_sp;
+	t_mat4	trans;
+	t_mat4	scale;
+	t_mat4	final;
+
+	(void)line;
+	new_sp = malloc(sizeof(t_obj));
+	if (!new_sp)
+		clean_exit(data, 1, "malloc fail\n", 0);
+	new_sp->type = CALC_SP;
+	mat4_initial(&trans);
+	mat4_initial(&scale);
+	mat4_scal(&scale, (t_vec3){2, 2, 2});
+	mat4_translation(&trans, (t_vec3){0, 0, -10});
+	final = mat4_mult(&trans, &scale);
+	new_sp->transform = final;
+	new_sp->inverse_transform = mat4_inverse(&final);
+	new_sp->next = NULL;
+	ft_objadd_back(&data->objs, new_sp);
+}
+
+void	set_cy(t_data *data, char *line)
+{
+	t_obj	*new_sp;
+	t_mat4	trans;
+	t_mat4	scale;
+	t_mat4	rot;
+	t_mat4	final;
+
+	(void)line;
+	new_sp = malloc(sizeof(t_obj));
+	if (!new_sp)
+		clean_exit(data, 1, "malloc fail\n", 0);
+	new_sp->type = CALC_CY;
+	mat4_initial(&trans);
+	mat4_initial(&scale);
+	mat4_scal(&scale, (t_vec3){10, 2, 2});
+	mat4_translation(&trans, (t_vec3){0, 13, -10});
+	mat4_rotate_z(&rot, PI * 0.3);
+	final = mat4_mult(&trans, &scale);
+	final = mat4_mult(&rot, &final);
+	new_sp->transform = final;
+	new_sp->inverse_transform = mat4_inverse(&final);
+	new_sp->next = NULL;
+	ft_objadd_back(&data->objs, new_sp);
+}
+
+void	set_sq(t_data *data, char *line)
+{
+	t_obj	*new_sp;
+	t_mat4	trans;
+	t_mat4	scale;
+	t_mat4	rot;
+	t_mat4	final;
+
+	(void)line;
+	new_sp = malloc(sizeof(t_obj));
+	if (!new_sp)
+		clean_exit(data, 1, "malloc fail\n", 0);
+	new_sp->type = CALC_SQ;
+	mat4_initial(&scale);
+	mat4_scal(&scale, (t_vec3){5, 1, 2.5});
+	mat4_rotate_x(&rot, PI * 0.5);
+	mat4_initial(&trans);
+	mat4_translation(&trans, (t_vec3){0, 0, -20});
+	final = mat4_mult(&rot, &scale);
+	final = mat4_mult(&trans, &final);
+	new_sp->transform = final;
+	new_sp->inverse_transform = mat4_inverse(&final);
+	new_sp->next = NULL;
+	ft_objadd_back(&data->objs, new_sp);
+}
+
+void	set_pl(t_data *data, char *line)
+{
+	t_obj	*new_sp;
+	t_mat4	trans;
+
+	(void)line;
+	new_sp = malloc(sizeof(t_obj));
+	if (!new_sp)
+		clean_exit(data, 1, "malloc fail\n", 0);
+	new_sp->type = CALC_PL;
+	mat4_initial(&trans);
+	mat4_translation(&trans, (t_vec3){0, -3, 0});
+	new_sp->transform = trans;
+	new_sp->inverse_transform = mat4_inverse(&trans);
+	new_sp->next = NULL;
+	ft_objadd_back(&data->objs, new_sp);
 }
 
 void	set_c(t_data *data, char *line)
 {
+	(void)line;
 	data->cam.origin = (t_vec3){0, 0, 5};
 	data->cam.dir = (t_vec3){0, 0, -1};
 	data->cam.fov = 70;
+	data->view_port.fov_radians = data->cam.fov * (PI / 180.0);
+	data->view_port.focal_length = 1.0;
+	data->view_port.viewport_height = 2.0 * tan(data->view_port.fov_radians / 2.0) * data->view_port.focal_length;
+	data->view_port.aspect_ratio = (double)data->width / (double)data->height;
+	data->view_port.viewport_width = data->view_port.aspect_ratio * data->view_port.viewport_height;
 }
 
-void	read_file(t_data *data, char *filename)
+void	read_rt(t_data *data, char *filename)
 {
 	int		fd;
 	int		i;
@@ -65,6 +187,8 @@ void	read_file(t_data *data, char *filename)
 
 	i = 1;
 	fd = open(filename, O_RDONLY);
+	if (fd < 0)
+		clean_exit(data, 1, "open fail\n", 0);
 	line = get_next_line(fd, 0);
 	while (line)
 	{
@@ -74,18 +198,25 @@ void	read_file(t_data *data, char *filename)
 			set_c(data, line + 1);
 		else if (line[0] == 'L')
 			set_l(data, line + 1);
-		else if (!ft_strncmp("sp", data, 2))
+		else if (!ft_strncmp("sp", line, 2))
 			set_sp(data, line + 2);
-		else if (!ft_strncmp("pl", data, 2))
+		else if (!ft_strncmp("pl", line, 2))
 			set_pl(data, line + 2);
-		else if (!ft_strncmp("cy", data, 2))
+		else if (!ft_strncmp("cy", line, 2))
 			set_cy(data, line + 2);
+		else if (!ft_strncmp("sq", line, 2))
+			set_sq(data, line + 2);
 		else
+		{
+			get_next_line(fd, 1);
+			close(fd);
 			clean_exit(data, EXIT_FAILURE, "Wrong identifier\n", i);
+		}
 		free(line);
 		line = get_next_line(fd, 0);
 		i++;
 	}
+	close(fd);
 }
 
 double	rand_double(void)
@@ -106,6 +237,7 @@ t_mat4	look_at(t_vec3 o, t_vec3 dir, t_vec3 up_guide)
 	t_vec3	r;
 	t_vec3	u;
 	t_mat4	m;
+
 	if (fabs(vec_dot_scal(f, up_guide)) > 0.99)
 		up_guide = vec_add(up_guide, (t_vec3){0.1, 0, 0});
 	r = vec_normalize(vec_cross(up_guide, f));
@@ -413,12 +545,13 @@ bool	hit_someting(t_data *data, t_ray ray, t_hit_r *rec)
 	t_hit_r	tmp_rec;
 	static t_calc_f functions[FLAG_MAX];
 
+	init_t_calc_f(functions);
 	hit = false;
 	objs = data->objs;
 	closest = INFINITY;
 	while (objs)
 	{
-		if (functions[objs->type])
+		if (functions[objs->type](objs, ray, &tmp_rec))
 		{
 			if (tmp_rec.t < closest)
 			{
@@ -628,7 +761,7 @@ void	update(void *param)
 	if (data->key_table[82] || data->key_table[81] || 
 		data->key_table[80] || data->key_table[79])
 		data->cam.dir = vec_normalize(data->cam.dir);
-	//mouvemnt
+	//mouvement
 	if (data->key_table[26])
 	{
 		data->cam.origin = vec_add(data->cam.origin, vec_scale(forward, data->speed));
@@ -691,6 +824,7 @@ void	init_data(t_data *data, mlx_window_create_info info)
 	data->height = HEIGHT;
 	data->is_full = false;
 	data->s_per_pixs = 1;
+	data->objs = NULL;
 	srand(time(NULL));
 	ft_memset(data->key_table, 0, sizeof(data->key_table));
 	data->cam.up_guide = (t_vec3){0, 1, 0};
@@ -699,11 +833,6 @@ void	init_data(t_data *data, mlx_window_create_info info)
 	data->mlx = mlx_init();
 	if (!data->mlx)
 		clean_exit(data, 1, "Error init MLX\n", 0);
-	data->view_port.fov_radians = data->cam.fov * (PI / 180.0);
-	data->view_port.focal_length = 1.0;
-	data->view_port.viewport_height = 2.0 * tan(data->view_port.fov_radians / 2.0) * data->view_port.focal_length;
-	data->view_port.aspect_ratio = (double)data->width / (double)data->height;
-	data->view_port.viewport_width = data->view_port.aspect_ratio * data->view_port.viewport_height;
 	data->win = mlx_new_window(data->mlx, &info);
 	if (!data->win)
 		clean_exit(data, 1, "Error Malloc MLX\n", 0);
@@ -728,7 +857,7 @@ int	main(void)
 	info.height = HEIGHT;
 	info.is_resizable = true;
 	init_data(data, info);
-	read_file(data, "caca");
+	read_rt(data, "caca");
 	mlx_set_fps_goal(data->mlx, 60);
 	mlx_on_event(data->mlx, data->win, MLX_KEYDOWN, key_down, data);
 	mlx_on_event(data->mlx, data->win, MLX_KEYUP, key_up, data);
