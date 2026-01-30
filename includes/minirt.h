@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/28 10:56:19 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/30 13:13:18 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,8 @@ typedef struct s_view_p
 
 typedef struct s_data
 {
+	bool			camera_is_set;
+	bool			ambient_is_set;
 	int				width;
 	int				height;
 	mlx_context		mlx;
@@ -121,7 +123,13 @@ typedef struct s_data
 }				t_data;
 
 typedef bool	(*t_calc_f)(t_obj *obj, t_ray ray, t_hit_r *rec);
-int		resize_win(t_data *data);
-void	render(t_data *data);
+int			resize_win(t_data *data);
+void		render(t_data *data);
+mlx_color	parse_color(char **line);
+t_vec3		parse_vec3(char **line);
+double		rt_atod(char **line);
+void		skip_coma(char **line);
+void		skip_spaces(char **line);
+t_mat4		mat4_align_vectors(t_vec3 start, t_vec3 dest);
 
 #endif

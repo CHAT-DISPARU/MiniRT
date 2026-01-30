@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
+#    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/01/22 14:19:54 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/01/30 12:59:31 by titan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,9 @@ LIB_URL = https://github.com/seekrs/MacroLibX.git
 MLX_DIR = MacroLibX
 MLX = $(MLX_DIR)/libmlx.so
 
-SRCS := $(SRC_DIR)main.c
+SRCS := $(SRC_DIR)main.c \
+		$(SRC_DIR)pars.c \
+		$(SRC_DIR)parsing_utils.c
 
 
 OBJ := $(patsubst $(SRC_DIR)%.c, $(BUILD_DIR)%.o, $(SRCS))

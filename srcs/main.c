@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/28 11:42:01 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/30 13:30:27 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,75 +73,95 @@ void	set_l(t_data *data, char *line)
 	(void)line;
 }
 
+void	set_sq(t_data *data, char *line)
+{
+	t_obj	*new_sq;
+	t_mat4	trans;
+	t_mat4	scale;
+	t_mat4	rot;
+	t_mat4	final;
+	t_vec3	center;
+	t_vec3	rot_vec;
+	double	width;
+	double	height;
+
+	center = parse_vec3(&line);
+	rot_vec = parse_vec3(&line);
+	width = rt_atod(&line);
+	height = rt_atod(&line);
+	new_sq = malloc(sizeof(t_obj));
+	if (!new_sq)
+		clean_exit(data, 1, "malloc fail\n", 0);
+	new_sq->type = CALC_SQ;
+	new_sq->color = parse_color(&line);
+	mat4_initial(&trans);
+	mat4_initial(&scale);
+	mat4_scal(&scale, (t_vec3){width / 2.0, 1.0, height / 2.0});
+	rot = mat4_align_vectors((t_vec3){0, 1, 0}, vec_normalize(rot_vec));
+	mat4_translation(&trans, center);
+	final = mat4_mult(&rot, &scale);
+	final = mat4_mult(&trans, &final);
+	new_sq->transform = final;
+	new_sq->inverse_transform = mat4_inverse(&final);
+	new_sq->next = NULL;
+	ft_objadd_back(&data->objs, new_sq);
+}
+
+void	set_cy(t_data *data, char *line)
+{
+	t_obj	*new_cy;
+	t_mat4	trans;
+	t_mat4	scale;
+	t_mat4	rot;
+	t_mat4	final;
+	t_vec3	center;
+	t_vec3	rot_vec;
+	double	diameter;
+	double	height;
+
+	center = parse_vec3(&line);
+	rot_vec = parse_vec3(&line);
+	diameter = rt_atod(&line);
+	height = rt_atod(&line);
+	new_cy = malloc(sizeof(t_obj));
+	if (!new_cy)
+		clean_exit(data, 1, "malloc fail\n", 0);
+	new_cy->type = CALC_CY;
+	new_cy->color = parse_color(&line);
+	mat4_initial(&trans);
+	mat4_initial(&scale);
+	mat4_scal(&scale, (t_vec3){height / 2.0, diameter / 2.0, diameter / 2.0});
+	mat4_translation(&trans, center);
+	rot = mat4_align_vectors((t_vec3){1, 0, 0}, vec_normalize(rot_vec));
+	final = mat4_mult(&rot, &scale);
+	final = mat4_mult(&trans, &final);
+	new_cy->transform = final;
+	new_cy->inverse_transform = mat4_inverse(&final);
+	new_cy->next = NULL;
+	ft_objadd_back(&data->objs, new_cy);
+}
+
 void	set_sp(t_data *data, char *line)
 {
 	t_obj	*new_sp;
 	t_mat4	trans;
 	t_mat4	scale;
 	t_mat4	final;
+	t_vec3	center;
+	double	diameter;
 
-	(void)line;
+	center = parse_vec3(&line);
+	diameter = rt_atod(&line);
 	new_sp = malloc(sizeof(t_obj));
 	if (!new_sp)
 		clean_exit(data, 1, "malloc fail\n", 0);
 	new_sp->type = CALC_SP;
-	mat4_initial(&trans);
+	new_sp->color = parse_color(&line);
 	mat4_initial(&scale);
-	mat4_scal(&scale, (t_vec3){2, 2, 2});
-	mat4_translation(&trans, (t_vec3){0, 0, -10});
+	mat4_initial(&trans);
+	mat4_scal(&scale, (t_vec3){diameter, diameter, diameter});
+	mat4_translation(&trans, center);
 	final = mat4_mult(&trans, &scale);
-	new_sp->transform = final;
-	new_sp->inverse_transform = mat4_inverse(&final);
-	new_sp->next = NULL;
-	ft_objadd_back(&data->objs, new_sp);
-}
-
-void	set_cy(t_data *data, char *line)
-{
-	t_obj	*new_sp;
-	t_mat4	trans;
-	t_mat4	scale;
-	t_mat4	rot;
-	t_mat4	final;
-
-	(void)line;
-	new_sp = malloc(sizeof(t_obj));
-	if (!new_sp)
-		clean_exit(data, 1, "malloc fail\n", 0);
-	new_sp->type = CALC_CY;
-	mat4_initial(&trans);
-	mat4_initial(&scale);
-	mat4_scal(&scale, (t_vec3){10, 2, 2});
-	mat4_translation(&trans, (t_vec3){0, 13, -10});
-	mat4_rotate_z(&rot, PI * 0.3);
-	final = mat4_mult(&trans, &scale);
-	final = mat4_mult(&rot, &final);
-	new_sp->transform = final;
-	new_sp->inverse_transform = mat4_inverse(&final);
-	new_sp->next = NULL;
-	ft_objadd_back(&data->objs, new_sp);
-}
-
-void	set_sq(t_data *data, char *line)
-{
-	t_obj	*new_sp;
-	t_mat4	trans;
-	t_mat4	scale;
-	t_mat4	rot;
-	t_mat4	final;
-
-	(void)line;
-	new_sp = malloc(sizeof(t_obj));
-	if (!new_sp)
-		clean_exit(data, 1, "malloc fail\n", 0);
-	new_sp->type = CALC_SQ;
-	mat4_initial(&scale);
-	mat4_scal(&scale, (t_vec3){5, 1, 2.5});
-	mat4_rotate_x(&rot, PI * 0.5);
-	mat4_initial(&trans);
-	mat4_translation(&trans, (t_vec3){0, 0, -20});
-	final = mat4_mult(&rot, &scale);
-	final = mat4_mult(&trans, &final);
 	new_sp->transform = final;
 	new_sp->inverse_transform = mat4_inverse(&final);
 	new_sp->next = NULL;
@@ -150,33 +170,52 @@ void	set_sq(t_data *data, char *line)
 
 void	set_pl(t_data *data, char *line)
 {
-	t_obj	*new_sp;
+	t_obj	*new_pl;
 	t_mat4	trans;
+	t_mat4	rot;
+	t_mat4	final;
+	t_vec3	center;
+	t_vec3	rot_vec;
 
-	(void)line;
-	new_sp = malloc(sizeof(t_obj));
-	if (!new_sp)
+	center = parse_vec3(&line);
+	rot_vec = parse_vec3(&line);
+	new_pl = malloc(sizeof(t_obj));
+	if (!new_pl)
 		clean_exit(data, 1, "malloc fail\n", 0);
-	new_sp->type = CALC_PL;
+	new_pl->type = CALC_PL;
+	new_pl->color = parse_color(&line);
 	mat4_initial(&trans);
-	mat4_translation(&trans, (t_vec3){0, -3, 0});
-	new_sp->transform = trans;
-	new_sp->inverse_transform = mat4_inverse(&trans);
-	new_sp->next = NULL;
-	ft_objadd_back(&data->objs, new_sp);
+	mat4_translation(&trans, center);
+	rot = mat4_align_vectors((t_vec3){0, 1, 0}, vec_normalize(rot_vec));
+	final = mat4_mult(&trans, &rot);
+	new_pl->transform = final;
+	new_pl->inverse_transform = mat4_inverse(&final);
+	new_pl->next = NULL;
+	ft_objadd_back(&data->objs, new_pl);
 }
 
-void	set_c(t_data *data, char *line)
+void	set_c(t_data *data, char *line, int i)
 {
-	(void)line;
-	data->cam.origin = (t_vec3){0, 0, 5};
-	data->cam.dir = (t_vec3){0, 0, -1};
-	data->cam.fov = 70;
+	t_vec3	origin;
+	t_vec3	dir;
+	double	fov;
+
+	if (data->camera_is_set == true)
+		clean_exit(data, 1, "Error: Multiple cameras defined\n", i);
+	origin = parse_vec3(&line);
+	skip_spaces(&line);
+	dir = parse_vec3(&line);
+	skip_spaces(&line);
+	fov = rt_atod(&line);
+	data->cam.origin = origin;
+	data->cam.dir = dir;
+	data->cam.fov = fov;
 	data->view_port.fov_radians = data->cam.fov * (PI / 180.0);
 	data->view_port.focal_length = 1.0;
 	data->view_port.viewport_height = 2.0 * tan(data->view_port.fov_radians / 2.0) * data->view_port.focal_length;
 	data->view_port.aspect_ratio = (double)data->width / (double)data->height;
 	data->view_port.viewport_width = data->view_port.aspect_ratio * data->view_port.viewport_height;
+	data->camera_is_set = true;
 }
 
 void	read_rt(t_data *data, char *filename)
@@ -195,7 +234,7 @@ void	read_rt(t_data *data, char *filename)
 		if (line[0] == 'A')
 			set_a(data, line + 1);
 		else if (line[0] == 'C')
-			set_c(data, line + 1);
+			set_c(data, line + 1, i);
 		else if (line[0] == 'L')
 			set_l(data, line + 1);
 		else if (!ft_strncmp("sp", line, 2))
@@ -209,6 +248,7 @@ void	read_rt(t_data *data, char *filename)
 		else
 		{
 			get_next_line(fd, 1);
+			free(line);
 			close(fd);
 			clean_exit(data, EXIT_FAILURE, "Wrong identifier\n", i);
 		}
@@ -396,7 +436,6 @@ bool	hit_cylinder(t_obj *cy, t_ray ray, t_hit_r *rec)
 	if (hit_zone == 0)
 		return (false);
 	rec->t = closest_t;
-	rec->p = vec_add(l_ray.origin, vec_scale(l_ray.dir, closest_t));
 	rec->p = vec_add(ray.origin, vec_scale(ray.dir, closest_t));
 	t_vec3 local_normal;
 	if (hit_zone == 1)
@@ -585,6 +624,7 @@ void	render(t_data *data)
 	t_vec3		sample_color;
 
 	// ecran de c mort 
+	ft_bzero(&rec, sizeof (t_hit_r));
 	t_mat4	cam_matrix = look_at(data->cam.origin, data->cam.dir, data->cam.up_guide);
 	t_vec3	cam_origin = mat4_mult_vec3(&cam_matrix, (t_vec3){0,0,0}, 1.0);
 	mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
@@ -820,6 +860,8 @@ void	update(void *param)
 
 void	init_data(t_data *data, mlx_window_create_info info)
 {
+	data->camera_is_set = false;
+	data->ambient_is_set = false;
 	data->width = WIDTH;
 	data->height = HEIGHT;
 	data->is_full = false;
@@ -830,6 +872,7 @@ void	init_data(t_data *data, mlx_window_create_info info)
 	data->cam.up_guide = (t_vec3){0, 1, 0};
 	data->speed = 0.5;
 	data->rot_speed = 0.05;
+	read_rt(data, "caca");
 	data->mlx = mlx_init();
 	if (!data->mlx)
 		clean_exit(data, 1, "Error init MLX\n", 0);
@@ -857,7 +900,6 @@ int	main(void)
 	info.height = HEIGHT;
 	info.is_resizable = true;
 	init_data(data, info);
-	read_rt(data, "caca");
 	mlx_set_fps_goal(data->mlx, 60);
 	mlx_on_event(data->mlx, data->win, MLX_KEYDOWN, key_down, data);
 	mlx_on_event(data->mlx, data->win, MLX_KEYUP, key_up, data);
