@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mat_rotate.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/16 14:54:13 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/20 16:24:02 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/30 12:32:31 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ void	mat4_rotate_z(t_mat4 *m, float angle)
 
 void	mat4_rotate_axis(t_mat4 *m, t_vec3 axis, double angle)
 {
+	axis = vec_normalize(axis);
 	double	c = cos(angle);
 	double	s = sin(angle);
 	double	t = 1.0 - c;
