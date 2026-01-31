@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 18:28:39 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/28 08:38:39 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/31 16:58:11 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ typedef struct s_list
 	struct s_list	*next;
 }				t_list;
 
+int				is_space(char c);
+int				ft_strcmp(const char *s1, const char *s2);
 unsigned int	ft_atol_base(char *str, char *base);
 int				ft_atoi(const char *nptr);
 void			ft_bzero(void *s, size_t n);

@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/30 13:13:18 by titan            ###   ########.fr       */
+/*   Updated: 2026/01/31 17:33:54 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,9 @@ typedef struct s_camera
 
 typedef struct s_hit_r
 {
-	t_vec3	p;
-	t_vec3	normal;
+	t_vec3		p;
+	t_vec3		normal;
+	mlx_color	color;
 	double	t;
 }				t_hit_r;
 
@@ -77,9 +78,8 @@ typedef struct s_obj
 
 typedef struct s_light
 {
-	int				type;
+	t_vec3			origin;
 	double			ratio;
-	struct s_light	*next;
 	mlx_color		color;
 }				t_light;
 
@@ -103,9 +103,13 @@ typedef struct s_data
 {
 	bool			camera_is_set;
 	bool			ambient_is_set;
+	bool			light_is_set;
 	int				width;
 	int				height;
 	mlx_context		mlx;
+	mlx_color		a_color;
+	double			a_ratio;
+	t_vec3			a_final;
 	void			*win;
 	void			*img;
 	mlx_color		*pixels;
@@ -114,22 +118,34 @@ typedef struct s_data
 	int				old_key_table[512];
 	t_camera		cam;
 	t_obj			*objs;
-	t_light			*lights;
+	t_light			light;
 	t_alight		alight;
 	double			speed;
 	double			rot_speed;
 	int				s_per_pixs;
 	t_view_p		view_port;
+	int				scene_fd;
+	char			*scene_line;
 }				t_data;
 
 typedef bool	(*t_calc_f)(t_obj *obj, t_ray ray, t_hit_r *rec);
 int			resize_win(t_data *data);
 void		render(t_data *data);
-mlx_color	parse_color(char **line);
-t_vec3		parse_vec3(char **line);
+mlx_color	parse_color(char **line, t_data *data, int i);
+t_vec3		parse_vec3(char **line, t_data *data, int i);
 double		rt_atod(char **line);
-void		skip_coma(char **line);
+void		skip_coma(char **line, t_data *data, int i);
 void		skip_spaces(char **line);
 t_mat4		mat4_align_vectors(t_vec3 start, t_vec3 dest);
+bool		is_in_shadow(t_data *data, t_hit_r *rec, t_light *light);
+void		init_t_calc_f(t_calc_f *functions);
+void		check_color_val(t_data *data, double c, int i);
+void		check_extra_info(t_data *data, char *line, int i);
+void		check_norm_vec(t_data *data, t_vec3 v, int i);
+void		check_missing_info(t_data *data, char *line, int i);
+void		check_ratio(t_data *data, double ratio, int i);
+void		check_fov(t_data *data, double fov, int i);
+void		check_positive(t_data *data, double val, int i);
+void		clean_exit(t_data *data, int exit_code, char *mess_eror, int i);
 
 #endif

@@ -6,7 +6,7 @@
 #    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/01/30 12:59:31 by titan            ###   ########.fr        #
+#    Updated: 2026/01/31 16:56:18 by titan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,7 +44,10 @@ MLX = $(MLX_DIR)/libmlx.so
 
 SRCS := $(SRC_DIR)main.c \
 		$(SRC_DIR)pars.c \
-		$(SRC_DIR)parsing_utils.c
+		$(SRC_DIR)parsing_utils.c \
+		$(SRC_DIR)shadow_rays.c \
+		$(SRC_DIR)check.c \
+		$(SRC_DIR)check2.c
 
 
 OBJ := $(patsubst $(SRC_DIR)%.c, $(BUILD_DIR)%.o, $(SRCS))

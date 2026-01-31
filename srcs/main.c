@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/30 13:30:27 by titan            ###   ########.fr       */
+/*   Updated: 2026/01/31 18:06:10 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,21 @@ void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 {
 	t_obj	*tmp;
 
+	if (data->scene_fd != -1)
+	{
+		get_next_line(data->scene_fd, 1);
+		close(data->scene_fd);
+	}
+	if (data->scene_line)
+	{
+		free(data->scene_line);
+		data->scene_line = NULL;
+	}
 	if (exit_code != EXIT_SUCCESS)
+	{
+		ft_putstr_fd("Error\n", 2);
 		ft_putstr_fd(mess_eror, 2);
+	}
 	if (i > 0)
 	{
 		ft_putstr_fd("line : ", 2);
@@ -61,39 +74,71 @@ void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 	exit(exit_code);
 }
 
-void	set_a(t_data *data, char *line)
+void	set_a(t_data *data, char *line, int i)
 {
-	(void)data;
-	(void)line;
+	char	*line2;
+
+	if (data->ambient_is_set)
+		clean_exit(data, 1, "Error: Multiple Ambient lights\n", i);
+	line2 = line + 1;
+	check_missing_info(data, line2, i);
+	data->a_ratio = rt_atod(&line2);
+	check_ratio(data, data->a_ratio, i);
+	check_missing_info(data, line2, i);
+	data->a_color = parse_color(&line2, data, i);
+	check_extra_info(data, line2, i);
+	data->ambient_is_set = true;
 }
 
-void	set_l(t_data *data, char *line)
+void	set_l(t_data *data, char *line, int i)
 {
-	(void)data;
-	(void)line;
+	char	*line2;
+	if (data->light_is_set)
+		clean_exit(data, 1, "Error: Multi Light\n", i);
+	line2 = line + 1;
+	check_missing_info(data, line2, i);
+	data->light.origin = parse_vec3(&line2, data, i);
+	check_missing_info(data, line2, i);
+	data->light.ratio = rt_atod(&line2);
+	check_ratio(data, data->light.ratio, i);
+	check_missing_info(data, line2, i);
+	data->light.color = parse_color(&line2, data, i);
+	check_extra_info(data, line2, i);
+	data->light_is_set = true;
 }
 
-void	set_sq(t_data *data, char *line)
+void	set_sq(t_data *data, char *line, int i)
 {
-	t_obj	*new_sq;
-	t_mat4	trans;
-	t_mat4	scale;
-	t_mat4	rot;
-	t_mat4	final;
-	t_vec3	center;
-	t_vec3	rot_vec;
-	double	width;
-	double	height;
+	t_obj		*new_sq;
+	t_mat4		trans;
+	t_mat4		scale;
+	t_mat4		rot;
+	t_mat4		final;
+	t_vec3		center;
+	t_vec3		rot_vec;
+	double		width;
+	double		height;
+	mlx_color	col;
 
-	center = parse_vec3(&line);
-	rot_vec = parse_vec3(&line);
+	check_missing_info(data, line, i);
+	center = parse_vec3(&line, data, i);
+	check_missing_info(data, line, i);
+	rot_vec = parse_vec3(&line, data, i);
+	check_norm_vec(data, rot_vec, i);
+	check_missing_info(data, line, i);
 	width = rt_atod(&line);
+	check_positive(data, width, i);
+	check_missing_info(data, line, i);
 	height = rt_atod(&line);
+	check_positive(data, height, i);
+	check_missing_info(data, line, i);
+	col = parse_color(&line, data, i);
+	check_extra_info(data, line, i);
 	new_sq = malloc(sizeof(t_obj));
 	if (!new_sq)
 		clean_exit(data, 1, "malloc fail\n", 0);
 	new_sq->type = CALC_SQ;
-	new_sq->color = parse_color(&line);
+	new_sq->color = col;
 	mat4_initial(&trans);
 	mat4_initial(&scale);
 	mat4_scal(&scale, (t_vec3){width / 2.0, 1.0, height / 2.0});
@@ -107,7 +152,7 @@ void	set_sq(t_data *data, char *line)
 	ft_objadd_back(&data->objs, new_sq);
 }
 
-void	set_cy(t_data *data, char *line)
+void	set_cy(t_data *data, char *line, int i)
 {
 	t_obj	*new_cy;
 	t_mat4	trans;
@@ -118,16 +163,27 @@ void	set_cy(t_data *data, char *line)
 	t_vec3	rot_vec;
 	double	diameter;
 	double	height;
+	mlx_color	col;
 
-	center = parse_vec3(&line);
-	rot_vec = parse_vec3(&line);
+	check_missing_info(data, line, i);
+	center = parse_vec3(&line, data, i);
+	check_missing_info(data, line, i);
+	rot_vec = parse_vec3(&line, data, i);
+	check_norm_vec(data, rot_vec, i);
+	check_missing_info(data, line, i);
 	diameter = rt_atod(&line);
+	check_positive(data, diameter, i);
+	check_missing_info(data, line, i);
 	height = rt_atod(&line);
+	check_positive(data, height, i);
+	check_missing_info(data, line, i);
+	col = parse_color(&line, data, i);
+	check_extra_info(data, line, i);
 	new_cy = malloc(sizeof(t_obj));
 	if (!new_cy)
 		clean_exit(data, 1, "malloc fail\n", 0);
 	new_cy->type = CALC_CY;
-	new_cy->color = parse_color(&line);
+	new_cy->color = col;
 	mat4_initial(&trans);
 	mat4_initial(&scale);
 	mat4_scal(&scale, (t_vec3){height / 2.0, diameter / 2.0, diameter / 2.0});
@@ -141,7 +197,7 @@ void	set_cy(t_data *data, char *line)
 	ft_objadd_back(&data->objs, new_cy);
 }
 
-void	set_sp(t_data *data, char *line)
+void	set_sp(t_data *data, char *line, int i)
 {
 	t_obj	*new_sp;
 	t_mat4	trans;
@@ -149,14 +205,21 @@ void	set_sp(t_data *data, char *line)
 	t_mat4	final;
 	t_vec3	center;
 	double	diameter;
+	mlx_color	col;
 
-	center = parse_vec3(&line);
+	check_missing_info(data, line, i);
+	center = parse_vec3(&line, data, i);
+	check_missing_info(data, line, i);
 	diameter = rt_atod(&line);
+	check_positive(data, diameter, i);
+	check_missing_info(data, line, i);
+	col = parse_color(&line, data, i);
+	check_extra_info(data, line, i);
 	new_sp = malloc(sizeof(t_obj));
 	if (!new_sp)
 		clean_exit(data, 1, "malloc fail\n", 0);
 	new_sp->type = CALC_SP;
-	new_sp->color = parse_color(&line);
+	new_sp->color = col;
 	mat4_initial(&scale);
 	mat4_initial(&trans);
 	mat4_scal(&scale, (t_vec3){diameter, diameter, diameter});
@@ -168,7 +231,7 @@ void	set_sp(t_data *data, char *line)
 	ft_objadd_back(&data->objs, new_sp);
 }
 
-void	set_pl(t_data *data, char *line)
+void	set_pl(t_data *data, char *line, int i)
 {
 	t_obj	*new_pl;
 	t_mat4	trans;
@@ -176,14 +239,21 @@ void	set_pl(t_data *data, char *line)
 	t_mat4	final;
 	t_vec3	center;
 	t_vec3	rot_vec;
+	mlx_color	col;
 
-	center = parse_vec3(&line);
-	rot_vec = parse_vec3(&line);
+	check_missing_info(data, line, i);
+	center = parse_vec3(&line, data, i);
+	check_missing_info(data, line, i);
+	rot_vec = parse_vec3(&line, data, i);
+	check_norm_vec(data, rot_vec, i);
+	check_missing_info(data, line, i);
+	col = parse_color(&line, data, i);
+	check_extra_info(data, line, i);
 	new_pl = malloc(sizeof(t_obj));
 	if (!new_pl)
 		clean_exit(data, 1, "malloc fail\n", 0);
 	new_pl->type = CALC_PL;
-	new_pl->color = parse_color(&line);
+	new_pl->color = col;
 	mat4_initial(&trans);
 	mat4_translation(&trans, center);
 	rot = mat4_align_vectors((t_vec3){0, 1, 0}, vec_normalize(rot_vec));
@@ -199,16 +269,22 @@ void	set_c(t_data *data, char *line, int i)
 	t_vec3	origin;
 	t_vec3	dir;
 	double	fov;
+	char	*line2;
 
+	line2 = line + 1;
 	if (data->camera_is_set == true)
 		clean_exit(data, 1, "Error: Multiple cameras defined\n", i);
-	origin = parse_vec3(&line);
-	skip_spaces(&line);
-	dir = parse_vec3(&line);
-	skip_spaces(&line);
-	fov = rt_atod(&line);
+	check_missing_info(data, line2, i);
+	origin = parse_vec3(&line2, data, i);
+	check_missing_info(data, line2, i);
+	dir = parse_vec3(&line2, data, i);
+	check_norm_vec(data, dir, i);
+	check_missing_info(data, line2, i);
+	fov = rt_atod(&line2);
+	check_fov(data, fov, i);
+	check_extra_info(data, line2, i);
 	data->cam.origin = origin;
-	data->cam.dir = dir;
+	data->cam.dir = vec_normalize(dir);
 	data->cam.fov = fov;
 	data->view_port.fov_radians = data->cam.fov * (PI / 180.0);
 	data->view_port.focal_length = 1.0;
@@ -220,43 +296,47 @@ void	set_c(t_data *data, char *line, int i)
 
 void	read_rt(t_data *data, char *filename)
 {
-	int		fd;
 	int		i;
-	char	*line;
+	char	buffer[1];
+	char	*ptr;
 
 	i = 1;
-	fd = open(filename, O_RDONLY);
-	if (fd < 0)
+	data->scene_fd = open(filename, O_RDONLY);
+	if (data->scene_fd < 0)
 		clean_exit(data, 1, "open fail\n", 0);
-	line = get_next_line(fd, 0);
-	while (line)
+	if (read(data->scene_fd, buffer, 0) == -1)
+		clean_exit(data, 1, "Error: The file is a directory\n", 0);
+	data->scene_line = get_next_line(data->scene_fd, 0);
+	while (data->scene_line)
 	{
-		if (line[0] == 'A')
-			set_a(data, line + 1);
-		else if (line[0] == 'C')
-			set_c(data, line + 1, i);
-		else if (line[0] == 'L')
-			set_l(data, line + 1);
-		else if (!ft_strncmp("sp", line, 2))
-			set_sp(data, line + 2);
-		else if (!ft_strncmp("pl", line, 2))
-			set_pl(data, line + 2);
-		else if (!ft_strncmp("cy", line, 2))
-			set_cy(data, line + 2);
-		else if (!ft_strncmp("sq", line, 2))
-			set_sq(data, line + 2);
-		else
+		ptr = data->scene_line;
+		while (*ptr && is_space(*ptr))
+			ptr++;
+		if (*ptr && *ptr != '\n')
 		{
-			get_next_line(fd, 1);
-			free(line);
-			close(fd);
-			clean_exit(data, EXIT_FAILURE, "Wrong identifier\n", i);
+			if (*ptr == 'A' && is_space(ptr[1]))
+				set_a(data, ptr, i);
+			else if (*ptr == 'C' && is_space(ptr[1]))
+				set_c(data, ptr, i);
+			else if (*ptr == 'L' && is_space(ptr[1]))
+				set_l(data, ptr, i);
+			else if (!ft_strncmp("sp", ptr, 2) && is_space(ptr[2]))
+				set_sp(data, ptr + 2, i);
+			else if (!ft_strncmp("pl", ptr, 2) && is_space(ptr[2]))
+				set_pl(data, ptr + 2, i);
+			else if (!ft_strncmp("cy", ptr, 2) && is_space(ptr[2]))
+				set_cy(data, ptr + 2, i);
+			else if (!ft_strncmp("sq", ptr, 2) && is_space(ptr[2]))
+				set_sq(data, ptr + 2, i);
+			else
+				clean_exit(data, EXIT_FAILURE, "Wrong identifier\n", i);
 		}
-		free(line);
-		line = get_next_line(fd, 0);
+		free(data->scene_line);
+		data->scene_line = get_next_line(data->scene_fd, 0);
 		i++;
 	}
-	close(fd);
+	close(data->scene_fd);
+	data->scene_fd = -1;
 }
 
 double	rand_double(void)
@@ -568,7 +648,7 @@ bool	hit_sphere(t_obj *sp, t_ray ray, t_hit_r *rec)
 	return (true);
 }
 
-static void	init_t_calc_f(t_calc_f *functions)
+void	init_t_calc_f(t_calc_f *functions)
 {
 	functions[CALC_SQ] = hit_square;
 	functions[CALC_CY] = hit_cylinder;
@@ -583,8 +663,13 @@ bool	hit_someting(t_data *data, t_ray ray, t_hit_r *rec)
 	t_obj	*objs;
 	t_hit_r	tmp_rec;
 	static t_calc_f functions[FLAG_MAX];
+	static bool		is_init = false;
 
-	init_t_calc_f(functions);
+	if (!is_init)
+	{
+		init_t_calc_f(functions);
+		is_init = true;
+	}
 	hit = false;
 	objs = data->objs;
 	closest = INFINITY;
@@ -596,6 +681,7 @@ bool	hit_someting(t_data *data, t_ray ray, t_hit_r *rec)
 			{
 				hit = true;
 				*rec = tmp_rec;
+				rec->color = objs->color;
 				closest = tmp_rec.t;
 			}
 		}
@@ -607,6 +693,10 @@ bool	hit_someting(t_data *data, t_ray ray, t_hit_r *rec)
 /*
 	formule fov equation
 	Height = 2×tan(2/FOV​) × FocalLength
+
+	Couleur Amb ​= Couleur Obj ​× (Couleur Amb​ × Ratio Amb​)
+	Couleur Diff​ = Couleur Obj ​× (Couleur Light ​× Ratio Light​)
+		× (Normal ⋅ Light Dir)
 */
 void	render(t_data *data)
 {
@@ -620,10 +710,11 @@ void	render(t_data *data)
 	int			idx;
 	t_hit_r		rec;
 	t_vec3		color_acc;
+	t_vec3		pixel;
 	t_vec3		final_color;
-	t_vec3		sample_color;
+	double		inv_width = 1.0 / (data->width - 1);
+	double		inv_height = 1.0 / (data->height - 1);
 
-	// ecran de c mort 
 	ft_bzero(&rec, sizeof (t_hit_r));
 	t_mat4	cam_matrix = look_at(data->cam.origin, data->cam.dir, data->cam.up_guide);
 	t_vec3	cam_origin = mat4_mult_vec3(&cam_matrix, (t_vec3){0,0,0}, 1.0);
@@ -640,13 +731,13 @@ void	render(t_data *data)
 			{
 				if (data->s_per_pixs == 1)
 				{
-					u = ((double)x + 0.5) / (data->width - 1);
-					v = ((double)y + 0.5) / (data->height - 1);
+					u = ((double)x + 0.5) * inv_width;
+					v = ((double)y + 0.5) * inv_height;
 				}
 				else
 				{
-					u = ((double)x + rand_double()) / (data->width - 1);
-					v = ((double)y + rand_double()) / (data->height - 1);
+					u = ((double)x + rand_double()) * inv_width;
+					v = ((double)y + rand_double()) * inv_height;
 				}
 				local_dir.x = (u * data->view_port.viewport_width) - (data->view_port.viewport_width / 2);
 				local_dir.y = (data->view_port.viewport_height / 2) - (v * data->view_port.viewport_height);
@@ -656,16 +747,45 @@ void	render(t_data *data)
 				ray.dir = vec_normalize(ray.dir);
 				if (hit_someting(data, ray, &rec))
 				{
-					sample_color.x = (rec.normal.x + 1.0) * 0.5;
-					sample_color.y = (rec.normal.y + 1.0) * 0.5;
-					sample_color.z = (rec.normal.z + 1.0) * 0.5;
+					double	obj_r = rec.color.r / 255.0;
+					double	obj_g = rec.color.g / 255.0;
+					double	obj_b = rec.color.b / 255.0;
+					t_vec3	ambient;
+					ambient.x = obj_r * data->a_final.x;
+					ambient.y = obj_g * data->a_final.y;
+					ambient.z = obj_b * data->a_final.z;
+					t_vec3	diffuse;
+					diffuse.x = data->light.color.r / 255.0;
+					diffuse.y = data->light.color.g / 255.0;
+					diffuse.z = data->light.color.b / 255.0;
+					if (is_in_shadow(data, &rec, &data->light) == false)
+					{
+						t_vec3	light_dir = vec_sub(data->light.origin, rec.p);
+						light_dir = vec_normalize(light_dir);
+						double	diff_strength = vec_dot_scal(rec.normal, light_dir);
+						if (diff_strength > 0)
+						{
+							diffuse.x *= obj_r * data->light.ratio * diff_strength;
+							diffuse.y *= obj_g * data->light.ratio * diff_strength;
+							diffuse.z *= obj_b * data->light.ratio * diff_strength;
+						}
+						else
+							diffuse = (t_vec3){0, 0, 0};
+					}
+					else
+						diffuse = (t_vec3){0, 0, 0};
+					pixel = vec_add(ambient, diffuse);
+					color_acc = vec_add(color_acc, pixel);
 				}
-				else
-					sample_color = (t_vec3){0, 0, 0};
-				color_acc = vec_add(color_acc, sample_color);
 				s++;
 			}
 			final_color = vec_scale(color_acc, 1.0 / data->s_per_pixs);
+			if (final_color.x > 1.0)
+				final_color.x = 1.0;
+			if (final_color.y > 1.0)
+				final_color.y = 1.0;
+			if (final_color.z > 1.0)
+				final_color.z = 1.0;
 			int ir = (int)(255.999 * final_color.x);
 			int ig = (int)(255.999 * final_color.y);
 			int ib = (int)(255.999 * final_color.z);
@@ -705,7 +825,7 @@ t_vec3	get_right_vector(t_vec3 dir)
 	t_vec3	up_guide = {0, 1, 0};
 	t_vec3	right;
 
-	// protection gimbal lock
+	/*protection gimbal lock*/
 	if (fabs(vec_dot_scal(dir, up_guide)) > 0.99)
 		up_guide = (t_vec3){1, 0, 0};
 	right = vec_normalize(vec_cross(dir, up_guide));
@@ -832,12 +952,14 @@ void	update(void *param)
 		data->cam.origin.y -= data->speed;
 		movded = true;
 	}
-	/*
 	if (data->key_table[46])
 	{
 		data->cam.fov -= 2;
 		if (data->cam.fov < 1)
 			data->cam.fov = 1;
+		data->view_port.fov_radians = data->cam.fov * (PI / 180.0);
+		data->view_port.viewport_height = 2.0 * tan(data->view_port.fov_radians / 2.0) * data->view_port.focal_length;
+		data->view_port.viewport_width = data->view_port.aspect_ratio * data->view_port.viewport_height;
 		movded = true;
 	}
 	if (data->key_table[45])
@@ -845,8 +967,11 @@ void	update(void *param)
 		data->cam.fov += 2;
 		if (data->cam.fov > 179)
 			data->cam.fov = 179;
+		data->view_port.fov_radians = data->cam.fov * (PI / 180.0);
+		data->view_port.viewport_height = 2.0 * tan(data->view_port.fov_radians / 2.0) * data->view_port.focal_length;
+		data->view_port.viewport_width = data->view_port.aspect_ratio * data->view_port.viewport_height;
 		movded = true;
-	}*/
+	}
 	if (movded)
 	{
 		//int old = data->s_per_pixs;
@@ -858,13 +983,25 @@ void	update(void *param)
 	ft_memcpy(data->old_key_table, data->key_table, sizeof(data->key_table));
 }
 
-void	init_data(t_data *data, mlx_window_create_info info)
+void	calcul_ambient(t_data *data)
+{
+	double	ratio;
+
+	ratio = data->a_ratio;
+	data->a_final.x = (data->a_color.r / 255.0) * ratio;
+	data->a_final.y = (data->a_color.g / 255.0) * ratio;
+	data->a_final.z = (data->a_color.b / 255.0) * ratio;
+}
+
+void	init_data(t_data *data, mlx_window_create_info info, char *filename)
 {
 	data->camera_is_set = false;
 	data->ambient_is_set = false;
 	data->width = WIDTH;
 	data->height = HEIGHT;
 	data->is_full = false;
+	data->scene_fd = -1;
+	data->scene_line = NULL;
 	data->s_per_pixs = 1;
 	data->objs = NULL;
 	srand(time(NULL));
@@ -872,7 +1009,8 @@ void	init_data(t_data *data, mlx_window_create_info info)
 	data->cam.up_guide = (t_vec3){0, 1, 0};
 	data->speed = 0.5;
 	data->rot_speed = 0.05;
-	read_rt(data, "caca");
+	read_rt(data, filename);
+	calcul_ambient(data);
 	data->mlx = mlx_init();
 	if (!data->mlx)
 		clean_exit(data, 1, "Error init MLX\n", 0);
@@ -883,11 +1021,16 @@ void	init_data(t_data *data, mlx_window_create_info info)
 		clean_exit(data, 1, "Error Malloc MLX\n", 0);
 }
 
-int	main(void)
+int	main(int ac, char **av)
 {
 	t_data					*data;
 	mlx_window_create_info	info;
 
+	if (ac != 2)
+	{
+		ft_putstr_fd("invalid argument:\n./MiniRT <file.rt>\n", 2);
+		return (1);
+	}
 	ft_memset(&info, 0, sizeof(mlx_window_create_info));
 	data = ft_calloc(sizeof(t_data), 1);
 	if (!data)
@@ -899,7 +1042,7 @@ int	main(void)
 	info.width = WIDTH;
 	info.height = HEIGHT;
 	info.is_resizable = true;
-	init_data(data, info);
+	init_data(data, info, av[1]);
 	mlx_set_fps_goal(data->mlx, 60);
 	mlx_on_event(data->mlx, data->win, MLX_KEYDOWN, key_down, data);
 	mlx_on_event(data->mlx, data->win, MLX_KEYUP, key_up, data);

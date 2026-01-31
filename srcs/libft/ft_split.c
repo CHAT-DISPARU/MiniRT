@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/14 10:30:37 by gajanvie          #+#    #+#             */
-/*   Updated: 2025/11/18 16:38:53 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/01/31 16:57:59 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	is_space(char c)
+int	is_space(char c)
 {
 	if (c == ' ')
 		return (1);
-	if (c >= 7 && c <= 13)
+	if (c >= 9 && c <= 13)
 		return (1);
 	return (0);
 }

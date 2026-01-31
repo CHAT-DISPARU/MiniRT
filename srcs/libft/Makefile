@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
+#    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/14 20:10:19 by gajanvie          #+#    #+#              #
-#    Updated: 2025/11/14 10:36:15 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/01/31 16:28:38 by titan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ SRCS = $(SRCD)/ft_isalnum.c \
        $(SRCD)/ft_split.c \
        $(SRCD)/ft_strlcat.c \
        $(SRCD)/ft_strncmp.c \
+       $(SRCD)/ft_strcmp.c \
        $(SRCD)/ft_substr.c \
        $(SRCD)/ft_atoi.c \
        $(SRCD)/ft_isalpha.c \
