@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 12:17:03 by titan             #+#    #+#             */
-/*   Updated: 2026/01/31 17:33:23 by titan            ###   ########.fr       */
+/*   Updated: 2026/01/31 22:40:10 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ t_mat4	mat4_align_vectors(t_vec3 start, t_vec3 dest)
 	t_vec3	axis;
 	double	cos_theta;
 	t_mat4	rot;
+	t_vec3	up;
 
 	start = vec_normalize(start);
 	dest = vec_normalize(dest);
@@ -28,17 +29,15 @@ t_mat4	mat4_align_vectors(t_vec3 start, t_vec3 dest)
 	}
 	if (cos_theta < -0.9999)
 	{
-		t_vec3 up = {0, 1, 0};
+		up = (t_vec3){0, 1, 0};
 		if (fabs(start.y) > 0.9)
 			up = (t_vec3){0, 0, 1};
-			
 		axis = vec_cross(start, up);
 		mat4_rotate_axis(&rot, axis, PI);
 		return (rot);
 	}
 	axis = vec_cross(start, dest);
-	double	angle = acos(cos_theta);
-	mat4_rotate_axis(&rot, axis, angle);
+	mat4_rotate_axis(&rot, axis, acos(cos_theta));
 	return (rot);
 }
 

@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/16 14:54:13 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/30 12:32:31 by titan            ###   ########.fr       */
+/*   Updated: 2026/01/31 22:35:48 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,22 +60,22 @@ void	mat4_rotate_z(t_mat4 *m, float angle)
 
 void	mat4_rotate_axis(t_mat4 *m, t_vec3 axis, double angle)
 {
-	axis = vec_normalize(axis);
-	double	c = cos(angle);
-	double	s = sin(angle);
-	double	t = 1.0 - c;
-	double	x = axis.x;
-	double	y = axis.y;
-	double	z = axis.z;
+	double	c;
+	double	s;
+	double	t;
 
+	axis = vec_normalize(axis);
+	c = cos(angle);
+	s = sin(angle);
+	t = 1.0 - c;
 	mat4_initial(m);
-	m->m[0][0] = t * x * x + c;
-	m->m[0][1] = t * x * y - s * z;
-	m->m[0][2] = t * x * z + s * y;
-	m->m[1][0] = t * x * y + s * z;
-	m->m[1][1] = t * y * y + c;
-	m->m[1][2] = t * y * z - s * x;
-	m->m[2][0] = t * x * z - s * y;
-	m->m[2][1] = t * y * z + s * x;
-	m->m[2][2] = t * z * z + c;
+	m->m[0][0] = t * axis.x * axis.x + c;
+	m->m[0][1] = t * axis.x * axis.y - s * axis.z;
+	m->m[0][2] = t * axis.x * axis.z + s * axis.y;
+	m->m[1][0] = t * axis.x * axis.y + s * axis.z;
+	m->m[1][1] = t * axis.y * axis.y + c;
+	m->m[1][2] = t * axis.y * axis.z - s * axis.x;
+	m->m[2][0] = t * axis.x * axis.z - s * axis.y;
+	m->m[2][1] = t * axis.y * axis.z + s * axis.x;
+	m->m[2][2] = t * axis.z * axis.z + c;
 }
