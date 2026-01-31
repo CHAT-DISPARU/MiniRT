@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 12:17:03 by titan             #+#    #+#             */
-/*   Updated: 2026/01/30 13:30:42 by titan            ###   ########.fr       */
+/*   Updated: 2026/01/31 17:33:23 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,26 +42,35 @@ t_mat4	mat4_align_vectors(t_vec3 start, t_vec3 dest)
 	return (rot);
 }
 
-t_vec3	parse_vec3(char **line)
+t_vec3	parse_vec3(char **line, t_data *data, int i)
 {
 	t_vec3	v;
 
 	v.x = rt_atod(line);
-	skip_coma(line);
+	skip_coma(line, data, i);
 	v.y = rt_atod(line);
-	skip_coma(line);
+	skip_coma(line, data, i);
 	v.z = rt_atod(line);
 	return (v);
 }
 
-mlx_color	parse_color(char **line)
+mlx_color	parse_color(char **line, t_data *data, int i)
 {
 	mlx_color	color;
+	double		r;
+	double		g;
+	double		b;
 
-	color.r = rt_atod(line);
-	skip_coma(line);
-	color.g = rt_atod(line);
-	skip_coma(line);
-	color.b = rt_atod(line);
+	r = rt_atod(line);
+	color.r = r;
+	check_color_val(data, r, i);
+	skip_coma(line, data, i);
+	g = rt_atod(line);
+	color.g = g;
+	check_color_val(data, g, i);
+	skip_coma(line, data, i);
+	b = rt_atod(line);
+	color.b = b;
+	check_color_val(data, b, i);
 	return (color);
 }

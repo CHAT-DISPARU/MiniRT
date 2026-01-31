@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 12:15:00 by titan             #+#    #+#             */
-/*   Updated: 2026/01/30 13:30:57 by titan            ###   ########.fr       */
+/*   Updated: 2026/01/31 17:32:13 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,12 @@ void	skip_spaces(char **line)
 		(*line)++;
 }
 
-void	skip_coma(char **line)
+void	skip_coma(char **line, t_data *data, int i)
 {
-	while (**line && is_space(**line))
-		(*line)++;
 	if (**line == ',')
 		(*line)++;
-	while (**line && is_space(**line))
-		(*line)++;
+	else
+		clean_exit(data, 1, "Error: Missing comma in color/vector\n", i);
 }
 
 double	rt_atod(char **line)
