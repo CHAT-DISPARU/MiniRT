@@ -6,7 +6,7 @@
 #    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/01/31 16:56:18 by titan            ###   ########.fr        #
+#    Updated: 2026/01/31 22:27:53 by titan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,6 +32,11 @@ BG_ESP_YELLOW := $(ESC)[48;5;220m
 YELLOW=\033[0;33m
 
 SRC_DIR := srcs/
+HIT_DIR := hit_objs/
+READ_DIR := read_rt/
+SETTER_DIR := setters/
+PARS_DIR := pars/
+UTILS_DIR := utils/
 BUILD_DIR := build/
 LIB_MATH_DIR := srcs/lib_math
 LIB_MATH := ./srcs/lib_math/gajanvielib_math.a
@@ -43,11 +48,31 @@ MLX_DIR = MacroLibX
 MLX = $(MLX_DIR)/libmlx.so
 
 SRCS := $(SRC_DIR)main.c \
-		$(SRC_DIR)pars.c \
-		$(SRC_DIR)parsing_utils.c \
+		$(SRC_DIR)$(READ_DIR)$(PARS_DIR)pars.c \
+		$(SRC_DIR)clean.c \
+		$(SRC_DIR)event.c \
+		$(SRC_DIR)render.c \
+		$(SRC_DIR)update.c \
+		$(SRC_DIR)$(READ_DIR)$(PARS_DIR)parsing_utils.c \
 		$(SRC_DIR)shadow_rays.c \
-		$(SRC_DIR)check.c \
-		$(SRC_DIR)check2.c
+		$(SRC_DIR)$(READ_DIR)$(PARS_DIR)check.c \
+		$(SRC_DIR)$(READ_DIR)$(PARS_DIR)check2.c \
+		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_a.c \
+		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_l.c \
+		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_c.c \
+		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_cy.c \
+		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_sp.c \
+		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_sq.c \
+		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_pl.c \
+		$(SRC_DIR)$(HIT_DIR)hit_cy.c \
+		$(SRC_DIR)$(HIT_DIR)hit_sp.c \
+		$(SRC_DIR)$(HIT_DIR)hit_sq.c \
+		$(SRC_DIR)$(HIT_DIR)hit_pl.c \
+		$(SRC_DIR)$(HIT_DIR)hit_something.c \
+		$(SRC_DIR)$(READ_DIR)read_rt.c \
+		$(SRC_DIR)$(UTILS_DIR)utils.c \
+		$(SRC_DIR)$(UTILS_DIR)math_utils.c
+		
 
 
 OBJ := $(patsubst $(SRC_DIR)%.c, $(BUILD_DIR)%.o, $(SRCS))

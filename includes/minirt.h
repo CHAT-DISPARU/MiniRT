@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/31 17:33:54 by titan            ###   ########.fr       */
+/*   Updated: 2026/01/31 23:20:12 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,12 @@ typedef enum e_func
 	FLAG_MAX,
 }				t_func;
 
+typedef struct s_ray
+{
+	t_vec3	origin;
+	t_vec3	dir;
+}				t_ray;
+
 typedef struct s_camera
 {
 	t_vec3	origin;
@@ -61,11 +67,33 @@ typedef struct s_hit_r
 	double	t;
 }				t_hit_r;
 
-typedef struct s_ray
+typedef struct s_hit_some
 {
-	t_vec3	origin;
-	t_vec3	dir;
-}				t_ray;
+	bool	hit;
+	double	closest;
+	t_hit_r	tmp_rec;
+}				t_hit_some;
+
+typedef struct s_hit
+{
+	t_ray	l_ray;
+	t_vec3	local_normal;
+	double	t;
+}				t_hit;
+
+typedef struct s_mat_t
+{
+	t_mat4		trans;
+	t_mat4		scale;
+	t_mat4		rot;
+	t_mat4		final;
+	t_vec3		center;
+	t_vec3		rot_vec;
+	double		width;
+	double		height;
+	double		diameter;
+	mlx_color	col;
+}				t_mat_t;
 
 typedef struct s_obj
 {
@@ -147,5 +175,27 @@ void		check_ratio(t_data *data, double ratio, int i);
 void		check_fov(t_data *data, double fov, int i);
 void		check_positive(t_data *data, double val, int i);
 void		clean_exit(t_data *data, int exit_code, char *mess_eror, int i);
+void		window_hook(int event, void *param);
+void		key_down(int key, void *param);
+void		key_up(int key, void *param);
+bool		hit_sphere(t_obj *sp, t_ray ray, t_hit_r *rec);
+bool		hit_plane(t_obj *pl, t_ray ray, t_hit_r *rec);
+bool		hit_square(t_obj *sq, t_ray ray, t_hit_r *rec);
+bool		hit_cylinder(t_obj *cy, t_ray ray, t_hit_r *rec);
+bool		hit_someting(t_data *data, t_ray ray, t_hit_r *rec);
+t_mat4		look_at(t_vec3 o, t_vec3 dir, t_vec3 up_guide);
+void		set_pl(t_data *data, char *line, int i);
+void		read_rt(t_data *data, char *filename);
+void		set_c(t_data *data, char *line, int i);
+void		set_sp(t_data *data, char *line, int i);
+void		set_cy(t_data *data, char *line, int i);
+void		set_sq(t_data *data, char *line, int i);
+void		set_l(t_data *data, char *line, int i);
+void		set_a(t_data *data, char *line, int i);
+void		update(void *param);
+t_vec3		get_right_vector(t_vec3 dir);
+void		calcul_ambient(t_data *data);
+double		rand_double(void);
+void		ft_objadd_back(t_obj **lst, t_obj *new);
 
 #endif
