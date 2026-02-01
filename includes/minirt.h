@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/31 23:20:12 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/01 12:22:53 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,12 @@ typedef enum e_func
 	CALC_CY,
 	FLAG_MAX,
 }				t_func;
+
+typedef struct s_cy_utils
+{
+	double	closest_t;
+	int		hit_zone;
+}				t_cy_utils;
 
 typedef struct s_ray
 {
