@@ -6,11 +6,12 @@
 #    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/01/31 22:27:53 by titan            ###   ########.fr        #
+#    Updated: 2026/02/01 14:16:50 by titan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := MiniRT
+NAME_BONUS := MiniRT_bonus
 
 ESC := \033
 RESET := $(ESC)[0m
@@ -32,20 +33,48 @@ BG_ESP_YELLOW := $(ESC)[48;5;220m
 YELLOW=\033[0;33m
 
 SRC_DIR := srcs/
+SRCB_DIR := srcs_bonus/
 HIT_DIR := hit_objs/
 READ_DIR := read_rt/
 SETTER_DIR := setters/
 PARS_DIR := pars/
 UTILS_DIR := utils/
 BUILD_DIR := build/
-LIB_MATH_DIR := srcs/lib_math
-LIB_MATH := ./srcs/lib_math/gajanvielib_math.a
-LIBFT = ./srcs/libft/libft.a
-LIBFT_DIR = srcs/libft
-LIB = MacroLibX
+LIB_MATH_DIR := libs/lib_math
+LIB_MATH := ./libs/lib_math/gajanvielib_math.a
+LIBFT = ./libs/libft/libft.a
+LIBFT_DIR = libs/libft
+LIB = libs/MacroLibX
 LIB_URL = https://github.com/seekrs/MacroLibX.git
-MLX_DIR = MacroLibX
+MLX_DIR = libs/MacroLibX
 MLX = $(MLX_DIR)/libmlx.so
+
+SRCSB := $(SRCB_DIR)main_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)pars_bonus.c \
+		$(SRCB_DIR)clean_bonus.c \
+		$(SRCB_DIR)event_bonus.c \
+		$(SRCB_DIR)render_bonus.c \
+		$(SRCB_DIR)update_bonus.c \
+		$(SRCB_DIR)thread_calls.c \
+		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)parsing_utils_bonus.c \
+		$(SRCB_DIR)shadow_rays_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)check_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)check2_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_a_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_l_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_c_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_cy_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_sp_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_sq_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_pl_bonus.c \
+		$(SRCB_DIR)$(HIT_DIR)hit_cy_bonus.c \
+		$(SRCB_DIR)$(HIT_DIR)hit_sp_bonus.c \
+		$(SRCB_DIR)$(HIT_DIR)hit_sq_bonus.c \
+		$(SRCB_DIR)$(HIT_DIR)hit_pl_bonus.c \
+		$(SRCB_DIR)$(HIT_DIR)hit_something_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)read_rt_bonus.c \
+		$(SRCB_DIR)$(UTILS_DIR)utils_bonus.c \
+		$(SRCB_DIR)$(UTILS_DIR)math_utils_bonus.c
 
 SRCS := $(SRC_DIR)main.c \
 		$(SRC_DIR)$(READ_DIR)$(PARS_DIR)pars.c \
@@ -76,12 +105,15 @@ SRCS := $(SRC_DIR)main.c \
 
 
 OBJ := $(patsubst $(SRC_DIR)%.c, $(BUILD_DIR)%.o, $(SRCS))
+OBJB := $(patsubst $(SRCB_DIR)%.c, $(BUILD_DIR)%.o, $(SRCSB))
+
 
 HEADERS := includes/
+HEADERSB := includes/ -I includes_bonus/
 
 CC := cc
 
-FLAGS := -Wall -Werror -Wextra -g -I MacroLibX/includes -O3 -ffast-math
+FLAGS := -Wall -Werror -Wextra -g -I libs/MacroLibX/includes -O3 -ffast-math
 
 all: $(LIB) header ${NAME}
 
@@ -91,18 +123,31 @@ header:
 	@echo "||__|||__|||__|||__|||__|||__||"
 	@echo "|/__\|/__\|/__\|/__\|/__\|/__\|"
 
+bonus: $(LIB) header_bonus $(NAME_BONUS)
+
+header_bonus:
+	@echo "caca"
+
 $(NAME): $(LIBFT) $(LIB_MATH) ${OBJ}
 	@echo "$(TEXT_NEON_GREEN)✅ Compilation of MiniRT finished !$(RESET)"
 	@${CC} -o ${NAME} -I ${HEADERS} ${OBJ} ${LIBFT} $(MLX) $(LIB_MATH) ${FLAGS} -lm -lSDL2
 
+$(NAME_BONUS) : $(LIBFT) $(LIB_MATH) ${OBJB}
+	@echo "$(TEXT_NEON_GREEN)✅ Compilation of MiniRT Bonus finished !$(RESET)"
+	@${CC} -o ${NAME_BONUS} -I ${HEADERSB} ${OBJB} ${LIBFT} $(MLX) $(LIB_MATH) ${FLAGS} -lm -lSDL2
+
 $(LIB):
-	@git clone https://github.com/seekrs/MacroLibX.git -b v2.2.2 MacroLibX --depth=1
-	@$(MAKE) --no-print-directory -C MacroLibX -j
+	@git clone https://github.com/seekrs/MacroLibX.git -b v2.2.2 libs/MacroLibX --depth=1
+	@$(MAKE) --no-print-directory -C libs/MacroLibX -j
 	@echo "$(GREEN)✅ Importation of MacroLibX finished!$(NC)"
 
 ${BUILD_DIR}%.o: ${SRC_DIR}%.c
 	@mkdir -p $(dir $@)
 	@${CC} -o $@ -I ${HEADERS} -c $< ${FLAGS}
+
+${BUILD_DIR}%.o: ${SRCB_DIR}%.c
+	@mkdir -p $(dir $@)
+	@${CC} -o $@ -I ${HEADERSB} -c $< ${FLAGS}
 
 $(LIBFT):
 	@make --no-print-directory -C $(LIBFT_DIR)
@@ -124,6 +169,7 @@ fclean: clean
 	@make --no-print-directory -C $(LIB_MATH_DIR) fclean
 	@rm -rf $(LIB)
 	@rm -f ${NAME}
+	@rm -f ${NAME_BONUS}
 
 re: fclean all
 re_bonus:	fclean bonus

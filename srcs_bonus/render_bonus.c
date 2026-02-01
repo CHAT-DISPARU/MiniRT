@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   render.c                                           :+:      :+:    :+:   */
+/*   render_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/02/01 12:44:43 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/01 14:42:28 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <minirt.h>
+#include <minirt_bonus.h>
 
 void	check_hit(t_data *data, t_ray ray, t_vec3 *color_acc)
 {
@@ -63,8 +63,10 @@ void	check_hit(t_data *data, t_ray ray, t_vec3 *color_acc)
 	Couleur Diff​ = Couleur Obj ​× (Couleur Light ​× Ratio Light​)
 		× (Normal ⋅ Light Dir)
 */
-void	render(t_data *data)
+void	*render(void *arg)
 {
+	t_thread_info	*info = (t_thread_info *)arg;
+	t_data			*data = info->data;
 	int			y;
 	int			x;
 	int			s;
@@ -80,12 +82,11 @@ void	render(t_data *data)
 
 	t_mat4	cam_matrix = look_at(data->cam.origin, data->cam.dir, data->cam.up_guide);
 	t_vec3	cam_origin = mat4_mult_vec3(&cam_matrix, (t_vec3){0,0,0}, 1.0);
-	mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
-	y = 0;
-	while (y < data->height)
+	y = info->start_y;
+	while (y < info->end_y)
 	{
-		x = 0;
-		while (x < data->width)
+		x = info->start_x;
+		while (x < info->end_x)
 		{
 			color_acc = (t_vec3){0, 0, 0};
 			s = 0;
@@ -117,6 +118,9 @@ void	render(t_data *data)
 				final_color.y = 1.0;
 			if (final_color.z > 1.0)
 				final_color.z = 1.0;
+			final_color.x = pow(final_color.x, 0.4545);
+			final_color.y = pow(final_color.y, 0.4545);
+			final_color.z = pow(final_color.z, 0.4545);
 			int ir = (int)(255.999 * final_color.x);
 			int ig = (int)(255.999 * final_color.y);
 			int ib = (int)(255.999 * final_color.z);
@@ -126,6 +130,5 @@ void	render(t_data *data)
 		}
 		y++;
 	}
-	mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
-	mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
+	return (NULL);
 }
