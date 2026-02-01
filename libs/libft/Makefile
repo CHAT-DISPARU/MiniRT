@@ -6,14 +6,14 @@
 #    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/14 20:10:19 by gajanvie          #+#    #+#              #
-#    Updated: 2026/01/31 16:28:38 by titan            ###   ########.fr        #
+#    Updated: 2026/02/01 13:47:40 by titan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libft.a
 
 SRCD = .
-OBJDIR = ../../objs/
+OBJDIR = ../../build/
 
 SRCS = $(SRCD)/ft_isalnum.c \
        $(SRCD)/ft_isprint.c \

@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   update.c                                           :+:      :+:    :+:   */
+/*   update_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:11:09 by titan             #+#    #+#             */
-/*   Updated: 2026/02/01 12:49:40 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/01 13:58:59 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <minirt.h>
+#include <minirt_bonus.h>
 
 void	update(void *param)
 {
@@ -151,6 +151,6 @@ void	update(void *param)
 		movded = true;
 	}
 	if (movded)
-		render(data);
+		thread_calls(data);
 	ft_memcpy(data->old_key_table, data->key_table, sizeof(data->key_table));
 }
