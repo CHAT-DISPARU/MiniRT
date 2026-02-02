@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/01 14:12:31 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/02 16:14:53 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 
 void	init_data(t_data *data, mlx_window_create_info info, char *filename)
 {
-	if (pthread_mutex_init(&data->pixel_mutex, NULL) != 0)
-		clean_exit(data, 1, "mutex init\n", 0);
 	data->camera_is_set = false;
 	data->ambient_is_set = false;
 	data->width = WIDTH;
@@ -25,6 +23,7 @@ void	init_data(t_data *data, mlx_window_create_info info, char *filename)
 	data->scene_line = NULL;
 	data->s_per_pixs = 1;
 	data->objs = NULL;
+	data->light = NULL;
 	srand(time(NULL));
 	ft_memset(data->key_table, 0, sizeof(data->key_table));
 	data->cam.up_guide = (t_vec3){0, 1, 0};

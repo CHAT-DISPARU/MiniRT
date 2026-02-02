@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hit_pl_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:59:19 by titan             #+#    #+#             */
-/*   Updated: 2026/02/01 14:40:11 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/02 17:19:25 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ bool	hit_plane(t_obj *pl, t_ray ray, t_hit_r *rec)
 	l_ray.origin = mat4_mult_vec3(&pl->inverse_transform, ray.origin, 1.0);
 	l_ray.dir = mat4_mult_vec3(&pl->inverse_transform, ray.dir, 0.0);
 	denom = l_ray.dir.y;
-	if (fabs(denom) < 0.00001)
+	if (fabs(denom) < EPSILON)
 		return (false);
 	t = -l_ray.origin.y / denom;
 	if (t < EPSILON)

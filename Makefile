@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
+#    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/02/01 15:01:13 by titan            ###   ########.fr        #
+#    Updated: 2026/02/02 14:50:29 by gajanvie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,7 @@ BG_ESP_YELLOW := $(ESC)[48;5;220m
 YELLOW=\033[0;33m
 
 SRC_DIR := srcs/
+UPDATED_DIR := update/
 SRCB_DIR := srcs_bonus/
 HIT_DIR := hit_objs/
 READ_DIR := read_rt/
@@ -54,8 +55,10 @@ SRCSB := $(SRCB_DIR)main_bonus.c \
 		$(SRCB_DIR)clean_bonus.c \
 		$(SRCB_DIR)event_bonus.c \
 		$(SRCB_DIR)render_bonus.c \
-		$(SRCB_DIR)update_bonus.c \
-		$(SRCB_DIR)thread_calls.c \
+		$(SRCB_DIR)lights_bonus.c \
+		$(SRCB_DIR)$(UPDATED_DIR)update_bonus.c \
+		$(SRCB_DIR)$(UPDATED_DIR)update_rot_bonus.c \
+		$(SRCB_DIR)thread_calls_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)parsing_utils_bonus.c \
 		$(SRCB_DIR)shadow_rays_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)check_bonus.c \
@@ -65,9 +68,11 @@ SRCSB := $(SRCB_DIR)main_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_c_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_cy_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_sp_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_tr_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_sq_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_pl_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_cy_bonus.c \
+		$(SRCB_DIR)$(HIT_DIR)hit_tr_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_sp_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_sq_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_pl_bonus.c \
@@ -81,7 +86,9 @@ SRCS := $(SRC_DIR)main.c \
 		$(SRC_DIR)clean.c \
 		$(SRC_DIR)event.c \
 		$(SRC_DIR)render.c \
-		$(SRC_DIR)update.c \
+		$(SRC_DIR)lights.c \
+		$(SRC_DIR)$(UPDATED_DIR)update.c \
+		$(SRC_DIR)$(UPDATED_DIR)update_rot.c \
 		$(SRC_DIR)$(READ_DIR)$(PARS_DIR)parsing_utils.c \
 		$(SRC_DIR)shadow_rays.c \
 		$(SRC_DIR)$(READ_DIR)$(PARS_DIR)check.c \

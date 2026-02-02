@@ -3,19 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   clean.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:10:27 by titan             #+#    #+#             */
-/*   Updated: 2026/01/31 22:10:49 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/02 11:33:04 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt.h>
 
-void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
+void	print_m_and_gnl(t_data *data, char *mess_eror, int exit_code, int i)
 {
-	t_obj	*tmp;
-
 	if (data->scene_fd != -1)
 	{
 		get_next_line(data->scene_fd, 1);
@@ -37,6 +35,13 @@ void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 		ft_putstr_fd(ft_itoa(i), 2);
 		ft_putstr_fd("\n", 2);
 	}
+}
+
+void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
+{
+	t_obj	*tmp;
+
+	print_m_and_gnl(data, mess_eror, exit_code, i);
 	while (data->objs)
 	{
 		tmp = data->objs->next;

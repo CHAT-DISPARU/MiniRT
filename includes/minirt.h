@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/01 12:22:53 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/02 12:31:37 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,39 @@
 # define KS			1
 # define KD			1
 # define PI			3.14159265358979323846
+
+typedef struct s_render_v
+{
+	double		u;
+	double		v;
+	double		inv_width;
+	double		inv_height;
+	t_mat4		cam_m;
+	t_vec3		cam_origin;
+}				t_render_v;
+
+typedef struct s_ic
+{
+	int	ir;
+	int	ig;
+	int	ib;
+}				t_ic;
+
+typedef struct s_idxs
+{
+	int	y;
+	int	x;
+	int	s;
+}				t_idxs;
+
+typedef struct s_color_c
+{
+	double		obj_r;
+	double		obj_g;
+	double		obj_b;
+	t_vec3		ambient;
+	t_vec3		diffuse;
+}				t_color_c;
 
 typedef enum e_func
 {
@@ -70,7 +103,7 @@ typedef struct s_hit_r
 	t_vec3		p;
 	t_vec3		normal;
 	mlx_color	color;
-	double	t;
+	double		t;
 }				t_hit_r;
 
 typedef struct s_hit_some
@@ -203,5 +236,9 @@ t_vec3		get_right_vector(t_vec3 dir);
 void		calcul_ambient(t_data *data);
 double		rand_double(void);
 void		ft_objadd_back(t_obj **lst, t_obj *new);
+void		final_diffuse(t_color_c *lights,
+				t_data *data, double diff_strength);
+void		calc_lights(t_color_c *lights, t_hit_r rec, t_data *data);
+void		update_rot(t_data *data, t_vec3 right, bool *movded);
 
 #endif

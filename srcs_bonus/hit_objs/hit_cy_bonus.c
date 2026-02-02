@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hit_cy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:59:51 by titan             #+#    #+#             */
-/*   Updated: 2026/02/01 14:40:11 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/02 17:19:08 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ bool	hit_border_cy(t_ray ray, double x_plane, double *t_out)
 	if (fabs(ray.dir.x) < 0.0001)
 		return (false);
 	t = (x_plane - ray.origin.x) / ray.dir.x;
-	if (t < EPSILON)
+	if (t < 0.001)
 		return (false);
 	y = ray.origin.y + t * ray.dir.y;
 	z = ray.origin.z + t * ray.dir.z;
@@ -67,6 +67,8 @@ t_hit_r	set_rec(t_ray ray, t_cy_utils utils, t_obj *cy, t_hit hit)
 		hit.local_normal = (t_vec3){-1, 0, 0};
 	rec.normal = mat4_mult_vec3(&cy->transform, hit.local_normal, 0.0);
 	rec.normal = vec_normalize(rec.normal);
+	if (vec_dot_scal(ray.dir, rec.normal) > 0)
+		rec.normal = vec_scale(rec.normal, -1.0);
 	return (rec);
 }
 
@@ -95,7 +97,7 @@ void	see_poly(t_hit hit, t_vec3 poly, double delta, t_cy_utils *utils)
 	double		hit_x;
 
 	hit.t = (-poly.y - sqrt(delta)) / (poly.x);
-	if (hit.t > EPSILON)
+	if (hit.t > 0.001)
 	{
 		hit_x = hit.l_ray.origin.x + hit.t * hit.l_ray.dir.x;
 		if (hit_x >= -1.0 && hit_x <= 1.0)
