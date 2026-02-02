@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   event_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:56:43 by titan             #+#    #+#             */
-/*   Updated: 2026/02/01 13:55:55 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/02 12:23:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ void	key_down(int key, void *param)
 {
 	t_data	*data;
 
-	printf("%d\n", key);
 	data = (t_data *)param;
 	if (key == 41)
 		mlx_loop_end(data->mlx);

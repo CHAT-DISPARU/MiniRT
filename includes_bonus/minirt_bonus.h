@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/01 14:41:35 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/02 18:37:43 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_H
-# define MINIRT_H
+#ifndef MINIRT_BONUS_H
+# define MINIRT_BONUS_H
 
 # include "libft.h"
 # include "get_next_line.h"
@@ -36,8 +36,41 @@
 # define KS				1
 # define KD				1
 # define PI				3.14159265358979323846
-# define THREADS_COUNT	24
+# define THREADS_COUNT	16
 # define EPSILON		1e-4
+
+typedef struct s_render_v
+{
+	double		u;
+	double		v;
+	double		inv_width;
+	double		inv_height;
+	t_mat4		cam_m;
+	t_vec3		cam_origin;
+}				t_render_v;
+
+typedef struct s_ic
+{
+	int	ir;
+	int	ig;
+	int	ib;
+}				t_ic;
+
+typedef struct s_idxs
+{
+	int	y;
+	int	x;
+	int	s;
+}				t_idxs;
+
+typedef struct s_color_c
+{
+	double		obj_r;
+	double		obj_g;
+	double		obj_b;
+	t_vec3		ambient;
+	t_vec3		diffuse;
+}				t_color_c;
 
 typedef enum e_func
 {
@@ -45,6 +78,7 @@ typedef enum e_func
 	CALC_SQ,
 	CALC_PL,
 	CALC_CY,
+	CALC_TR,
 	FLAG_MAX,
 }				t_func;
 
@@ -73,7 +107,7 @@ typedef struct s_hit_r
 	t_vec3		p;
 	t_vec3		normal;
 	mlx_color	color;
-	double	t;
+	double		t;
 }				t_hit_r;
 
 typedef struct s_hit_some
@@ -90,6 +124,13 @@ typedef struct s_hit
 	double	t;
 }				t_hit;
 
+typedef struct s_triangle
+{
+	t_vec3	p1;
+	t_vec3	p2;
+	t_vec3	p3;
+}				t_triangle;
+
 typedef struct s_mat_t
 {
 	t_mat4		trans;
@@ -102,11 +143,13 @@ typedef struct s_mat_t
 	double		height;
 	double		diameter;
 	mlx_color	col;
+	t_triangle	tri;
 }				t_mat_t;
 
 typedef struct s_obj
 {
 	int				type;
+	t_triangle		tri;
 	t_mat4			transform;
 	t_mat4			inverse_transform;
 	mlx_color		color;
@@ -118,6 +161,7 @@ typedef struct s_light
 	t_vec3			origin;
 	double			ratio;
 	mlx_color		color;
+	struct s_light	*next;
 }				t_light;
 
 typedef struct s_alight
@@ -149,14 +193,13 @@ typedef struct s_data
 	t_vec3			a_final;
 	void			*win;
 	void			*img;
-	pthread_mutex_t	pixel_mutex;
 	mlx_color		*pixels;
 	bool			is_full;
 	int				key_table[512];
 	int				old_key_table[512];
 	t_camera		cam;
 	t_obj			*objs;
-	t_light			light;
+	t_light			*light;
 	t_alight		alight;
 	double			speed;
 	double			rot_speed;
@@ -217,5 +260,13 @@ t_vec3		get_right_vector(t_vec3 dir);
 void		calcul_ambient(t_data *data);
 double		rand_double(void);
 void		ft_objadd_back(t_obj **lst, t_obj *new);
+void		final_diffuse(t_color_c *lights,
+				t_light *light, double diff_strength);
+void		calc_lights(t_color_c *lights, t_hit_r rec,
+				t_data *data, t_light *light);
+void		update_rot(t_data *data, t_vec3 right, bool *movded);
+bool		hit_triangle(t_obj *tr, t_ray ray, t_hit_r *rec);
+void		set_tr(t_data *data, char *line, int i);
+void		ft_lightadd_back(t_light **lst, t_light *new);
 
 #endif
