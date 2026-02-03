@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 18:30:00 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/03 11:43:46 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,12 +85,18 @@ void	do_samples(t_data *data, t_idxs idxs, t_render_v rv, t_vec3 *color_acc)
 	}
 }
 
-void	set_final_color(t_vec3 color_acc, t_data *data, t_idxs idxs)
+void	set_final_color(t_vec3 color_acc, t_data *data, t_idxs idxs, t_thread_info *info)
 {
 	int			idx;
+	int			x;
+	int			y;
+	int			y1;
+	int			x1;
 	t_vec3		final_color;
 	t_ic		ic;
 
+	y = idxs.y;
+	x = idxs.x;
 	final_color = vec_scale(color_acc, 1.0 / data->s_per_pixs);
 	if (final_color.x > 1.0)
 		final_color.x = 1.0;
@@ -104,9 +110,26 @@ void	set_final_color(t_vec3 color_acc, t_data *data, t_idxs idxs)
 	ic.ir = (int)(255.999 * final_color.x);
 	ic.ig = (int)(255.999 * final_color.y);
 	ic.ib = (int)(255.999 * final_color.z);
-	idx = idxs.y * data->width + idxs.x;
-	data->pixels[idx].rgba = (ic.ir << 24)
-		| (ic.ig << 16) | (ic.ib << 8) | 0xFF;
+	y = 0;
+	while (y < data->step)
+	{
+		x = 0;
+		y1 = idxs.y + y;
+		if (y1 >= info->end_y)
+			break ;
+		while (x < data->step)
+		{
+			x1 = idxs.x + x;
+			if (x1 >= info->end_x)
+				break ;
+			idx = (y1) * data->width + (x1);
+			data->pixels[idx].rgba = (ic.ir << 24)
+				| (ic.ig << 16) | (ic.ib << 8) | 0xFF;
+			x++;
+		}
+		y++;
+	}
+
 }
 
 /*
@@ -129,7 +152,6 @@ void	*render(void *arg)
 	rv.inv_height = 1.0 / (data->height - 1);
 	rv.cam_m = look_at(data->cam.origin, data->cam.dir, data->cam.up_guide);
 	rv.cam_origin = mat4_mult_vec3(&rv.cam_m, (t_vec3){0, 0, 0}, 1.0);
-	mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
 	idxs.y = info->start_y;;
 	while (idxs.y < info->end_y)
 	{
@@ -138,10 +160,10 @@ void	*render(void *arg)
 		{
 			color_acc = (t_vec3){0, 0, 0};
 			do_samples(data, idxs, rv, &color_acc);
-			set_final_color(color_acc, data, idxs);
-			idxs.x++;
+			set_final_color(color_acc, data, idxs, info);
+			idxs.x += data->step;
 		}
-		idxs.y++;
+		idxs.y += data->step;
 	}
 	return (NULL);
 }

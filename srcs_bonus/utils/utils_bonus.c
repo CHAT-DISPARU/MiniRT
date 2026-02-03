@@ -6,11 +6,43 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:17:57 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 15:46:24 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/03 17:09:16 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
+
+int	ft_facesize(t_face_c *lst)
+{
+	int	i;
+
+	i = 0;
+	if (!lst)
+		return (0);
+	while (lst)
+	{
+		i++;
+		lst = lst->next;
+	}
+	return (i);
+}
+
+void	ft_faceadd_back(t_face_c **lst, t_face_c *new)
+{
+	t_face_c	*current;
+
+	if (!lst)
+		return ;
+	if (!*lst)
+	{
+		*lst = new;
+		return ;
+	}
+	current = *lst;
+	while (current->next)
+		current = current->next;
+	current->next = new;
+}
 
 void	ft_lightadd_back(t_light **lst, t_light *new)
 {
@@ -53,6 +85,7 @@ void	init_t_calc_f(t_calc_f *functions)
 	functions[CALC_PL] = hit_plane;
 	functions[CALC_SP] = hit_sphere;
 	functions[CALC_TR] = hit_triangle;
+	functions[CALC_HY] = hit_hyperboloid;
 }
 
 int	resize_win(t_data *data)
