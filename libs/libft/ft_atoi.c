@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 22:30:50 by gajanvie          #+#    #+#             */
-/*   Updated: 2025/11/13 12:02:52 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/03 12:51:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ int	ft_atoi(const char *nptr)
 
 	sign = 1;
 	result = 0;
+	while (*nptr == ' ')
+		nptr++;
 	if (*nptr == '-')
 	{
 		sign = -1;

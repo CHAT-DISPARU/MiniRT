@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/02 16:14:53 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/03 11:10:33 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 void	init_data(t_data *data, mlx_window_create_info info, char *filename)
 {
 	data->camera_is_set = false;
+	data->step = 1;
 	data->ambient_is_set = false;
 	data->width = WIDTH;
 	data->height = HEIGHT;

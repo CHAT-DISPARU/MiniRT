@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/02 18:37:43 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/03 17:10:32 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,12 @@ typedef struct s_render_v
 	t_vec3		cam_origin;
 }				t_render_v;
 
+typedef struct s_face_c
+{
+	t_vec3			point;
+	struct s_face_c	*next;
+}				t_face_c;
+
 typedef struct s_ic
 {
 	int	ir;
@@ -79,6 +85,7 @@ typedef enum e_func
 	CALC_PL,
 	CALC_CY,
 	CALC_TR,
+	CALC_HY,
 	FLAG_MAX,
 }				t_func;
 
@@ -142,6 +149,7 @@ typedef struct s_mat_t
 	double		width;
 	double		height;
 	double		diameter;
+	double		diameter2;
 	mlx_color	col;
 	t_triangle	tri;
 }				t_mat_t;
@@ -182,6 +190,7 @@ typedef struct s_view_p
 
 typedef struct s_data
 {
+	int				step;
 	bool			camera_is_set;
 	bool			ambient_is_set;
 	bool			light_is_set;
@@ -217,6 +226,12 @@ typedef struct s_thread_info
 	int		start_x;
 	int		end_x;
 }				t_thread_info;
+
+typedef struct s_file_info
+{
+	int		fd;
+	char	*line_o;
+}				t_file_info;
 
 typedef bool	(*t_calc_f)(t_obj *obj, t_ray ray, t_hit_r *rec);
 void		thread_calls(t_data *data);
@@ -268,5 +283,10 @@ void		update_rot(t_data *data, t_vec3 right, bool *movded);
 bool		hit_triangle(t_obj *tr, t_ray ray, t_hit_r *rec);
 void		set_tr(t_data *data, char *line, int i);
 void		ft_lightadd_back(t_light **lst, t_light *new);
+void		ft_faceadd_back(t_face_c **lst, t_face_c *new);
+int			ft_facesize(t_face_c *lst);
+void		set_o(t_data *data, char *line, int i);
+bool		hit_hyperboloid(t_obj *hy, t_ray ray, t_hit_r *rec);
+void		set_hy(t_data *data, char *line, int i);
 
 #endif

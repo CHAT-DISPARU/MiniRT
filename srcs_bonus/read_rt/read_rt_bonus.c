@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:04:41 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 15:14:15 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/03 17:06:03 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ void	call_setters(t_data *data, char *ptr, int i)
 {
 	if (*ptr == 'A' && is_space(ptr[1]))
 		set_a(data, ptr, i);
+	else if (*ptr == 'O' && is_space(ptr[1]))
+		set_o(data, ptr, i);
 	else if (*ptr == 'C' && is_space(ptr[1]))
 		set_c(data, ptr, i);
 	else if (*ptr == 'L' && is_space(ptr[1]))
@@ -28,6 +30,8 @@ void	call_setters(t_data *data, char *ptr, int i)
 		set_cy(data, ptr + 2, i);
 	else if (!ft_strncmp("sq", ptr, 2) && is_space(ptr[2]))
 		set_sq(data, ptr + 2, i);
+	else if (!ft_strncmp("hy", ptr, 2) && is_space(ptr[2]))
+		set_hy(data, ptr + 2, i);
 	else if (!ft_strncmp("tr", ptr, 2) && is_space(ptr[2]))
 		set_tr(data, ptr + 2, i);
 	else
