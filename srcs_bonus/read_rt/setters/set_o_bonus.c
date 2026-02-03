@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_o_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/03 16:28:32 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/03 23:52:41 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,10 +96,8 @@ t_vec3	ft_get_vec_s(int i, t_face_c *face_c)
 
 t_triangle	find_tri(char *line, t_face_c *face_c, t_mat_t t)
 {
-	int	i;
 	t_triangle	tri;
 
-	i = 0;
 	tri.p1 = (t_vec3){0, 0, 0};
 	tri.p2 = (t_vec3){0, 0, 0};
 	tri.p3 = (t_vec3){0, 0, 0};
@@ -172,7 +170,7 @@ void	set_o(t_data *data, char *line, int i)
 	fill_face(f.fd, &face_c, data);
 	mat4_initial(&t.trans);
 	mat4_translation(&t.trans, t.center);
-	t.rot = mat4_align_vectors((t_vec3){0, 1, 0}, vec_normalize(t.rot_vec));
+	t.rot = mat4_align_vectors((t_vec3){1, 0, 0}, vec_normalize(t.rot_vec));
 	t.final = mat4_mult(&t.trans, &t.rot);
 	f.line_o = get_next_line(f.fd, 0);
 	while (f.line_o)

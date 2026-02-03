@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hit_sp_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:59:41 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 17:20:04 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/03 22:49:54 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,5 +58,7 @@ bool	hit_sphere(t_obj *sp, t_ray ray, t_hit_r *rec)
 	local_normal = vec_add(l_ray.origin, vec_scale(l_ray.dir, rec->t));
 	rec->normal = mat4_mult_vec3(&sp->transform, local_normal, 0);
 	rec->normal = vec_normalize(rec->normal);
+	if (vec_dot_scal(ray.dir, rec->normal) > 0)
+		rec->normal = vec_scale(rec->normal, -1.0);
 	return (true);
 }

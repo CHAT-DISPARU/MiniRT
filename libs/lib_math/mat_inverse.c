@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mat_inverse.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 16:08:44 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/17 18:35:28 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/01 15:59:23 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ t_mat4	mat4_transpose(t_mat4 *m)
 }
 
 /*
-	regle sarrus
+	regle sarrus le chauve
 	det(Mat3​)=a(ei−fh)−b(di−fg)+c(dh−eg)
 */
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_hy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 17:06:16 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/03 17:25:54 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/03 22:45:42 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	read_hy(t_data *data, char **line, int i, t_mat_t *t)
 	check_positive(data, t->diameter, i);
 	check_missing_info(data, *line, i);
 	t->diameter2 = rt_atod(line);
-	check_positive(data, t->diameter, i);
+	check_positive(data, t->diameter2, i);
 	check_missing_info(data, *line, i);
 	t->height = rt_atod(line);
 	check_positive(data, t->height, i);
@@ -49,9 +49,12 @@ void	set_hy(t_data *data, char *line, int i)
 	mat4_scal(&t.scale,
 		(t_vec3){t.height / 2.0, t.diameter / 2.0, t.diameter2 / 2.0});
 	mat4_translation(&t.trans, t.center);
-	t.rot = mat4_align_vectors((t_vec3){0, 1, 0}, vec_normalize(t.rot_vec));
-	t.final = mat4_mult(&t.rot, &t.scale);
+	t.rot = mat4_align_vectors((t_vec3){0, 0, 1}, vec_normalize(t.rot_vec));
+	t.final = t.rot;
 	t.final = mat4_mult(&t.trans, &t.final);
+	new_hy->rad_1 = t.diameter / 2.0;
+	new_hy->rad_2 = t.diameter2 / 2.0;
+	new_hy->height = t.height;
 	new_hy->transform = t.final;
 	new_hy->inverse_transform = mat4_inverse(&t.final);
 	new_hy->next = NULL;

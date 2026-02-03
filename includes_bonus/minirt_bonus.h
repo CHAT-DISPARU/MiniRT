@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/03 17:10:32 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/03 22:37:00 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,9 @@ typedef struct s_mat_t
 
 typedef struct s_obj
 {
+	double			rad_1;
+	double			rad_2;
+	double			height;
 	int				type;
 	t_triangle		tri;
 	t_mat4			transform;
