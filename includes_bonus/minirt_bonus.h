@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/03 22:37:00 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/04 12:38:24 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ typedef enum e_func
 	CALC_CY,
 	CALC_TR,
 	CALC_HY,
+	CALC_CO,
 	FLAG_MAX,
 }				t_func;
 
@@ -93,6 +94,7 @@ typedef struct s_cy_utils
 {
 	double	closest_t;
 	int		hit_zone;
+	double	half_h;
 }				t_cy_utils;
 
 typedef struct s_ray
@@ -291,5 +293,8 @@ int			ft_facesize(t_face_c *lst);
 void		set_o(t_data *data, char *line, int i);
 bool		hit_hyperboloid(t_obj *hy, t_ray ray, t_hit_r *rec);
 void		set_hy(t_data *data, char *line, int i);
+bool		hit_cone(t_obj *co, t_ray ray, t_hit_r *rec);
+void		set_co(t_data *data, char *line, int i);
+bool		hit_border_cy(t_ray ray, double x_plane, double *t_out);
 
 #endif
