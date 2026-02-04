@@ -6,7 +6,7 @@
 #    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/02/03 17:09:54 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/02/04 12:30:14 by gajanvie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -73,9 +73,11 @@ SRCSB := $(SRCB_DIR)main_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_sq_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_pl_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_hy_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_co_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_cy_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_tr_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_sp_bonus.c \
+		$(SRCB_DIR)$(HIT_DIR)hit_co_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_hy_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_sq_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_pl_bonus.c \

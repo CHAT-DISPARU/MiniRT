@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:17:57 by titan             #+#    #+#             */
-/*   Updated: 2026/02/03 17:09:16 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/04 12:27:56 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ void	init_t_calc_f(t_calc_f *functions)
 	functions[CALC_SP] = hit_sphere;
 	functions[CALC_TR] = hit_triangle;
 	functions[CALC_HY] = hit_hyperboloid;
+	functions[CALC_CO] = hit_cone;
 }
 
 int	resize_win(t_data *data)

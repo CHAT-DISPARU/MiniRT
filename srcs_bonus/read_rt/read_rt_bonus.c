@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:04:41 by titan             #+#    #+#             */
-/*   Updated: 2026/02/03 17:06:03 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/04 12:29:14 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ void	call_setters(t_data *data, char *ptr, int i)
 		set_hy(data, ptr + 2, i);
 	else if (!ft_strncmp("tr", ptr, 2) && is_space(ptr[2]))
 		set_tr(data, ptr + 2, i);
+	else if (!ft_strncmp("co", ptr, 2) && is_space(ptr[2]))
+		set_co(data, ptr + 2, i);
 	else
 		clean_exit(data, EXIT_FAILURE, "Wrong identifier\n", i);
 }
