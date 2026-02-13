@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/02/03 11:43:46 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 16:06:17 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,43 +28,176 @@ t_ray	calc_ray(t_render_v rv, t_data *data)
 	return (ray);
 }
 
-void	check_hit(t_data *data, t_ray ray, t_vec3 *color_acc)
+/*
+	rebond
+	R=I−2(I⋅N)N
+*/
+
+t_vec3	vec_random_in_unit_sphere(void)
+{
+	t_vec3	p;
+
+	while (1)
+	{
+		p.x = rand_double() * 2.0 - 1.0;
+		p.y = rand_double() * 2.0 - 1.0;
+		p.z = rand_double() * 2.0 - 1.0;
+		if (vec_dot_scal(p, p) < 1.0)
+			return (p);
+	}
+}
+
+t_vec3	random_hemisphere_dir(t_vec3 normal)
+{
+	t_vec3	dir;
+
+	dir = vec_random_in_unit_sphere();
+	if (vec_dot_scal(dir, normal) < 0.0)
+		dir = vec_scale(dir, -1.0);
+	return (vec_normalize(dir));
+}
+
+t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 {
 	t_color_c	lights;
-	double		diff_strength;
-	t_vec3		light_dir;
+	t_vec3		color_acc = {0, 0, 0};
+	t_vec3		diffuse_total = {0, 0, 0};
+	t_vec3		specular_total = {0, 0, 0};
 	t_hit_r		rec;
 	t_light		*light;
+	t_vec3		light_dir;
+	t_vec3		view_dir;
+	t_vec3		reflect_dir;
+	t_vec3		minus_l;
+	t_vec3		l_col;
+	double		diff_strength;
+	double		spec_factor;
 
+	if (deph <= 0)
+		return (color_acc);
 	light = data->light;
-	ft_bzero(&rec, sizeof (t_hit_r));
+	ft_bzero(&rec, sizeof(t_hit_r));
+	rec.t = INFINITY;
 	if (hit_someting(data, ray, &rec))
 	{
+		t_vec3	base_color;
+		t_vec3	col_a;
+		t_vec3	col_b;
+		col_a.x = rec.obj_ptr->color.r / 255.0;
+		col_a.y = rec.obj_ptr->color.g / 255.0;
+		col_a.z = rec.obj_ptr->color.b / 255.0;
+		if (rec.obj_ptr->has_texture) 
+			rec.color = get_texture_color(rec.obj_ptr->tex, rec.u, rec.v);
+		if (data->has_checker)
+		{
+			col_b.x = data->checker_color.r / 255.0;
+			col_b.y = data->checker_color.g / 255.0;
+			col_b.z = data->checker_color.b / 255.0;
+			base_color = get_checker_color(rec.u, rec.v, col_a, col_b);
+			rec.color.r = base_color.x * 255.0;
+			rec.color.g = base_color.y * 255.0;
+			rec.color.b = base_color.z * 255.0;
+		}
+		calc_lights(&lights, rec, data, light);
+		color_acc = lights.ambient;
+		view_dir = vec_normalize(vec_scale(ray.dir, -1.0));
 		while (light)
 		{
-			calc_lights(&lights, rec, data, light);
+			l_col.x = light->color.r / 255.0;
+			l_col.y = light->color.g / 255.0;
+			l_col.z = light->color.b / 255.0;
+			lights.diffuse = l_col;
 			if (is_in_shadow(data, &rec, light) == false)
 			{
-				light_dir = vec_sub(light->origin, rec.p);
-				light_dir = vec_normalize(light_dir);
+				light_dir = vec_normalize(vec_sub(light->origin, rec.p));
 				diff_strength = vec_dot_scal(rec.normal, light_dir);
 				if (diff_strength > 0)
+				{
 					final_diffuse(&lights, light, diff_strength);
-				else
-					lights.diffuse = (t_vec3){0, 0, 0};
+					diffuse_total = vec_add(diffuse_total, lights.diffuse);
+					minus_l = vec_scale(light_dir, -1.0);
+					reflect_dir = vec_normalize(vec_sub(minus_l, vec_scale(rec.normal, 2.0 * vec_dot_scal(minus_l, rec.normal))));
+					spec_factor = vec_dot_scal(view_dir, reflect_dir);
+					if (spec_factor > 0)
+					{
+						spec_factor = pow(spec_factor, 32.0);
+						specular_total = vec_add(specular_total, vec_scale(l_col, spec_factor * light->ratio));
+					}
+				}
 			}
-			else
-				lights.diffuse = (t_vec3){0, 0, 0};
-			*color_acc = vec_add(*color_acc,
-					vec_add(lights.ambient, lights.diffuse));
 			light = light->next;
 		}
+		color_acc = vec_add(color_acc, vec_add(diffuse_total, specular_total));
+		if (deph > 1)
+		{
+			t_vec3	perfect_reflect;
+			t_vec3	fuzz;
+			t_vec3	spec_dir;
+			t_vec3	diff_dir;
+			t_ray	spec_ray;
+			t_ray	diff_ray;
+			t_vec3	spec_color;
+			t_vec3	diff_color;
+			t_vec3	obj_col;
+			t_vec3	final_spec = {0, 0, 0};
+			t_vec3	final_diff = {0, 0, 0};
+			double	r = rec.obj_ptr->reflectivity;
+
+			if (r > 0.0) 
+			{
+				r = rec.obj_ptr->reflectivity;
+				perfect_reflect = vec_sub(ray.dir, vec_scale(rec.normal, 2.0 * vec_dot_scal(ray.dir, rec.normal)));
+				fuzz = vec_scale(vec_random_in_unit_sphere(), rec.obj_ptr->rought);
+				spec_dir = vec_normalize(vec_add(perfect_reflect, fuzz));
+				spec_ray.origin = vec_add(rec.p, vec_scale(rec.normal, EPSILON));
+				spec_ray.dir = spec_dir;
+				spec_color = check_hit(data, spec_ray, deph - 1);
+				final_spec = vec_scale(spec_color, r);
+			}
+			if (r < 1.0 && data->diff_ok)
+			{
+				diff_dir = random_hemisphere_dir(rec.normal);
+				diff_ray.origin = vec_add(rec.p, vec_scale(rec.normal, EPSILON));
+				diff_ray.dir = diff_dir;
+				diff_color = check_hit(data, diff_ray, deph - 1);
+				obj_col.x = rec.color.r / 255.0;
+				obj_col.y = rec.color.g / 255.0;
+				obj_col.z = rec.color.b / 255.0;
+				final_diff = vec_scale(vec_mult(obj_col, diff_color), (1.0 - r) * 0.5);
+			}
+			color_acc = vec_add(color_acc, vec_add(final_spec, final_diff));
+		}
 	}
+	if (data->debug && data->bvh_nodes)
+	{
+		int			k = 0;
+		double		box_t;
+		t_bvh_node	*node;
+		bool		should_draw;
+
+		while (k < data->nodes_used)
+		{
+			node = &data->bvh_nodes[k];
+			should_draw = (node->depth <= data->debug_depth);
+			if (should_draw)
+			{
+				box_t = hit_aabb_edge(ray, node->box);
+				if (box_t < INFINITY && box_t < rec.t)
+				{
+					color_acc = node->debug_color;
+					rec.t = box_t;
+				}
+			}
+			k++;
+		}
+	}
+	return (color_acc);
 }
 
 void	do_samples(t_data *data, t_idxs idxs, t_render_v rv, t_vec3 *color_acc)
 {
 	t_ray	ray;
+	t_vec3	sample_color;
 
 	idxs.s = 0;
 	while (idxs.s < data->s_per_pixs)
@@ -80,7 +213,8 @@ void	do_samples(t_data *data, t_idxs idxs, t_render_v rv, t_vec3 *color_acc)
 			rv.v = ((double)idxs.y + rand_double()) * rv.inv_height;
 		}
 		ray = calc_ray(rv, data);
-		check_hit(data, ray, color_acc);
+		sample_color = check_hit(data, ray, data->deph);
+		*color_acc = vec_add(*color_acc, sample_color);
 		idxs.s++;
 	}
 }
@@ -139,6 +273,8 @@ void	set_final_color(t_vec3 color_acc, t_data *data, t_idxs idxs, t_thread_info 
 	Couleur Amb ​= Couleur Obj ​× (Couleur Amb​ × Ratio Amb​)
 	Couleur Diff​ = Couleur Obj ​× (Couleur Light ​× Ratio Light​)
 		× (Normal ⋅ Light Dir)
+
+	couleur spec ​=C light​⋅ks​⋅(max(0,V⋅R)) exposant α
 */
 void	*render(void *arg)
 {
@@ -147,11 +283,18 @@ void	*render(void *arg)
 	t_idxs		idxs;
 	t_vec3		color_acc;
 	t_render_v	rv;
+	int             lines_done = 0;
+	int             total_lines;
+	int				mid_y = data->height / 2;
+	bool			is_main_thread = (info->start_x == 0 && mid_y >= info->start_y && mid_y < info->end_y);
 
 	rv.inv_width = 1.0 / (data->width - 1);
 	rv.inv_height = 1.0 / (data->height - 1);
 	rv.cam_m = look_at(data->cam.origin, data->cam.dir, data->cam.up_guide);
 	rv.cam_origin = mat4_mult_vec3(&rv.cam_m, (t_vec3){0, 0, 0}, 1.0);
+	total_lines = (info->end_y - info->start_y) / data->step;
+	if (total_lines <= 0)
+		total_lines = 1;
 	idxs.y = info->start_y;;
 	while (idxs.y < info->end_y)
 	{
@@ -163,7 +306,14 @@ void	*render(void *arg)
 			set_final_color(color_acc, data, idxs, info);
 			idxs.x += data->step;
 		}
+		if ((data->s_per_pixs > 1 || data->deph > 1) && is_main_thread)
+		{
+			lines_done++;
+			print_progress(lines_done, total_lines);
+		}
 		idxs.y += data->step;
 	}
+	if ((data->s_per_pixs > 1 || data->deph > 1) && is_main_thread)
+		printf("\n");
 	return (NULL);
 }

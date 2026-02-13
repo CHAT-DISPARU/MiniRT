@@ -1,29 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   set_a_bonus.c                                      :+:      :+:    :+:   */
+/*   box_hy.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/31 22:07:03 by titan             #+#    #+#             */
-/*   Updated: 2026/02/12 20:06:04 by titan            ###   ########.fr       */
+/*   Created: 2026/02/11 11:35:35 by titan             #+#    #+#             */
+/*   Updated: 2026/02/11 11:39:21 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-void	set_a(t_data *data, char *line, int i)
-{
-	char	*line2;
 
-	if (data->ambient_is_set)
-		clean_exit(data, 1, "Error: Multiple Ambient lights\n", i);
-	line2 = line + 1;
-	check_missing_info(data, line2, i);
-	data->a_ratio = rt_atod(&line2);
-	check_ratio(data, data->a_ratio, i);
-	check_missing_info(data, line2, i);
-	data->a_color = parse_color(&line2, data, i);
-	check_extra_info(data, line2, i);
-	data->ambient_is_set = true;
+t_aabb	aabb_hyperboloid(t_obj *hy)
+{
+	t_aabb	box;
+	double	max_r;
+	double	half_h;
+
+	max_r = fmax(hy->rad_1, hy->rad_2);
+	half_h = hy->height / 2.0;
+	box.min = (t_vec3){-max_r, -max_r, -half_h};
+	box.max = (t_vec3){max_r, max_r, half_h};
+	return (aabb_transform_matrix(box, hy->transform));
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_sq_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:23 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 12:23:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 15:56:42 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ void	read_sq(t_data *data, char **line, int i, t_mat_t *t)
 	check_positive(data, t->height, i);
 	check_missing_info(data, *line, i);
 	t->col = parse_color(line, data, i);
+	t->reflectivity = parse_reflectivity(line);
+	t->rought = parse_roughness(line);
 	check_extra_info(data, *line, i);
 }
 
@@ -36,7 +38,7 @@ void	set_sq(t_data *data, char *line, int i)
 	t_mat_t		t;
 
 	read_sq(data, &line, i, &t);
-	new_sq = malloc(sizeof(t_obj));
+	new_sq = ft_calloc(1, sizeof(t_obj));
 	if (!new_sq)
 		clean_exit(data, 1, "malloc fail\n", 0);
 	new_sq->type = CALC_SQ;
@@ -50,6 +52,16 @@ void	set_sq(t_data *data, char *line, int i)
 	t.final = mat4_mult(&t.trans, &t.final);
 	new_sq->transform = t.final;
 	new_sq->inverse_transform = mat4_inverse(&t.final);
+	new_sq->reflectivity = t.reflectivity;
+	new_sq->rought = t.rought;
+	char	*path = get_texture_path(&line);
+	if (path)
+	{
+		new_sq->has_texture = true;
+		new_sq->tex  = load_texture(data, path);
+	}
+	else
+		new_sq->has_texture = false;
 	new_sq->next = NULL;
 	ft_objadd_back(&data->objs, new_sq);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   update_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:11:09 by titan             #+#    #+#             */
-/*   Updated: 2026/02/03 11:51:09 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 13:21:56 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,16 @@ void	update_samples(t_data *data, bool *movded)
 	{
 		*movded = true;
 		data->s_per_pixs = S_PER_PIXS;
+	}
+	if (data->key_table[39] && !data->old_key_table[39])
+	{
+		*movded = true;
+		data->deph++;
+	}
+	if (data->key_table[38] && !data->old_key_table[38] && data->deph > 1)
+	{
+		*movded = true;
+		data->deph--;
 	}
 }
 
@@ -89,6 +99,8 @@ void	change_speed(t_data *data)
 
 void	update_fov(bool *movded, t_data *data)
 {
+	if (data->key_table[42] && !data->old_key_table[42])
+		data->diff_ok = !data->diff_ok;
 	if (data->key_table[46])
 	{
 		data->cam.fov -= 2;
@@ -131,7 +143,24 @@ void	update(void *param)
 	update_rot(data, right, &movded);
 	update_move(data, &movded, forward, right);
 	update_fov(&movded, data);
+	if (data->key_table[5] && !data->old_key_table[5])
+	{
+		data->debug = !data->debug;
+		movded = true;
+	}
+	if (data->key_table[40] && !data->old_key_table[40])
+	{
+		data->use_bvh = !data->use_bvh;
+		movded = true;
+	}
+	if (data->key_table[6] && !data->old_key_table[6])
+	{
+		data->has_checker = !data->has_checker;
+		movded = true;
+	}
 	if (movded)
 		thread_calls(data);
+	if (movded)
+		display_fps(data);
 	ft_memcpy(data->old_key_table, data->key_table, sizeof(data->key_table));
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_co_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 12:25:02 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/04 13:21:25 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 15:57:53 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ void	read_co(t_data *data, char **line, int i, t_mat_t *t)
 	check_positive(data, t->height, i);
 	check_missing_info(data, *line, i);
 	t->col = parse_color(line, data, i);
-	check_extra_info(data, *line, i);
+	t->reflectivity = parse_reflectivity(line);
+	t->rought = parse_roughness(line);
 }
 
 void	set_co(t_data *data, char *line, int i)
@@ -36,7 +37,7 @@ void	set_co(t_data *data, char *line, int i)
 	t_mat_t	t;
 
 	read_co(data, &line, i, &t);
-	new_co = malloc(sizeof(t_obj));
+	new_co = ft_calloc(1, sizeof(t_obj));
 	if (!new_co)
 		clean_exit(data, 1, "malloc fail\n", 0);
 	new_co->type = CALC_CO;
@@ -50,6 +51,17 @@ void	set_co(t_data *data, char *line, int i)
 	new_co->height = t.height;
 	new_co->transform = t.final;
 	new_co->inverse_transform = mat4_inverse(&t.final);
+	new_co->reflectivity = t.reflectivity;
+	new_co->rought = t.rought;
+	char	*path = get_texture_path(&line);
+	check_extra_info(data, line, i);
+	if (path)
+	{
+		new_co->has_texture = true;
+		new_co->tex = load_texture(data, path);
+	}
+	else
+		new_co->has_texture = false;
 	new_co->next = NULL;
 	ft_objadd_back(&data->objs, new_co);
 }

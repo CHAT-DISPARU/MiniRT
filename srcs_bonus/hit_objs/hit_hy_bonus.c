@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 16:43:40 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/03 23:40:39 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/13 13:15:30 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,13 @@ bool	hit_hyperboloid(t_obj *hy, t_ray ray, t_hit_r *rec)
 	t2 = (-b + sqrt(delta)) / a;
 	v1 = false;
 	v2 = false;
-	if (t1 > EPSILON)
+	if (t1 > EPSILON && t1 < rec->t)
 	{
 		double z = oc.z + t1 * dir.z;
 		if (fabs(z) <= half_h)
 			v1 = true;
 	}
-	if (t2 > EPSILON)
+	if (t2 > EPSILON && t2 < rec->t)
 	{
 		double z = oc.z + t2 * dir.z;
 		if (fabs(z) <= half_h)
@@ -84,9 +84,14 @@ bool	hit_hyperboloid(t_obj *hy, t_ray ray, t_hit_r *rec)
 		t_final = t2;
 	else
 		return (false);
+	rec->color = hy->color;
 	rec->t = t_final;
+	rec->obj_ptr = hy;
 	rec->p = vec_add(ray.origin, vec_scale(ray.dir, rec->t));
 	t_vec3 local_hit = vec_add(oc, vec_scale(dir, rec->t));
+	double phi = atan2(local_hit.y, local_hit.x);
+	rec->u = (phi + PI) / (2.0 * PI);
+	rec->v = (local_hit.z + half_h) / h;
 	t_vec3 local_normal;
 	local_normal.x = local_hit.x;
 	local_normal.y = local_hit.y;

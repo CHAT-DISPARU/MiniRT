@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   clean_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:10:27 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 16:14:15 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 16:12:44 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,23 @@ void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 {
 	t_obj	*tmp;
 	t_light	*tmp2;
+	t_texture tex;
 
 	print_m_and_gnl(data, mess_eror, exit_code, i);
 	while (data->objs)
 	{
 		tmp = data->objs->next;
+		tex = *data->objs->tex;
+		if (tex.pixels)
+		{
+			free(tex.pixels);
+			data->objs->tex->pixels = NULL;
+		}
+		if (tex.img)
+		{
+			mlx_destroy_image(data->mlx, tex.img);
+			data->objs->tex->img = NULL;
+		}
 		free(data->objs);
 		data->objs = tmp;
 	}
@@ -55,6 +67,16 @@ void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 		free(data->light);
 		data->light = tmp2;
 	}
+	if (data->array_obj)
+		free(data->array_obj);
+	if (data->bvh_nodes)
+		free(data->bvh_nodes);
+	if (data->sorted_objs)
+		free(data->sorted_objs);
+	if (data->plane_array)
+		free(data->plane_array);
+	if (data->obj_aabbs)
+		free(data->obj_aabbs);
 	if (!data)
 		exit(exit_code);
 	if (data->img)

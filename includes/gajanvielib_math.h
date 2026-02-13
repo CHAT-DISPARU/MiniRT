@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 17:50:56 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/18 13:39:06 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/13 15:48:01 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,12 @@ typedef struct s_vec3
 	double	y;
 	double	z;
 }				t_vec3;
+
+typedef struct s_vec2
+{
+	double	x;
+	double	y;
+}				t_vec2;
 
 typedef struct s_mat4
 {

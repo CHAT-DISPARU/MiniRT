@@ -1,29 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   set_a_bonus.c                                      :+:      :+:    :+:   */
+/*   box_co.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/31 22:07:03 by titan             #+#    #+#             */
-/*   Updated: 2026/02/12 20:06:04 by titan            ###   ########.fr       */
+/*   Created: 2026/02/11 13:20:06 by titan             #+#    #+#             */
+/*   Updated: 2026/02/11 13:20:39 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-void	set_a(t_data *data, char *line, int i)
+t_aabb	aabb_cone(t_obj *co)
 {
-	char	*line2;
+	t_aabb	local_box;
+	double	r;
+	double	h;
 
-	if (data->ambient_is_set)
-		clean_exit(data, 1, "Error: Multiple Ambient lights\n", i);
-	line2 = line + 1;
-	check_missing_info(data, line2, i);
-	data->a_ratio = rt_atod(&line2);
-	check_ratio(data, data->a_ratio, i);
-	check_missing_info(data, line2, i);
-	data->a_color = parse_color(&line2, data, i);
-	check_extra_info(data, line2, i);
-	data->ambient_is_set = true;
+	r = co->rad_1;
+	h = co->height;
+	local_box.min = (t_vec3){0.0, -r, -r};
+	local_box.max = (t_vec3){h, r, r};
+	return (aabb_transform_matrix(local_box, co->transform));
 }

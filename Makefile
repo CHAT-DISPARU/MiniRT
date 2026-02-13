@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
+#    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/02/04 12:30:14 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/02/13 14:18:53 by titan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,6 +41,7 @@ SETTER_DIR := setters/
 PARS_DIR := pars/
 UTILS_DIR := utils/
 BUILD_DIR := build/
+BVH_DIR	  := bvh/
 LIB_MATH_DIR := libs/lib_math
 LIB_MATH := ./libs/lib_math/gajanvielib_math.a
 LIBFT = ./libs/libft/libft.a
@@ -56,6 +57,16 @@ SRCSB := $(SRCB_DIR)main_bonus.c \
 		$(SRCB_DIR)event_bonus.c \
 		$(SRCB_DIR)render_bonus.c \
 		$(SRCB_DIR)lights_bonus.c \
+		$(SRCB_DIR)$(BVH_DIR)box_cy.c \
+		$(SRCB_DIR)$(BVH_DIR)box_hy.c \
+		$(SRCB_DIR)$(BVH_DIR)box_sp.c \
+		$(SRCB_DIR)$(BVH_DIR)slice_cost.c \
+		$(SRCB_DIR)$(BVH_DIR)comp_coord.c \
+		$(SRCB_DIR)$(BVH_DIR)build_bvh.c \
+		$(SRCB_DIR)$(BVH_DIR)box_tr.c \
+		$(SRCB_DIR)$(BVH_DIR)box_sq.c \
+		$(SRCB_DIR)$(BVH_DIR)box_co.c \
+		$(SRCB_DIR)$(BVH_DIR)bvh_utils.c \
 		$(SRCB_DIR)$(UPDATED_DIR)update_bonus.c \
 		$(SRCB_DIR)$(UPDATED_DIR)update_rot_bonus.c \
 		$(SRCB_DIR)thread_calls_bonus.c \
@@ -84,6 +95,9 @@ SRCSB := $(SRCB_DIR)main_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_something_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)read_rt_bonus.c \
 		$(SRCB_DIR)$(UTILS_DIR)utils_bonus.c \
+		$(SRCB_DIR)$(UTILS_DIR)texture.c \
+		$(SRCB_DIR)$(UTILS_DIR)checkboard.c \
+		$(SRCB_DIR)$(UTILS_DIR)fps.c \
 		$(SRCB_DIR)$(UTILS_DIR)math_utils_bonus.c
 
 SRCS := $(SRC_DIR)main.c \

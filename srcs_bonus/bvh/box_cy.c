@@ -1,29 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   set_a_bonus.c                                      :+:      :+:    :+:   */
+/*   box_cy.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/31 22:07:03 by titan             #+#    #+#             */
-/*   Updated: 2026/02/12 20:06:04 by titan            ###   ########.fr       */
+/*   Created: 2026/02/11 11:25:47 by titan             #+#    #+#             */
+/*   Updated: 2026/02/11 13:19:41 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-void	set_a(t_data *data, char *line, int i)
-{
-	char	*line2;
 
-	if (data->ambient_is_set)
-		clean_exit(data, 1, "Error: Multiple Ambient lights\n", i);
-	line2 = line + 1;
-	check_missing_info(data, line2, i);
-	data->a_ratio = rt_atod(&line2);
-	check_ratio(data, data->a_ratio, i);
-	check_missing_info(data, line2, i);
-	data->a_color = parse_color(&line2, data, i);
-	check_extra_info(data, line2, i);
-	data->ambient_is_set = true;
+t_aabb	aabb_cylinder(t_obj *cy)
+{
+	t_aabb	box;
+
+	box.min = (t_vec3){-1.0, -1.0, -1.0};
+	box.max = (t_vec3){1.0, 1.0, 1.0};
+	return (aabb_transform_matrix(box, cy->transform));
 }

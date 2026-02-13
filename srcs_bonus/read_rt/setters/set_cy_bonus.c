@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_cy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:55 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 12:23:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 15:57:42 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ void	read_cy(t_data *data, char **line, int i, t_mat_t *t)
 	check_positive(data, t->height, i);
 	check_missing_info(data, *line, i);
 	t->col = parse_color(line, data, i);
-	check_extra_info(data, *line, i);
+	t->reflectivity = parse_reflectivity(line);
+	t->rought = parse_roughness(line);
 }
 
 void	set_cy(t_data *data, char *line, int i)
@@ -36,7 +37,7 @@ void	set_cy(t_data *data, char *line, int i)
 	t_mat_t	t;
 
 	read_cy(data, &line, i, &t);
-	new_cy = malloc(sizeof(t_obj));
+	new_cy = ft_calloc(1, sizeof(t_obj));
 	if (!new_cy)
 		clean_exit(data, 1, "malloc fail\n", 0);
 	new_cy->type = CALC_CY;
@@ -51,6 +52,17 @@ void	set_cy(t_data *data, char *line, int i)
 	t.final = mat4_mult(&t.trans, &t.final);
 	new_cy->transform = t.final;
 	new_cy->inverse_transform = mat4_inverse(&t.final);
+	new_cy->reflectivity = t.reflectivity;
+	new_cy->rought = t.rought;
+	char	*path = get_texture_path(&line);
+	check_extra_info(data, line, i);
+	if (path)
+	{
+		new_cy->has_texture = true;
+		new_cy->tex = load_texture(data, path);
+	}
+	else
+		new_cy->has_texture = false;
 	new_cy->next = NULL;
 	ft_objadd_back(&data->objs, new_cy);
 }
