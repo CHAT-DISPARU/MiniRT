@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pars_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 12:17:03 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 12:23:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 14:12:27 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,4 +72,31 @@ mlx_color	parse_color(char **line, t_data *data, int i)
 	color.b = b;
 	check_color_val(data, b, i);
 	return (color);
+}
+
+char	*get_texture_path(char **ptr)
+{
+	int		len;
+	int		j;
+	char	*path;
+
+	while (**ptr && is_space(**ptr))
+		(*ptr)++;
+	if (!**ptr || **ptr == '\n')
+		return (NULL);
+	len = 0;
+	while ((*ptr)[len] && !is_space((*ptr)[len]) && (*ptr)[len] != '\n')
+		len++;
+	path = malloc(sizeof(char) * (len + 1));
+	if (!path)
+		return (NULL);
+	j = 0;
+	while (j < len)
+	{
+		path[j] = **ptr;
+		(*ptr)++;
+		j++;
+	}
+	path[j] = '\0';
+	return (path);
 }

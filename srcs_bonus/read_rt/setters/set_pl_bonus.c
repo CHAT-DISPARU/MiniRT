@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_pl_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:44 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 12:23:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 15:57:13 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,9 @@ void	set_pl(t_data *data, char *line, int i)
 	check_norm_vec(data, t.rot_vec, i);
 	check_missing_info(data, line, i);
 	t.col = parse_color(&line, data, i);
-	check_extra_info(data, line, i);
-	new_pl = malloc(sizeof(t_obj));
+	t.reflectivity = parse_reflectivity(&line);
+	t.rought = parse_roughness(&line);
+	new_pl = ft_calloc(1, sizeof(t_obj));
 	if (!new_pl)
 		clean_exit(data, 1, "malloc fail\n", 0);
 	new_pl->type = CALC_PL;
@@ -35,7 +36,18 @@ void	set_pl(t_data *data, char *line, int i)
 	t.rot = mat4_align_vectors((t_vec3){0, 1, 0}, vec_normalize(t.rot_vec));
 	t.final = mat4_mult(&t.trans, &t.rot);
 	new_pl->transform = t.final;
+	new_pl->reflectivity = t.reflectivity;
 	new_pl->inverse_transform = mat4_inverse(&t.final);
+	new_pl->rought = t.rought;
+	char	*path = get_texture_path(&line);
+	check_extra_info(data, line, i);
+	if (path)
+	{
+		new_pl->has_texture = true;
+		new_pl->tex = load_texture(data, path);
+	}
+	else
+		new_pl->has_texture = false;
 	new_pl->next = NULL;
 	ft_objadd_back(&data->objs, new_pl);
 }

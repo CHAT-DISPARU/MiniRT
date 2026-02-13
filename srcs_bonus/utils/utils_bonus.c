@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:17:57 by titan             #+#    #+#             */
-/*   Updated: 2026/02/04 12:27:56 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 11:50:11 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,4 +108,104 @@ int	resize_win(t_data *data)
 		return (1);
 	thread_calls(data);
 	return (0);
+}
+
+t_aabb	get_aabb_by_type(t_obj *obj)
+{
+	if (obj->type == CALC_SP)
+		return (aabb_sphere(obj));
+	else if (obj->type == CALC_CY)
+		return (aabb_cylinder(obj));
+	else if (obj->type == CALC_CO)
+		return (aabb_cone(obj));
+	else if (obj->type == CALC_SQ)
+		return (aabb_square(obj));
+	else if (obj->type == CALC_HY)
+		return (aabb_hyperboloid(obj));
+	else
+		return (aabb_triangle(obj));
+}
+
+void	convert_list_to_arrays(t_data *data)
+{
+	t_obj	*curr;
+
+	curr = data->objs;
+	data->obj_count = 0;
+	data->plane_count = 0;
+	while (curr)
+	{
+		if (curr->type == CALC_PL)
+			data->plane_count++;
+		else
+			data->obj_count++;
+		curr = curr->next;
+	}
+	if (data->obj_count > 0)
+	{
+		data->array_obj = malloc(sizeof(t_obj) * data->obj_count);
+		data->obj_aabbs = malloc(sizeof(t_aabb) * data->obj_count); // <--- ICI
+		if (!data->array_obj || !data->obj_aabbs)
+			clean_exit(data, 1, "Malloc failed", 0);
+	}
+	if (data->plane_count > 0)
+		data->plane_array = malloc(sizeof(t_obj) * data->plane_count);
+	int i_obj = 0;
+	int i_plane = 0;
+	curr = data->objs;
+	while (curr)
+	{
+		if (curr->type == CALC_PL)
+		{
+			data->plane_array[i_plane] = *curr;
+			data->plane_array[i_plane].next = NULL;
+			i_plane++;
+		}
+		else
+		{
+			data->array_obj[i_obj] = *curr;
+			data->array_obj[i_obj].next = NULL;
+			data->obj_aabbs[i_obj] = get_aabb_by_type(&data->array_obj[i_obj]);
+			i_obj++;
+		}
+		t_obj *tmp = curr;
+		curr = curr->next;
+		free(tmp);
+	}
+	data->objs = NULL;
+	if (data->obj_count > 0)
+		build_bvh(data);
+}
+
+double	get_time(void)
+{
+    struct timeval  tv;
+
+    gettimeofday(&tv, NULL);
+    return (tv.tv_sec + (tv.tv_usec / 1000000.0));
+}
+
+void	print_progress(int current_line, int total_lines)
+{
+	int	percent;
+	int	bar_width = 40;
+	int	pos;
+	int	i;
+
+	percent = (current_line * 100) / total_lines;
+	pos = (percent * bar_width) / 100;
+	printf("\r\033[0;32mRender: [");
+	i = 0;
+	while (i < bar_width)
+	{
+		if (i < pos)
+			printf("=");
+		else if (i == pos)
+			printf(">");
+		else
+			printf(" ");
+		i++;
+	}
+	printf("] %d%%\033[0m", percent);
+	fflush(stdout); 
 }

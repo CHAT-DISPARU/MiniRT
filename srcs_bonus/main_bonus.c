@@ -3,26 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/03 11:10:33 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 14:22:04 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-void	init_data(t_data *data, mlx_window_create_info info, char *filename)
+void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 {
 	data->camera_is_set = false;
-	data->step = 1;
+	if (ac >= 3)
+		data->step = ft_atoi(av[2]);
+	else if (ac < 3 || data->step <= 0)
+		data->step = 1;
 	data->ambient_is_set = false;
 	data->width = WIDTH;
+	data->diff_ok = false;
 	data->height = HEIGHT;
+	data->deph = 1;
+	data->has_checker = false;
+	data->checker_color = (mlx_color)(uint32_t){0x00000000};
+	data->debug = false;
 	data->is_full = false;
+	data->sorted_objs = NULL;
+	data->bvh_nodes = NULL;
+	data->debug_depth = MAX_BVH_DEPTH;
 	data->scene_fd = -1;
 	data->scene_line = NULL;
-	data->s_per_pixs = 1;
+	if (ac == 4)
+		data->s_per_pixs = ft_atoi(av[3]);
+	else if (ac != 4 || data->s_per_pixs <= 0)
+		data->s_per_pixs = 1;
 	data->objs = NULL;
 	data->light = NULL;
 	srand(time(NULL));
@@ -30,14 +44,21 @@ void	init_data(t_data *data, mlx_window_create_info info, char *filename)
 	data->cam.up_guide = (t_vec3){0, 1, 0};
 	data->speed = 0.5;
 	data->rot_speed = 0.05;
-	read_rt(data, filename);
-	calcul_ambient(data);
 	data->mlx = mlx_init();
 	if (!data->mlx)
 		clean_exit(data, 1, "Error init MLX\n", 0);
+	read_rt(data, av[1]);
+	convert_list_to_arrays(data);
+	if (data->obj_count > 25)
+		data->use_bvh = true;
+	else
+		data->use_bvh = false;
+	printf("pars finshed\n");
+	calcul_ambient(data);
 	data->win = mlx_new_window(data->mlx, &info);
 	if (!data->win)
 		clean_exit(data, 1, "Error Malloc MLX\n", 0);
+	data->last_frame_time = get_time();
 	if (resize_win(data) != 0)
 		clean_exit(data, 1, "Error Malloc MLX\n", 0);
 }
@@ -55,9 +76,9 @@ int	main(int ac, char **av)
 	t_data					*data;
 	mlx_window_create_info	info;
 
-	if (ac != 2)
+	if (ac < 2 || ac > 4)
 	{
-		ft_putstr_fd("invalid argument:\n./MiniRT <file.rt>\n", 2);
+		ft_putstr_fd("invalid argument:\n./MiniRT <file.rt>\n Optional : ./MiniRT <file.rt> <sample per pixel> <resolution>\n", 2);
 		return (1);
 	}
 	ft_memset(&info, 0, sizeof(mlx_window_create_info));
@@ -68,7 +89,7 @@ int	main(int ac, char **av)
 		return (1);
 	}
 	set_info(&info);
-	init_data(data, info, av[1]);
+	init_data(data, info, av, ac);
 	mlx_set_fps_goal(data->mlx, 60);
 	mlx_on_event(data->mlx, data->win, MLX_KEYDOWN, key_down, data);
 	mlx_on_event(data->mlx, data->win, MLX_KEYUP, key_up, data);

@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 17:06:16 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/03 22:45:42 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/13 15:57:31 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ void	read_hy(t_data *data, char **line, int i, t_mat_t *t)
 	check_positive(data, t->height, i);
 	check_missing_info(data, *line, i);
 	t->col = parse_color(line, data, i);
-	check_extra_info(data, *line, i);
+	t->reflectivity = parse_reflectivity(line);
+	t->rought = parse_roughness(line);
 }
 
 void	set_hy(t_data *data, char *line, int i)
@@ -39,7 +40,7 @@ void	set_hy(t_data *data, char *line, int i)
 	t_mat_t	t;
 
 	read_hy(data, &line, i, &t);
-	new_hy = malloc(sizeof(t_obj));
+	new_hy = ft_calloc(1, sizeof(t_obj));
 	if (!new_hy)
 		clean_exit(data, 1, "malloc fail\n", 0);
 	new_hy->type = CALC_HY;
@@ -57,6 +58,17 @@ void	set_hy(t_data *data, char *line, int i)
 	new_hy->height = t.height;
 	new_hy->transform = t.final;
 	new_hy->inverse_transform = mat4_inverse(&t.final);
+	new_hy->reflectivity = t.reflectivity;
+	new_hy->rought = t.rought;
+	char	*path = get_texture_path(&line);
+	check_extra_info(data, line, i);
+	if (path)
+	{
+		new_hy->has_texture = true;
+		new_hy->tex = load_texture(data, path);
+	}
+	else
+		new_hy->has_texture = false;
 	new_hy->next = NULL;
 	ft_objadd_back(&data->objs, new_hy);
 }

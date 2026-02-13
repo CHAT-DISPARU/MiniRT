@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/04 12:38:24 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 15:55:39 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include "lib_mat.h"
 # include <stdio.h>
 # include <math.h>
+# include <sys/time.h>
 # include <stdlib.h>
 # include <fcntl.h> 
 # include <errno.h>
@@ -36,8 +37,26 @@
 # define KS				1
 # define KD				1
 # define PI				3.14159265358979323846
-# define THREADS_COUNT	16
+# define THREADS_COUNT	24
+# define MAX_BVH_DEPTH	32
 # define EPSILON		1e-4
+
+typedef struct s_aabb
+{
+	t_vec3	min;
+	t_vec3	max;
+}				t_aabb;
+
+typedef struct s_bvh_node
+{
+	t_aabb	box;
+	int		left;
+	int		right;
+	int		start_idx;
+	int		obj_count;
+	int		depth;
+	t_vec3	debug_color;
+}				t_bvh_node;
 
 typedef struct s_render_v
 {
@@ -111,19 +130,9 @@ typedef struct s_camera
 	double	fov;
 }				t_camera;
 
-typedef struct s_hit_r
-{
-	t_vec3		p;
-	t_vec3		normal;
-	mlx_color	color;
-	double		t;
-}				t_hit_r;
-
 typedef struct s_hit_some
 {
 	bool	hit;
-	double	closest;
-	t_hit_r	tmp_rec;
 }				t_hit_some;
 
 typedef struct s_hit
@@ -138,6 +147,10 @@ typedef struct s_triangle
 	t_vec3	p1;
 	t_vec3	p2;
 	t_vec3	p3;
+	t_vec3	normal;
+	t_vec2		uv1;
+	t_vec2		uv2;
+	t_vec2		uv3;
 }				t_triangle;
 
 typedef struct s_mat_t
@@ -150,11 +163,22 @@ typedef struct s_mat_t
 	t_vec3		rot_vec;
 	double		width;
 	double		height;
+	double		scaled;
 	double		diameter;
 	double		diameter2;
 	mlx_color	col;
 	t_triangle	tri;
+	double		reflectivity;
+	double		rought;
 }				t_mat_t;
+
+typedef struct s_texture
+{
+	void		*img;
+	mlx_color	*pixels;
+	int			width;
+	int			height;
+}				t_texture;
 
 typedef struct s_obj
 {
@@ -166,8 +190,23 @@ typedef struct s_obj
 	t_mat4			transform;
 	t_mat4			inverse_transform;
 	mlx_color		color;
+	double			reflectivity;
+	double			rought;
+	bool			has_texture;
+	t_texture		*tex;
 	struct s_obj	*next;
 }				t_obj;
+
+typedef struct s_hit_r
+{
+	t_vec3		p;
+	t_vec3		normal;
+	mlx_color	color;
+	double		t;
+	double		u;
+	double		v;
+	t_obj		*obj_ptr;
+}				t_hit_r;
 
 typedef struct s_light
 {
@@ -195,6 +234,12 @@ typedef struct s_view_p
 
 typedef struct s_data
 {
+	mlx_color		checker_color;
+	bool			has_checker;
+	bool			diff_ok;
+	int				deph;
+	double			last_frame_time;
+	bool			use_bvh;
 	int				step;
 	bool			camera_is_set;
 	bool			ambient_is_set;
@@ -212,8 +257,19 @@ typedef struct s_data
 	int				key_table[512];
 	int				old_key_table[512];
 	t_camera		cam;
+	int				nodes_used;
+	bool			debug;
+	int				debug_depth;
 	t_obj			*objs;
+	t_obj			**sorted_objs;
+    t_bvh_node		*bvh_nodes;
+	t_obj			*array_obj;
+	t_aabb			*obj_aabbs;
+	int				obj_count;
+	t_obj			*plane_array;
+	int				plane_count;
 	t_light			*light;
+	int				nodes_capacity;
 	t_alight		alight;
 	double			speed;
 	double			rot_speed;
@@ -296,5 +352,38 @@ void		set_hy(t_data *data, char *line, int i);
 bool		hit_cone(t_obj *co, t_ray ray, t_hit_r *rec);
 void		set_co(t_data *data, char *line, int i);
 bool		hit_border_cy(t_ray ray, double x_plane, double *t_out);
+void		add_point_to_aabb(t_aabb *box, t_vec3 p);
+t_aabb		empty_aabb(void);
+t_aabb		aabb_transform_matrix(t_aabb local_box, t_mat4 matrix);
+void		convert_list_to_arrays(t_data *data);
+t_aabb		aabb_cylinder(t_obj *cy);
+t_aabb		aabb_hyperboloid(t_obj *hy);
+t_aabb		aabb_sphere(t_obj *sp);
+t_aabb		aabb_triangle(t_obj *tr);
+double		hit_aabb_edge(t_ray ray, t_aabb box);
+t_aabb		aabb_square(t_obj *sq);
+t_aabb		aabb_cone(t_obj *co);
+t_aabb		get_aabb_by_type(t_obj *obj);
+t_aabb		compute_bounds(t_obj **objs, int count);
+int			cmp_x(const void *a, const void *b);
+int			cmp_y(const void *a, const void *b);
+int			cmp_z(const void *a, const void *b);
+void		build_bvh(t_data *data);
+int			find_best_split_sah(t_data *data, int start, int count);
+bool		intersect_aabb(t_ray ray, t_aabb box, double t_max);
+bool		hit_bvh(t_data *data, int node_idx, t_ray ray, t_hit_r *rec);
+void		display_fps(t_data *data);
+double		get_time(void);
+double		parse_reflectivity(char **line);
+double		parse_roughness(char **line);
+void		print_progress(int current_line, int total_lines);
+t_vec3		get_checker_color(double u, double v, t_vec3 color_a, t_vec3 color_b);
+void		get_sphere_uv(t_vec3 normal, double *u, double *v);
+void		get_pl_uv(t_vec3 p, t_vec3 normal, double *u, double *v);
+void		get_sq_uv(t_vec3 p, t_vec3 center, t_vec3 normal, double side_size, double *u, double *v);
+void		get_cycohy_uv(t_vec3 p, t_vec3 center, t_vec3 axis, double height, double *u, double *v);
+mlx_color	get_texture_color(t_texture *tex, double u, double v);
+char		*get_texture_path(char **ptr);
+t_texture	*load_texture(t_data *data, char *filepath);
 
 #endif

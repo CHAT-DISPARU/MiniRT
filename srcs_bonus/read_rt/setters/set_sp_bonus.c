@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_sp_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:39 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 12:23:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 15:56:54 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,9 @@ void	set_sp(t_data *data, char *line, int i)
 	check_positive(data, t.diameter, i);
 	check_missing_info(data, line, i);
 	t.col = parse_color(&line, data, i);
-	check_extra_info(data, line, i);
-	new_sp = malloc(sizeof(t_obj));
+	t.reflectivity = parse_reflectivity(&line);
+	t.rought = parse_roughness(&line);
+	new_sp = ft_calloc(1, sizeof(t_obj));
 	if (!new_sp)
 		clean_exit(data, 1, "malloc fail\n", 0);
 	new_sp->type = CALC_SP;
@@ -37,6 +38,17 @@ void	set_sp(t_data *data, char *line, int i)
 	t.final = mat4_mult(&t.trans, &t.scale);
 	new_sp->transform = t.final;
 	new_sp->inverse_transform = mat4_inverse(&t.final);
+	new_sp->reflectivity = t.reflectivity;
+	new_sp->rought = t.rought;
+	char	*path = get_texture_path(&line);
+	check_extra_info(data, line, i);
+	if (path)
+	{
+		new_sp->has_texture = true;
+		new_sp->tex = load_texture(data, path);
+	}
+	else
+		new_sp->has_texture = false;
 	new_sp->next = NULL;
 	ft_objadd_back(&data->objs, new_sp);
 }

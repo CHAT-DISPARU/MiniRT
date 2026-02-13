@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hit_cy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:59:51 by titan             #+#    #+#             */
-/*   Updated: 2026/02/04 13:24:57 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/13 13:18:40 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ bool	hit_border_cy(t_ray ray, double x_plane, double *t_out)
 	double	y;
 	double	z;
 
-	if (fabs(ray.dir.x) < 0.0001)
+	if (fabs(ray.dir.x) < EPSILON)
 		return (false);
 	t = (x_plane - ray.origin.x) / ray.dir.x;
-	if (t < 0.001)
+	if (t < EPSILON)
 		return (false);
 	y = ray.origin.y + t * ray.dir.y;
 	z = ray.origin.z + t * ray.dir.z;
@@ -52,19 +52,31 @@ bool	hit_border_cy(t_ray ray, double x_plane, double *t_out)
 t_hit_r	set_rec(t_ray ray, t_cy_utils utils, t_obj *cy, t_hit hit)
 {
 	t_hit_r	rec;
+	t_vec3	local_p;
 
+	rec.obj_ptr = cy;
+	rec.color = cy->color;
 	rec.t = utils.closest_t;
 	rec.p = vec_add(ray.origin, vec_scale(ray.dir, utils.closest_t));
+	local_p = vec_add(hit.l_ray.origin, vec_scale(hit.l_ray.dir, utils.closest_t));
 	if (utils.hit_zone == 1)
 	{
 		hit.local_normal = vec_add(hit.l_ray.origin,
 				vec_scale(hit.l_ray.dir, utils.closest_t));
 		hit.local_normal.x = 0;
+		double phi = atan2(local_p.z, local_p.y);
+		rec.u = (phi + PI) / (2.0 * PI);
+		rec.v = (local_p.x + 1.0) * 0.5;
 	}
-	else if (utils.hit_zone == 2)
-		hit.local_normal = (t_vec3){1, 0, 0};
-	else
-		hit.local_normal = (t_vec3){-1, 0, 0};
+	else if (utils.hit_zone == 2 || utils.hit_zone == 3)
+	{
+		if (utils.hit_zone == 2)
+			hit.local_normal = (t_vec3){1, 0, 0};
+		else
+			hit.local_normal = (t_vec3){-1, 0, 0};
+		rec.u = (local_p.y + 1.0) * 0.5;
+		rec.v = (local_p.z + 1.0) * 0.5;
+	}
 	rec.normal = mat4_mult_vec3(&cy->transform, hit.local_normal, 0.0);
 	rec.normal = vec_normalize(rec.normal);
 	if (vec_dot_scal(ray.dir, rec.normal) > 0)
@@ -76,7 +88,7 @@ void	see_caps(t_hit hit, t_cy_utils *utils)
 {
 	if (hit_border_cy(hit.l_ray, 1.0, &hit.t))
 	{
-		if (hit.t < utils->closest_t)
+		if (hit.t > EPSILON && hit.t < utils->closest_t)
 		{
 			utils->hit_zone = 2;
 			utils->closest_t = hit.t;
@@ -84,7 +96,7 @@ void	see_caps(t_hit hit, t_cy_utils *utils)
 	}
 	if (hit_border_cy(hit.l_ray, -1.0, &hit.t))
 	{
-		if (hit.t < utils->closest_t)
+		if (hit.t > EPSILON && hit.t < utils->closest_t)
 		{
 			utils->hit_zone = 3;
 			utils->closest_t = hit.t;
@@ -97,7 +109,7 @@ void	see_poly(t_hit hit, t_vec3 poly, double delta, t_cy_utils *utils)
 	double		hit_x;
 
 	hit.t = (-poly.y - sqrt(delta)) / (poly.x);
-	if (hit.t > 0.001)
+	if (hit.t > EPSILON && hit.t < utils->closest_t)
 	{
 		hit_x = hit.l_ray.origin.x + hit.t * hit.l_ray.dir.x;
 		if (hit_x >= -1.0 && hit_x <= 1.0)
@@ -109,7 +121,7 @@ void	see_poly(t_hit hit, t_vec3 poly, double delta, t_cy_utils *utils)
 	if (utils->hit_zone == 0)
 	{
 		hit.t = (-poly.y + sqrt(delta)) / poly.x;
-		if (hit.t > EPSILON)
+		if (hit.t > EPSILON && hit.t < utils->closest_t)
 		{
 			hit_x = hit.l_ray.origin.x + hit.t * hit.l_ray.dir.x;
 			if (hit_x >= -1.0 && hit_x <= 1.0)
@@ -128,7 +140,7 @@ bool	hit_cylinder(t_obj *cy, t_ray ray, t_hit_r *rec)
 	t_hit		hit;
 	t_cy_utils	utils;
 
-	utils.closest_t = INFINITY;
+	utils.closest_t = rec->t;
 	utils.hit_zone = 0;
 	hit.l_ray.origin = mat4_mult_vec3(&cy->inverse_transform, ray.origin, 1.0);
 	hit.l_ray.dir = mat4_mult_vec3(&cy->inverse_transform, ray.dir, 0.0);
