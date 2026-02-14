@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_cy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:55 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 15:57:42 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 14:19:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	set_cy(t_data *data, char *line, int i)
 	if (path)
 	{
 		new_cy->has_texture = true;
-		new_cy->tex = load_texture(data, path);
+		new_cy->tex = load_texture(data, path, NULL);
 	}
 	else
 		new_cy->has_texture = false;

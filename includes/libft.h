@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 18:28:39 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/31 16:58:11 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 14:10:13 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void			ft_lstadd_front(t_list **lst, t_list *new);
 void			ft_lstclear(t_list **lst);
 void			ft_lstdelone(t_list *lst);
 t_list			*ft_lstlast(t_list *lst);
-t_list			*ft_lstnew(char *content);
+t_list			*ft_lstnew(void *content);
 int				ft_lstsize(t_list *lst);
 void			*free_all(char **tab);
 void			*ft_memchr(const void *s, int c, size_t n);

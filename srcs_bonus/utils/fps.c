@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fps.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 15:37:35 by titan             #+#    #+#             */
-/*   Updated: 2026/02/12 20:09:16 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 18:57:51 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,17 @@ void	display_fps(t_data *data)
 	double		current_time;
 	double		delta_time;
 	int			fps;
+	char		string;
 
+	if (data->diff_ok)
+		string = 't';
+	else
+		string = 'f';
 	current_time = get_time();
 	delta_time = current_time - data->last_frame_time;
 	data->last_frame_time = current_time;
 	fps = (delta_time > 0) ? (int)(1.0 / delta_time) : 999;
-	sprintf(buf, "FPS: %d | STEP: %d | SAMPLES: %d | DEPTH: %d", fps, data->step, data->s_per_pixs, data->deph);
+	sprintf(buf, "FPS: %d | STEP: %d | SAMPLES: %d | DEPTH: %d | DIF: %c", fps, data->step, data->s_per_pixs, data->deph, string);
 	mlx_string_put(data->mlx, data->win, 10, 20, (mlx_color)(uint32_t){0xFF0000FF}, buf);
 	sprintf(buf, "POS: X:%.2f Y:%.2f Z:%.2f", 
 			data->cam.origin.x, data->cam.origin.y, data->cam.origin.z);

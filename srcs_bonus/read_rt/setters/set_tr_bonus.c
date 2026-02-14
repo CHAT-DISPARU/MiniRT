@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_tr_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 14:38:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/13 15:56:46 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 14:19:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	set_tr(t_data *data, char *line, int i)
 	if (path)
 	{
 		new_tr->has_texture = true;
-		new_tr->tex = load_texture(data, path);
+		new_tr->tex = load_texture(data, path, NULL);
 	}
 	else
 		new_tr->has_texture = false;

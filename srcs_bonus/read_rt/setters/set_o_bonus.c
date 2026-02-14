@@ -3,230 +3,266 @@
 /*                                                        :::      ::::::::   */
 /*   set_o_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/13 16:17:11 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 15:09:20 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
+#include <sys/stat.h>
 
-char	*pars_file_n(char **line)
+static char	*read_file_fast(char *filename)
 {
-    int		i;
-    int		len;
-    char	*result;
+	int			fd;
+	struct stat	st;
+	char		*buf;
+	ssize_t		ret;
 
-    while (**line && is_space(**line))
-        (*line)++;
-    len = 0;
-    while ((*line)[len] && !is_space((*line)[len]) && (*line)[len] != '\n')
-        len++;
-    if (len == 0)
-        return (NULL);
-    result = ft_calloc(len + 1, sizeof(char));
-    if (!result)
-        return (NULL);
-    i = 0;
-    while (i < len)
-    {
-        result[i] = **line;
-        (*line)++;
-        i++;
-    }
-    return (result);
-}
-
-void	face_node(char *line, t_face_c **list)
-{
-	t_face_c	*new;
-
-	new = malloc(sizeof(t_face_c));
-	if (!new)
-		return ;
-	skip_spaces(&line);
-	new->point.x = rt_atod(&line);
-	skip_spaces(&line);
-	new->point.y = rt_atod(&line);
-	skip_spaces(&line);
-	new->point.z = rt_atod(&line);
-	new->next = NULL;
-	ft_faceadd_back(list, new);
-}
-
-void	fill_obj_data(int fd, t_face_c **v_l, t_face_c **vn_l, t_face_c **vt_l)
-{
-	char	*line;
-
-	line = get_next_line(fd, 0);
-	while (line)
+	fd = open(filename, O_RDONLY);
+	if (fd < 0)
+		return (NULL);
+	if (fstat(fd, &st) < 0)
 	{
-		if (line[0] == 'v' && line[1] == ' ')
-			face_node(line + 1, v_l);
-		else if (line[0] == 'v' && line[1] == 'n' && line[2] == ' ')
-			face_node(line + 2, vn_l);
-		else if (line[0] == 'v' && line[1] == 't' && line[2] == ' ')
-			face_node(line + 2, vt_l);
-		free(line);
-		line = get_next_line(fd, 0);
+		close(fd);
+		return (NULL);
+	}
+	buf = malloc(sizeof(char) * (st.st_size + 1));
+	if (!buf)
+	{
+		close(fd);
+		return (NULL);
+	}
+	ret = read(fd, buf, st.st_size);
+	buf[ret] = '\0';
+	close(fd);
+	return (buf);
+}
+
+static void	count_data_fast(char *s, int *v, int *vn, int *vt)
+{
+	*v = 0;
+	*vn = 0;
+	*vt = 0;
+	while (*s)
+	{
+		if (*s == 'v')
+		{
+			if (*(s + 1) == ' ')
+				(*v)++;
+			else if (*(s + 1) == 'n')
+				(*vn)++;
+			else if (*(s + 1) == 't')
+				(*vt)++;
+		}
+		while (*s && *s != '\n')
+			s++;
+		if (*s)
+			s++;
 	}
 }
 
-t_vec3	get_vec_from_list(int i, t_face_c *list)
+static t_vec3	parse_vec_fast(char **s, int type)
 {
-	int	j;
+	t_vec3	p;
 
-	if (i <= 0 || !list)
-		return ((t_vec3){0, 0, 0});
-	j = 1;
-	while (j < i && list->next)
+	while (**s && !ft_isdigit(**s) && **s != '-')
+		(*s)++;
+	p.x = rt_atod(s);
+	while (**s && !ft_isdigit(**s) && **s != '-')
+		(*s)++;
+	p.y = rt_atod(s);
+	if (type != 2)
 	{
-		list = list->next;
-		j++;
+		while (**s && !ft_isdigit(**s) && **s != '-')
+			(*s)++;
+		p.z = rt_atod(s);
 	}
-	return (list->point);
+	else
+		p.z = 0;
+	return (p);
 }
 
-t_triangle	parse_face_line(char *line, t_face_c *v_l, t_face_c *vn_l, t_face_c *vt_l,t_mat_t t)
+static int	fast_atoi_move(char **s)
+{
+	int	res;
+
+	res = ft_atoi(*s);
+	while (**s && ft_isdigit(**s))
+		(*s)++;
+	return (res);
+}
+
+static t_triangle	parse_face_fast(char **s, t_vars_obj *v)
 {
 	t_triangle	tri;
-	int			v_idx[3];
-	int			vn_idx[3];
-	int			vt_idx[3];
-	int			i = 0;
+	int			idx[3][3];
+	int			i;
 
-	while (i < 3)
+	i = -1;
+	while (++i < 3)
 	{
-		skip_spaces(&line);
-		v_idx[i] = ft_atoi(line);
-		vn_idx[i] = 0;
-		vt_idx[i] = 0;
-		char	*next_space = ft_strchr(line, ' ');
-		char	*slash = ft_strchr(line, '/');
-		if (slash && (!next_space || slash < next_space))
+		while (**s && !ft_isdigit(**s))
+			(*s)++;
+		idx[0][i] = fast_atoi_move(s);
+		idx[1][i] = 0;
+		idx[2][i] = 0;
+		if (**s == '/')
 		{
-			if (*(slash + 1) != '/')
-				vt_idx[i] = ft_atoi(slash + 1);
-			char *second_slash = ft_strchr(slash + 1, '/');
-			if (second_slash && (!next_space || second_slash < next_space))
-                vn_idx[i] = ft_atoi(second_slash + 1);
+			(*s)++;
+			if (**s != '/')
+				idx[1][i] = fast_atoi_move(s);
+			if (**s == '/')
+			{
+				(*s)++;
+				idx[2][i] = fast_atoi_move(s);
+			}
 		}
-		while (*line && *line != ' ' && *line != '\t')
-			line++;
-		i++;
+		while (**s && !is_space(**s) && **s != '\n')
+			(*s)++;
 	}
-	tri.p1 = mat4_mult_vec3(&t.final, get_vec_from_list(v_idx[0], v_l), 1.0);
-	tri.p2 = mat4_mult_vec3(&t.final, get_vec_from_list(v_idx[1], v_l), 1.0);
-	tri.p3 = mat4_mult_vec3(&t.final, get_vec_from_list(v_idx[2], v_l), 1.0);
-	if (vt_idx[0] > 0 && vt_l)
-    {
-        t_vec3 uv1 = get_vec_from_list(vt_idx[0], vt_l);
-        t_vec3 uv2 = get_vec_from_list(vt_idx[1], vt_l);
-        t_vec3 uv3 = get_vec_from_list(vt_idx[2], vt_l);
-        tri.uv1 = (t_vec2){uv1.x, uv1.y};
-        tri.uv2 = (t_vec2){uv2.x, uv2.y};
-        tri.uv3 = (t_vec2){uv3.x, uv3.y};
-    }
-	if (vn_idx[0] != 0 && vn_l)
-		tri.normal = vec_normalize(mat4_mult_vec3(&t.final, get_vec_from_list(vn_idx[0], vn_l), 0.0));
-	else
+	tri.p1 = mat4_mult_vec3(&v->t.final, v->v[idx[0][0] - 1], 1.0);
+	tri.p2 = mat4_mult_vec3(&v->t.final, v->v[idx[0][1] - 1], 1.0);
+	tri.p3 = mat4_mult_vec3(&v->t.final, v->v[idx[0][2] - 1], 1.0);
+	if (idx[1][0] > 0 && v->vt)
 	{
-		t_vec3	e1 = vec_sub(tri.p2, tri.p1);
-		t_vec3	e2 = vec_sub(tri.p3, tri.p1);
-		tri.normal = vec_normalize(vec_cross(e1, e2));
+		tri.uv1 = (t_vec2){v->vt[idx[1][0] - 1].x, v->vt[idx[1][0] - 1].y};
+		tri.uv2 = (t_vec2){v->vt[idx[1][1] - 1].x, v->vt[idx[1][1] - 1].y};
+		tri.uv3 = (t_vec2){v->vt[idx[1][2] - 1].x, v->vt[idx[1][2] - 1].y};
 	}
+	if (idx[2][0] > 0 && v->vn)
+		tri.normal = vec_normalize(mat4_mult_vec3(&v->t.final, v->vn[idx[2][0] - 1], 0.0));
+	else
+		tri.normal = vec_normalize(vec_cross(vec_sub(tri.p2, tri.p1), vec_sub(tri.p3, tri.p1)));
 	return (tri);
 }
 
-void	new_tr_obj(char *line, t_data *data, t_face_c *v_l, t_face_c *vn_l, t_face_c *vt_l,t_mat_t t, t_texture *tex, bool has_texture)
+static char	*pars_file_n(char **line)
 {
-	t_obj	*new_tr;
+	int		len;
+	char	*result;
 
-	new_tr = ft_calloc(1, sizeof(t_obj));
-	if (!new_tr)
-		return ;
-	new_tr->tri = parse_face_line(line + 1, v_l, vn_l, vt_l, t);
-	new_tr->type = CALC_TR;
-	new_tr->color = t.col;
-	new_tr->has_texture = has_texture;
-	if (has_texture)
-		new_tr->tex = tex;
-	new_tr->reflectivity = t.reflectivity;
-	new_tr->rought = t.rought;
-	new_tr->next = NULL;
-	ft_objadd_back(&data->objs, new_tr);
-}
-
-void	free_face_list(t_face_c *list)
-{
-	t_face_c	*tmp;
-
-	while (list)
-	{
-		tmp = list->next;
-		free(list);
-		list = tmp;
-	}
+	while (**line && is_space(**line))
+		(*line)++;
+	len = 0;
+	while ((*line)[len] && !is_space((*line)[len]) && (*line)[len] != '\n')
+		len++;
+	if (len == 0)
+		return (NULL);
+	result = ft_calloc(len + 1, sizeof(char));
+	ft_strlcpy(result, *line, len + 1);
+	*line += len;
+	return (result);
 }
 
 void	set_o(t_data *data, char *line, int i)
 {
-	t_mat_t		t;
-	t_face_c	*v_list = NULL;
-	t_face_c	*vn_list = NULL;
-	t_face_c	*vt_list = NULL;
-	t_file_info	f;
-	t_texture	*tex;
-	char		*filename;
-	char		*tex_path;
-	bool		has_texture;
+	t_vars_obj	v;
+	char		*c;
 
 	line++;
 	check_missing_info(data, line, i);
-	t.center = parse_vec3(&line, data, i);
-	t.rot_vec = parse_vec3(&line, data, i);
-	t.col = parse_color(&line, data, i);
-	t.scaled = rt_atod(&line);
-	t.reflectivity = rt_atod(&line);
-	t.rought = parse_roughness(&line);
-	if (t.scaled <= 0)
-		t.scaled = 1.0;
+	v.t.center = parse_vec3(&line, data, i);
+	v.t.rot_vec = parse_vec3(&line, data, i);
+	v.t.col = parse_color(&line, data, i);
+	v.t.scaled = rt_atod(&line);
+	if (v.t.scaled <= 0)
+		v.t.scaled = 1.0;
+	v.t.reflectivity = rt_atod(&line);
+	v.t.rought = parse_roughness(&line);
 	skip_spaces(&line);
-	filename = pars_file_n(&line);
-	tex_path = get_texture_path(&line);
-	tex = NULL;
-	if (tex_path)
+	v.file = pars_file_n(&line);
+	v.tex_p = get_texture_path(&line);
+	v.tex = NULL;
+	v.has_tex = false;
+	if (v.tex_p)
 	{
-		has_texture = true;
-		tex = load_texture(data, tex_path);
+		v.tex = load_texture(data, v.tex_p, v.file);
+		if (v.tex)
+			v.has_tex = true;
 	}
-	else
-		has_texture = false;
-	f.fd = open(filename, O_RDONLY);
-	if (f.fd < 0)
-		clean_exit(data, 1, "Error: File not found\n", 0);
-	fill_obj_data(f.fd, &v_list, &vn_list, &vt_list);
-	close(f.fd);
-	mat4_initial(&t.trans);
-	mat4_translation(&t.trans, t.center);
-	mat4_initial(&t.scale);
-	mat4_scal(&t.scale, (t_vec3){t.scaled, t.scaled, t.scaled});
-	t.rot = mat4_align_vectors((t_vec3){1, 0, 0}, vec_normalize(t.rot_vec));
-	t.final = mat4_mult(&t.rot, &t.scale);
-	t.final = mat4_mult(&t.trans, &t.final);
-	f.fd = open(filename, O_RDONLY);
-	f.line_o = get_next_line(f.fd, 0);
-	while (f.line_o)
+	mat4_initial(&v.t.trans);
+	mat4_translation(&v.t.trans, v.t.center);
+	mat4_initial(&v.t.scale);
+	mat4_scal(&v.t.scale, (t_vec3){v.t.scaled, v.t.scaled, v.t.scaled});
+	v.t.rot = mat4_align_vectors((t_vec3){1, 0, 0}, vec_normalize(v.t.rot_vec));
+	v.t.final = mat4_mult(&v.t.rot, &v.t.scale);
+	v.t.final = mat4_mult(&v.t.trans, &v.t.final);
+	v.str = read_file_fast(v.file);
+	if (!v.str)
 	{
-		if (f.line_o[0] == 'f' && (f.line_o[1] == ' ' || f.line_o[1] == '\t'))
-			new_tr_obj(f.line_o, data, v_list, vn_list, vt_list, t, tex, has_texture);
-		free(f.line_o);
-		f.line_o = get_next_line(f.fd, 0);
+		free(v.file);
+		clean_exit(data, 1, "Error: Read Fail\n", 0);
 	}
-	close(f.fd);
-	free(filename);
-	free_face_list(v_list);
-	free_face_list(vn_list);
-	free_face_list(vt_list);
+	free(v.file);
+	count_data_fast(v.str, &v.cts[0], &v.cts[1], &v.cts[2]);
+	v.v = malloc(sizeof(t_vec3) * (v.cts[0] + 1));
+	v.vn = malloc(sizeof(t_vec3) * (v.cts[1] + 1));
+	v.vt = malloc(sizeof(t_vec3) * (v.cts[2] + 1));
+	if (!v.v || !v.vn || !v.vt)
+		clean_exit(data, 1, "Malloc fail\n", 0);
+	v.idx[0] = 0;
+	v.idx[1] = 0;
+	v.idx[2] = 0;
+	v.len = ft_strlen(v.str);
+	v.step = v.len / 20;
+	if (v.step == 0)
+		v.step = 1;
+	v.next = v.step;
+	c = v.str;
+	while (*c)
+	{
+		v.pos = c - v.str;
+		if (v.pos >= v.next)
+		{
+			printf("\rParsing OBJ: [%3lu%%]", (v.pos * 100) / v.len);
+			fflush(stdout);
+			v.next += v.step;
+		}
+		if (*c == 'v')
+		{
+			if (*(c + 1) == ' ')
+			{
+				c += 2;
+				v.v[v.idx[0]++] = parse_vec_fast(&c, 1);
+			}
+			else if (*(c + 1) == 'n')
+			{
+				c += 3;
+				v.vn[v.idx[1]++] = parse_vec_fast(&c, 1);
+			}
+			else if (*(c + 1) == 't')
+			{
+				c += 3;
+				v.vt[v.idx[2]++] = parse_vec_fast(&c, 2);
+			}
+		}
+		else if (*c == 'f' && is_space(*(c + 1)))
+		{
+			c += 2;
+			v.new = ft_calloc(1, sizeof(t_obj));
+			if (v.new)
+			{
+				v.new->tri = parse_face_fast(&c, &v);
+				v.new->type = CALC_TR;
+				v.new->color = v.t.col;
+				v.new->has_texture = v.has_tex;
+				if (v.has_tex)
+					v.new->tex = v.tex;
+				v.new->reflectivity = v.t.reflectivity;
+				v.new->rought = v.t.rought;
+				ft_objadd_back(&data->objs, v.new);
+			}
+		}
+		while (*c && *c != '\n')
+			c++;
+		if (*c)
+			c++;
+	}
+	printf("\rParsing OBJ: [100%%] - OK.\n");
+	free(v.str);
+	free(v.v);
+	free(v.vn);
+	free(v.vt);
 }

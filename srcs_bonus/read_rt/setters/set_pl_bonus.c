@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_pl_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:44 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 15:57:13 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 14:19:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	set_pl(t_data *data, char *line, int i)
 	if (path)
 	{
 		new_pl->has_texture = true;
-		new_pl->tex = load_texture(data, path);
+		new_pl->tex = load_texture(data, path, NULL);
 	}
 	else
 		new_pl->has_texture = false;

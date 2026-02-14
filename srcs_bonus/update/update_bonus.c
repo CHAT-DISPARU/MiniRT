@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   update_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:11:09 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 13:21:56 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 18:55:17 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void	update_move(t_data *data, bool *movded, t_vec3 forward, t_vec3 right)
 		*movded = true;
 }
 
-void	change_speed(t_data *data)
+void	change_speed(t_data *data, bool *movded)
 {
 	if (data->key_table[224] && !data->old_key_table[224])
 	{
@@ -88,12 +88,12 @@ void	change_speed(t_data *data)
 	{
 		if (data->step > 1)
 			data->step--;
-		thread_calls(data);
+		*movded = true;
 	}
 	if (data->key_table[59] && !data->old_key_table[59])
 	{
 		data->step++;
-		thread_calls(data);
+		*movded = true;
 	}
 }
 
@@ -139,7 +139,7 @@ void	update(void *param)
 	forward = data->cam.dir;
 	right = get_right_vector(forward);
 	update_samples(data, &movded);
-	change_speed(data);
+	change_speed(data, &movded);
 	update_rot(data, right, &movded);
 	update_move(data, &movded, forward, right);
 	update_fov(&movded, data);
@@ -157,6 +157,11 @@ void	update(void *param)
 	{
 		data->has_checker = !data->has_checker;
 		movded = true;
+	}
+	if (data->key_table[269] && !data->old_key_table[269])
+	{
+		mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
+		mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
 	}
 	if (movded)
 		thread_calls(data);
