@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_sq_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:23 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 15:56:42 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 14:19:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	set_sq(t_data *data, char *line, int i)
 	if (path)
 	{
 		new_sq->has_texture = true;
-		new_sq->tex  = load_texture(data, path);
+		new_sq->tex  = load_texture(data, path, NULL);
 	}
 	else
 		new_sq->has_texture = false;

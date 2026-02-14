@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_hy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 17:06:16 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/13 15:57:31 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 14:19:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	set_hy(t_data *data, char *line, int i)
 	if (path)
 	{
 		new_hy->has_texture = true;
-		new_hy->tex = load_texture(data, path);
+		new_hy->tex = load_texture(data, path, NULL);
 	}
 	else
 		new_hy->has_texture = false;

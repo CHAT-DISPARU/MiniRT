@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_co_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 12:25:02 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/13 15:57:53 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 14:18:51 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	set_co(t_data *data, char *line, int i)
 	if (path)
 	{
 		new_co->has_texture = true;
-		new_co->tex = load_texture(data, path);
+		new_co->tex = load_texture(data, path, NULL);
 	}
 	else
 		new_co->has_texture = false;

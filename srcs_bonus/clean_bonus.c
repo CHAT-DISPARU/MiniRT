@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   clean_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:10:27 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 16:12:44 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 14:05:45 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,28 +39,34 @@ void	print_m_and_gnl(t_data *data, char *mess_eror, int exit_code, int i)
 
 void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 {
-	t_obj	*tmp;
-	t_light	*tmp2;
-	t_texture tex;
+	t_obj		*tmp;
+	t_obj		*current;
+	t_light		*tmp2;
+	t_texture	*tex;
+	t_list		*tmp_t;
 
 	print_m_and_gnl(data, mess_eror, exit_code, i);
-	while (data->objs)
+	current = data->objs;
+	while (current)
 	{
-		tmp = data->objs->next;
-		tex = *data->objs->tex;
-		if (tex.pixels)
-		{
-			free(tex.pixels);
-			data->objs->tex->pixels = NULL;
-		}
-		if (tex.img)
-		{
-			mlx_destroy_image(data->mlx, tex.img);
-			data->objs->tex->img = NULL;
-		}
-		free(data->objs);
-		data->objs = tmp;
+		tmp = current->next;
+		free(current);
+		current = tmp;
 	}
+	while (data->textures)
+	{
+		tex = (t_texture *)data->textures->content;
+		if (tex->pixels)
+			free(tex->pixels);
+		if (tex->img)
+			mlx_destroy_image(data->mlx, tex->img);
+		free(tex);
+		tmp_t = data->textures->next;
+		free(data->textures);
+		data->textures = tmp_t;
+	}
+	data->textures = NULL;
+	data->objs = NULL;
 	while (data->light)
 	{
 		tmp2 = data->light->next;

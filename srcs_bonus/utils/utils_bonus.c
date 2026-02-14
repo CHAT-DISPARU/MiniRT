@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:17:57 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 11:50:11 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 18:39:44 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,10 +179,10 @@ void	convert_list_to_arrays(t_data *data)
 
 double	get_time(void)
 {
-    struct timeval  tv;
+	struct timeval  tv;
 
-    gettimeofday(&tv, NULL);
-    return (tv.tv_sec + (tv.tv_usec / 1000000.0));
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec + (tv.tv_usec / 1000000.0));
 }
 
 void	print_progress(int current_line, int total_lines)
@@ -193,6 +193,8 @@ void	print_progress(int current_line, int total_lines)
 	int	i;
 
 	percent = (current_line * 100) / total_lines;
+	if (percent > 100)
+		percent = 100;
 	pos = (percent * bar_width) / 100;
 	printf("\r\033[0;32mRender: [");
 	i = 0;

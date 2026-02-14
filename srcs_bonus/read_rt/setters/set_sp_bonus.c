@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_sp_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:39 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 15:56:54 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 14:19:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	set_sp(t_data *data, char *line, int i)
 	if (path)
 	{
 		new_sp->has_texture = true;
-		new_sp->tex = load_texture(data, path);
+		new_sp->tex = load_texture(data, path, NULL);
 	}
 	else
 		new_sp->has_texture = false;

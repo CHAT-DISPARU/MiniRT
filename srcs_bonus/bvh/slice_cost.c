@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   slice_cost.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 15:02:25 by titan             #+#    #+#             */
-/*   Updated: 2026/02/12 10:19:23 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 15:34:02 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	find_best_split_sah(t_data *data, int start, int count)
 
 	int step = 1; 
 	if (count > 32)
-		step = count / 10; 
+		step = count / 10;
 	i = 1;
 	while (i < count)
 	{

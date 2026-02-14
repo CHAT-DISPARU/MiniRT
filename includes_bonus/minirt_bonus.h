@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/13 15:55:39 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 18:49:43 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,10 @@
 
 # define WIDTH			1500
 # define HEIGHT			1000
-# define S_PER_PIXS		10
-# define KA				1
-# define KS				1
-# define KD				1
+# define S_PER_PIXS		50
 # define PI				3.14159265358979323846
-# define THREADS_COUNT	24
-# define MAX_BVH_DEPTH	32
+# define THREADS_COUNT	16
+# define MAX_BVH_DEPTH	16
 # define EPSILON		1e-4
 
 typedef struct s_aabb
@@ -234,6 +231,7 @@ typedef struct s_view_p
 
 typedef struct s_data
 {
+	t_list			*textures;
 	mlx_color		checker_color;
 	bool			has_checker;
 	bool			diff_ok;
@@ -262,7 +260,7 @@ typedef struct s_data
 	int				debug_depth;
 	t_obj			*objs;
 	t_obj			**sorted_objs;
-    t_bvh_node		*bvh_nodes;
+	t_bvh_node		*bvh_nodes;
 	t_obj			*array_obj;
 	t_aabb			*obj_aabbs;
 	int				obj_count;
@@ -293,6 +291,26 @@ typedef struct s_file_info
 	int		fd;
 	char	*line_o;
 }				t_file_info;
+
+typedef struct s_vars_obj
+{
+	t_mat_t		t;
+	t_obj		*new;
+	t_texture	*tex;
+	char		*file;
+	char		*tex_p;
+	char		*str;
+	t_vec3		*v;
+	t_vec3		*vn;
+	t_vec3		*vt;
+	int			cts[3];
+	int			idx[3];
+	bool		has_tex;
+	size_t		len;
+	size_t		pos;
+	size_t		step;
+	size_t		next;
+}				t_vars_obj;
 
 typedef bool	(*t_calc_f)(t_obj *obj, t_ray ray, t_hit_r *rec);
 void		thread_calls(t_data *data);
@@ -384,6 +402,6 @@ void		get_sq_uv(t_vec3 p, t_vec3 center, t_vec3 normal, double side_size, double
 void		get_cycohy_uv(t_vec3 p, t_vec3 center, t_vec3 axis, double height, double *u, double *v);
 mlx_color	get_texture_color(t_texture *tex, double u, double v);
 char		*get_texture_path(char **ptr);
-t_texture	*load_texture(t_data *data, char *filepath);
+t_texture	*load_texture(t_data *data, char *filepath, char *file_o);
 
 #endif

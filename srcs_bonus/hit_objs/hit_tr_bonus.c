@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hit_tr_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 12:42:25 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/13 13:13:32 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/14 11:40:21 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,9 @@ bool	hit_triangle(t_obj *tr, t_ray ray, t_hit_r *rec)
 		rec->normal = tr->tri.normal;
 		if (vec_dot_scal(ray.dir, rec->normal) > 0)
 			rec->normal = vec_scale(rec->normal, -1.0);
-		rec->u = u;
-        rec->v = v;
+		double w = 1.0 - u - v;
+		rec->u = (w * tr->tri.uv1.x) + (u * tr->tri.uv2.x) + (v * tr->tri.uv3.x);
+		rec->v = (w * tr->tri.uv1.y) + (u * tr->tri.uv2.y) + (v * tr->tri.uv3.y);
 		rec->color = tr->color;
 		rec->obj_ptr = tr;
 		return (true);
