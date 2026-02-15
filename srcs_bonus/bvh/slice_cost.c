@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   slice_cost.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 15:02:25 by titan             #+#    #+#             */
-/*   Updated: 2026/02/14 15:34:02 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/15 15:40:19 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ double	get_aabb_surface_area(t_aabb box)
 int	find_best_split_sah(t_data *data, int start, int count)
 {
 	int		best_mid = count / 2;
-	double	min_cost = INFINITY;
+	double	min_cost = DBL_MAX;
 	double	current_cost;
 	t_aabb	left_box;
 	t_aabb	right_box;

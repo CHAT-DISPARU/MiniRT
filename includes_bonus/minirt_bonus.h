@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/14 18:49:43 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/15 16:02:27 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,14 @@
 # include <mlx_extended.h>
 # include <time.h>
 # include <pthread.h>
+# include <float.h>
 
 # define WIDTH			1500
 # define HEIGHT			1000
-# define S_PER_PIXS		50
+# define S_PER_PIXS		100
 # define PI				3.14159265358979323846
 # define THREADS_COUNT	16
-# define MAX_BVH_DEPTH	16
+# define MAX_BVH_DEPTH	17
 # define EPSILON		1e-4
 
 typedef struct s_aabb
@@ -190,7 +191,9 @@ typedef struct s_obj
 	double			reflectivity;
 	double			rought;
 	bool			has_texture;
+	bool			has_bump;
 	t_texture		*tex;
+	t_texture		*bump;
 	struct s_obj	*next;
 }				t_obj;
 
@@ -403,5 +406,6 @@ void		get_cycohy_uv(t_vec3 p, t_vec3 center, t_vec3 axis, double height, double 
 mlx_color	get_texture_color(t_texture *tex, double u, double v);
 char		*get_texture_path(char **ptr);
 t_texture	*load_texture(t_data *data, char *filepath, char *file_o);
+void		apply_bump(t_hit_r *rec, t_texture *bump_tex, double strength);
 
 #endif

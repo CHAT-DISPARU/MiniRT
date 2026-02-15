@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_sq_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:23 by titan             #+#    #+#             */
-/*   Updated: 2026/02/14 14:19:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/15 14:59:51 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void	read_sq(t_data *data, char **line, int i, t_mat_t *t)
 	t->col = parse_color(line, data, i);
 	t->reflectivity = parse_reflectivity(line);
 	t->rought = parse_roughness(line);
-	check_extra_info(data, *line, i);
 }
 
 void	set_sq(t_data *data, char *line, int i)
@@ -55,6 +54,8 @@ void	set_sq(t_data *data, char *line, int i)
 	new_sq->reflectivity = t.reflectivity;
 	new_sq->rought = t.rought;
 	char	*path = get_texture_path(&line);
+	char	*path2 = get_texture_path(&line);
+	check_extra_info(data, line, i);
 	if (path)
 	{
 		new_sq->has_texture = true;
@@ -62,6 +63,13 @@ void	set_sq(t_data *data, char *line, int i)
 	}
 	else
 		new_sq->has_texture = false;
+	if (path2)
+	{
+		new_sq->has_bump = true;
+		new_sq->bump = load_texture(data, path2, NULL);
+	}
+	else
+		new_sq->has_bump = false;
 	new_sq->next = NULL;
 	ft_objadd_back(&data->objs, new_sq);
 }

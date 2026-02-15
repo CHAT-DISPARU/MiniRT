@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_tr_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 14:38:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/14 14:19:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/15 14:29:50 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ void	set_tr(t_data *data, char *line, int i)
 	new_tr->reflectivity = t.reflectivity;
 	new_tr->rought = t.rought;
 	char	*path = get_texture_path(&line);
+	char	*path2 = get_texture_path(&line);
 	check_extra_info(data, line, i);
 	if (path)
 	{
@@ -53,6 +54,13 @@ void	set_tr(t_data *data, char *line, int i)
 	}
 	else
 		new_tr->has_texture = false;
+	if (path2)
+	{
+		new_tr->has_bump = true;
+		new_tr->bump = load_texture(data, path2, NULL);
+	}
+	else
+		new_tr->has_bump = false;
 	new_tr->next = NULL;
 	ft_objadd_back(&data->objs, new_tr);
 }

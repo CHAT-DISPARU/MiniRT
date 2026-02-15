@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 11:16:50 by titan             #+#    #+#             */
-/*   Updated: 2026/02/12 14:59:34 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/15 16:10:26 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ t_aabb	empty_aabb(void)
 {
 	t_aabb	box;
 
-	box.min = (t_vec3){INFINITY, INFINITY, INFINITY};
-	box.max = (t_vec3){-INFINITY, -INFINITY, -INFINITY};
+	box.min = (t_vec3){DBL_MAX, DBL_MAX, DBL_MAX};
+	box.max = (t_vec3){-DBL_MAX, -DBL_MAX, -DBL_MAX};
 	return (box);
 }
 
@@ -42,8 +42,8 @@ t_aabb	aabb_transform_matrix(t_aabb local_box, t_mat4 matrix)
 	corners[5] = (t_vec3){local_box.max.x, local_box.min.y, local_box.max.z};
 	corners[6] = (t_vec3){local_box.max.x, local_box.max.y, local_box.min.z};
 	corners[7] = (t_vec3){local_box.max.x, local_box.max.y, local_box.max.z};
-	world_box.min = (t_vec3){INFINITY, INFINITY, INFINITY};
-	world_box.max = (t_vec3){-INFINITY, -INFINITY, -INFINITY};
+	world_box.min = (t_vec3){DBL_MAX, DBL_MAX, DBL_MAX};
+	world_box.max = (t_vec3){-DBL_MAX, -DBL_MAX, -DBL_MAX};
 	i = 0;
 	while (i < 8)
 	{
@@ -92,17 +92,17 @@ double	hit_aabb_edge(t_ray ray, t_aabb box)
 	tmin = fmax(tmin, fmin(tz1, tz2));
 	tmax = fmin(tmax, fmax(tz1, tz2));
 	if (tmax < tmin || tmax < 0)
-		return (INFINITY);
+		return (DBL_MAX);
 	t_enter = tmin;
 	if (t_enter < EPSILON)
 		t_enter = tmax;
 	if (t_enter < EPSILON)
-		return (INFINITY);
+		return (DBL_MAX);
 	p = vec_add(ray.origin, vec_scale(ray.dir, t_enter));
-	double thickness = 0.01 * t_enter; 
+	double thickness = 0.006 * t_enter; 
 	if (is_on_edge(p, box, thickness))
 		return (t_enter);
-	return (INFINITY);
+	return (DBL_MAX);
 }
 
 t_aabb	aabb_union(t_aabb a, t_aabb b)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_co_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 12:25:02 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/14 14:18:51 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/15 14:30:11 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	set_co(t_data *data, char *line, int i)
 	new_co->reflectivity = t.reflectivity;
 	new_co->rought = t.rought;
 	char	*path = get_texture_path(&line);
+	char	*path2 = get_texture_path(&line);
 	check_extra_info(data, line, i);
 	if (path)
 	{
@@ -62,6 +63,13 @@ void	set_co(t_data *data, char *line, int i)
 	}
 	else
 		new_co->has_texture = false;
+	if (path2)
+	{
+		new_co->has_bump = true;
+		new_co->bump = load_texture(data, path2, NULL);
+	}
+	else
+		new_co->has_bump = false;
 	new_co->next = NULL;
 	ft_objadd_back(&data->objs, new_co);
 }
