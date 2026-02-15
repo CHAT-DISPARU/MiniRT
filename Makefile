@@ -6,7 +6,7 @@
 #    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/02/13 14:18:53 by titan            ###   ########.fr        #
+#    Updated: 2026/02/15 15:32:53 by titan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -98,6 +98,7 @@ SRCSB := $(SRCB_DIR)main_bonus.c \
 		$(SRCB_DIR)$(UTILS_DIR)texture.c \
 		$(SRCB_DIR)$(UTILS_DIR)checkboard.c \
 		$(SRCB_DIR)$(UTILS_DIR)fps.c \
+		$(SRCB_DIR)$(UTILS_DIR)bump.c \
 		$(SRCB_DIR)$(UTILS_DIR)math_utils_bonus.c
 
 SRCS := $(SRC_DIR)main.c \
@@ -137,9 +138,9 @@ OBJB := $(patsubst $(SRCB_DIR)%.c, $(BUILD_DIR)%.o, $(SRCSB))
 HEADERS := includes/
 HEADERSB := includes/ -I includes_bonus/
 
-CC := cc
+CC := clang
 
-FLAGS := -Wall -Werror -Wextra -g -I libs/MacroLibX/includes -O3 -ffast-math
+FLAGS := -Wall -Werror -Wextra -g -I libs/MacroLibX/includes -O3 -mavx2 -mfma -march=native -mtune=native -funroll-loops -fvectorize -ffp-contract=fast  -freciprocal-math -ffast-math -fstrict-aliasing  -fomit-frame-pointer -flto=full -mprefer-vector-width=256
 
 all: $(LIB) header ${NAME}
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_sp_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:39 by titan             #+#    #+#             */
-/*   Updated: 2026/02/14 14:19:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/15 14:29:59 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void	set_sp(t_data *data, char *line, int i)
 	new_sp->reflectivity = t.reflectivity;
 	new_sp->rought = t.rought;
 	char	*path = get_texture_path(&line);
+	char	*path2 = get_texture_path(&line);
 	check_extra_info(data, line, i);
 	if (path)
 	{
@@ -49,6 +50,13 @@ void	set_sp(t_data *data, char *line, int i)
 	}
 	else
 		new_sp->has_texture = false;
+	if (path2)
+	{
+		new_sp->has_bump = true;
+		new_sp->bump = load_texture(data, path2, NULL);
+	}
+	else
+		new_sp->has_bump = false;
 	new_sp->next = NULL;
 	ft_objadd_back(&data->objs, new_sp);
 }

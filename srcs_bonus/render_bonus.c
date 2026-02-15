@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/02/14 18:41:14 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/15 15:40:19 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 		return (color_acc);
 	light = data->light;
 	ft_bzero(&rec, sizeof(t_hit_r));
-	rec.t = INFINITY;
+	rec.t = DBL_MAX;
 	if (hit_someting(data, ray, &rec))
 	{
 		t_vec3	base_color;
@@ -86,8 +86,10 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 		col_a.x = rec.obj_ptr->color.r / 255.0;
 		col_a.y = rec.obj_ptr->color.g / 255.0;
 		col_a.z = rec.obj_ptr->color.b / 255.0;
-		if (rec.obj_ptr->has_texture) 
+		if (rec.obj_ptr->has_texture && rec.obj_ptr->tex) 
 			rec.color = get_texture_color(rec.obj_ptr->tex, rec.u, rec.v);
+		if (rec.obj_ptr->bump && rec.obj_ptr->has_bump)
+			apply_bump(&rec, rec.obj_ptr->bump, 10);
 		if (data->has_checker)
 		{
 			col_b.x = data->checker_color.r / 255.0;
@@ -182,7 +184,7 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 			if (should_draw)
 			{
 				box_t = hit_aabb_edge(ray, node->box);
-				if (box_t < INFINITY && box_t < rec.t)
+				if (box_t < DBL_MAX && box_t < rec.t)
 				{
 					color_acc = node->debug_color;
 					rec.t = box_t;
