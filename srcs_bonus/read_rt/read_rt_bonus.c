@@ -6,11 +6,12 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:04:41 by titan             #+#    #+#             */
-/*   Updated: 2026/02/04 12:29:14 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/16 13:51:32 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
+#include <sys/stat.h>
 
 void	call_setters(t_data *data, char *ptr, int i)
 {
@@ -40,30 +41,59 @@ void	call_setters(t_data *data, char *ptr, int i)
 		clean_exit(data, EXIT_FAILURE, "Wrong identifier\n", i);
 }
 
-void	read_rt(t_data *data, char *filename)
+char	*jump_to_next_line(char *str)
 {
-	int		i;
-	char	buffer[1];
-	char	*ptr;
+	while (*str && *str != '\n')
+		str++;
+	if (*str == '\n')
+		str++;
+	return (str);
+}
 
-	i = 1;
-	data->scene_fd = open(filename, O_RDONLY);
+void	read_rt(t_data *data)
+{
+	struct stat	file_stat;
+	char		*cursor;
+	char		*line_start;
+	int			i;
+
+	data->scene_fd = open(data->filename, O_RDONLY);
 	if (data->scene_fd < 0)
-		clean_exit(data, 1, "open fail\n", 0);
-	if (read(data->scene_fd, buffer, 0) == -1)
-		clean_exit(data, 1, "Error: The file is a directory\n", 0);
-	data->scene_line = get_next_line(data->scene_fd, 0);
-	while (data->scene_line)
-	{
-		ptr = data->scene_line;
-		while (*ptr && is_space(*ptr))
-			ptr++;
-		if (*ptr && *ptr != '\n')
-			call_setters(data, ptr, i);
-		free(data->scene_line);
-		data->scene_line = get_next_line(data->scene_fd, 0);
-		i++;
-	}
+		clean_exit(data, 1, "Error: Open failed\n", 0);
+	if (fstat(data->scene_fd, &file_stat) < 0)
+		clean_exit(data, 1, "Error: Fstat failed\n", 0);
+	if (S_ISDIR(file_stat.st_mode))
+		clean_exit(data, 1, "Error: Is a directory\n", 0);
+	data->scene_line = malloc(sizeof(char) * (file_stat.st_size + 1));
+	if (!data->scene_line)
+		clean_exit(data, 1, "Error: Malloc failed\n", 0);
+	if (read(data->scene_fd, data->scene_line, file_stat.st_size) == -1)
+		clean_exit(data, 1, "Error: Read failed\n", 0);
+	data->scene_line[file_stat.st_size] = '\0';
 	close(data->scene_fd);
 	data->scene_fd = -1;
+	i = 1;
+	cursor = data->scene_line;
+	while (*cursor)
+	{
+		line_start = cursor;
+		while (*cursor && *cursor != '\n')
+			cursor++;
+		if (*cursor == '\n')
+		{
+			*cursor = '\0';
+			cursor++;
+		}
+		char *ptr = line_start;
+		while (*ptr && is_space(*ptr))
+			ptr++;
+		if (*ptr)
+			call_setters(data, ptr, i);
+		if (i % 500 == 0)
+			printf("\rLoading line: %d...", i);
+		i++;
+	}
+	free(data->scene_line);
+	data->scene_line = NULL;
+	printf("\nParsing finished: %d lines loaded.\n", i);
 }

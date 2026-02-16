@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/15 16:02:27 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/16 14:06:24 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,6 +278,7 @@ typedef struct s_data
 	t_view_p		view_port;
 	int				scene_fd;
 	char			*scene_line;
+	char			*filename;
 }				t_data;
 
 typedef struct s_thread_info
@@ -345,7 +346,7 @@ bool		hit_cylinder(t_obj *cy, t_ray ray, t_hit_r *rec);
 bool		hit_someting(t_data *data, t_ray ray, t_hit_r *rec);
 t_mat4		look_at(t_vec3 o, t_vec3 dir, t_vec3 up_guide);
 void		set_pl(t_data *data, char *line, int i);
-void		read_rt(t_data *data, char *filename);
+void		read_rt(t_data *data);
 void		set_c(t_data *data, char *line, int i);
 void		set_sp(t_data *data, char *line, int i);
 void		set_cy(t_data *data, char *line, int i);
@@ -407,5 +408,7 @@ mlx_color	get_texture_color(t_texture *tex, double u, double v);
 char		*get_texture_path(char **ptr);
 t_texture	*load_texture(t_data *data, char *filepath, char *file_o);
 void		apply_bump(t_hit_r *rec, t_texture *bump_tex, double strength);
+void		clean(t_data *data);
+void		re_init(t_data *data);
 
 #endif

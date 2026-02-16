@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   bump.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/15 14:33:01 by titan             #+#    #+#             */
-/*   Updated: 2026/02/15 14:43:50 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/16 12:16:33 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,14 @@ void	apply_bump(t_hit_r *rec, t_texture *bump_tex, double strength)
 	t_vec3	tangent;
 	t_vec3	bitangent;
 	t_vec3	bump_vec;
-	t_vec3	up_guide = {0, 1, 0};
+	t_vec3	up_guide;
 
+	up_guide = (t_vec3){0, 1, 0};
 	i_center = get_texture_intens(bump_tex, rec->u, rec->v);
-	i_u = get_texture_intens(bump_tex, rec->u + (1.0 / bump_tex->width), rec->v);
-	i_v = get_texture_intens(bump_tex, rec->u, rec->v + (1.0 / bump_tex->height));
+	i_u = get_texture_intens(bump_tex,
+		rec->u + (1.0 / bump_tex->width), rec->v);
+	i_v = get_texture_intens(bump_tex, rec->u,
+		rec->v + (1.0 / bump_tex->height));
 	double d_u = (i_center - i_u) * strength;
 	double d_v = (i_center - i_v) * strength;
 	if (fabs(vec_dot_scal(rec->normal, up_guide)) > 0.99)
