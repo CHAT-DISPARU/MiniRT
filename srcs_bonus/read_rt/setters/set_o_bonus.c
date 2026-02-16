@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/14 15:09:20 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/16 15:55:50 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,7 +206,7 @@ void	set_o(t_data *data, char *line, int i)
 	v.idx[1] = 0;
 	v.idx[2] = 0;
 	v.len = ft_strlen(v.str);
-	v.step = v.len / 20;
+	v.step = v.len / 60;
 	if (v.step == 0)
 		v.step = 1;
 	v.next = v.step;

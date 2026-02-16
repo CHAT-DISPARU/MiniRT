@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 15:37:35 by titan             #+#    #+#             */
-/*   Updated: 2026/02/14 18:57:51 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/16 12:17:51 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,10 @@ void	display_fps(t_data *data)
 	current_time = get_time();
 	delta_time = current_time - data->last_frame_time;
 	data->last_frame_time = current_time;
-	fps = (delta_time > 0) ? (int)(1.0 / delta_time) : 999;
+	if (delta_time > 0)
+		fps = (int)(1.0 / delta_time);
+	else
+		fps = 999;
 	sprintf(buf, "FPS: %d | STEP: %d | SAMPLES: %d | DEPTH: %d | DIF: %c", fps, data->step, data->s_per_pixs, data->deph, string);
 	mlx_string_put(data->mlx, data->win, 10, 20, (mlx_color)(uint32_t){0xFF0000FF}, buf);
 	sprintf(buf, "POS: X:%.2f Y:%.2f Z:%.2f", 

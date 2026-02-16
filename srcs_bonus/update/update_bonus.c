@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:11:09 by titan             #+#    #+#             */
-/*   Updated: 2026/02/14 18:55:17 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/16 14:06:38 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,6 +162,15 @@ void	update(void *param)
 	{
 		mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
 		mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
+	}
+	if (data->key_table[229] && !data->old_key_table[229])
+	{
+		clean(data);
+		re_init(data);
+		read_rt(data);
+		convert_list_to_arrays(data);
+		calcul_ambient(data);
+		movded = true;
 	}
 	if (movded)
 		thread_calls(data);
