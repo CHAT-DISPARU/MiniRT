@@ -3,22 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   set_o_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/16 15:55:50 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 09:53:15 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 
-static char	*read_file_fast(char *filename)
+static char *map_file_fast(char *filename, size_t *size)
 {
-	int			fd;
-	struct stat	st;
-	char		*buf;
-	ssize_t		ret;
+	int         fd;
+	struct stat st;
+	char        *ptr;
 
 	fd = open(filename, O_RDONLY);
 	if (fd < 0)
@@ -28,57 +28,86 @@ static char	*read_file_fast(char *filename)
 		close(fd);
 		return (NULL);
 	}
-	buf = malloc(sizeof(char) * (st.st_size + 1));
-	if (!buf)
-	{
-		close(fd);
-		return (NULL);
-	}
-	ret = read(fd, buf, st.st_size);
-	buf[ret] = '\0';
+	*size = st.st_size;
+	ptr = mmap(NULL, *size, PROT_READ, MAP_PRIVATE, fd, 0);
 	close(fd);
-	return (buf);
+	if (ptr == MAP_FAILED)
+		return (NULL);
+	return (ptr);
 }
 
-static void	count_data_fast(char *s, int *v, int *vn, int *vt)
+static void	count_data_fast(char *s, char *end, int *v, int *vn, int *vt)
 {
-	*v = 0;
-	*vn = 0;
-	*vt = 0;
-	while (*s)
+	*v = 0; *vn = 0; *vt = 0;
+	while (s < end && *s)
 	{
 		if (*s == 'v')
 		{
-			if (*(s + 1) == ' ')
-				(*v)++;
-			else if (*(s + 1) == 'n')
-				(*vn)++;
-			else if (*(s + 1) == 't')
-				(*vt)++;
+			if (s + 1 < end)
+			{
+				if (*(s + 1) == ' ')
+					(*v)++;
+				else if (*(s + 1) == 'n')
+					(*vn)++;
+				else if (*(s + 1) == 't')
+					(*vt)++;
+			}
 		}
-		while (*s && *s != '\n')
+		while (s < end && *s && *s != '\n')
 			s++;
-		if (*s)
+		if (s < end && *s)
 			s++;
 	}
+}
+
+static double parse_double_fast(char **s)
+{
+	double		res;
+	double		sign;
+	long long	fraction;
+	long long	divisor;
+	bool		has_fraction;
+
+	res = 0;
+	sign = 1;
+	fraction = 0;
+	divisor = 1;
+	has_fraction = false;
+	skip_spaces(s);
+	if (**s == '-')
+	{
+		sign = -1.0;
+		(*s)++;
+	}
+	while (**s >= '0' && **s <= '9')
+	{
+		res = res * 10.0 + (**s - '0');
+		(*s)++;
+	}
+	if (**s == '.')
+	{
+		(*s)++;
+		while (**s >= '0' && **s <= '9')
+		{
+			fraction = fraction * 10 + (**s - '0');
+			divisor *= 10;
+			(*s)++;
+			has_fraction = true;
+		}
+	}
+	if (has_fraction)
+		res += (double)fraction / (double)divisor;
+	return (res * sign);
 }
 
 static t_vec3	parse_vec_fast(char **s, int type)
 {
 	t_vec3	p;
 
-	while (**s && !ft_isdigit(**s) && **s != '-')
-		(*s)++;
-	p.x = rt_atod(s);
-	while (**s && !ft_isdigit(**s) && **s != '-')
-		(*s)++;
-	p.y = rt_atod(s);
-	if (type != 2)
-	{
-		while (**s && !ft_isdigit(**s) && **s != '-')
-			(*s)++;
-		p.z = rt_atod(s);
-	}
+	p.x = parse_double_fast(s);
+	p.y = parse_double_fast(s);
+	if (type == 1)
+		p.z = parse_double_fast(s);
 	else
 		p.z = 0;
 	return (p);
@@ -159,6 +188,8 @@ static char	*pars_file_n(char **line)
 void	set_o(t_data *data, char *line, int i)
 {
 	t_vars_obj	v;
+	size_t		file_size = 0;
+	char		*end_ptr;
 	char		*c;
 
 	line++;
@@ -189,14 +220,15 @@ void	set_o(t_data *data, char *line, int i)
 	v.t.rot = mat4_align_vectors((t_vec3){1, 0, 0}, vec_normalize(v.t.rot_vec));
 	v.t.final = mat4_mult(&v.t.rot, &v.t.scale);
 	v.t.final = mat4_mult(&v.t.trans, &v.t.final);
-	v.str = read_file_fast(v.file);
+	v.str = map_file_fast(v.file, &file_size);
 	if (!v.str)
 	{
 		free(v.file);
 		clean_exit(data, 1, "Error: Read Fail\n", 0);
 	}
+	end_ptr = v.str + file_size;
 	free(v.file);
-	count_data_fast(v.str, &v.cts[0], &v.cts[1], &v.cts[2]);
+	count_data_fast(v.str, end_ptr, &v.cts[0], &v.cts[1], &v.cts[2]);
 	v.v = malloc(sizeof(t_vec3) * (v.cts[0] + 1));
 	v.vn = malloc(sizeof(t_vec3) * (v.cts[1] + 1));
 	v.vt = malloc(sizeof(t_vec3) * (v.cts[2] + 1));
@@ -205,13 +237,13 @@ void	set_o(t_data *data, char *line, int i)
 	v.idx[0] = 0;
 	v.idx[1] = 0;
 	v.idx[2] = 0;
-	v.len = ft_strlen(v.str);
+	v.len = file_size;
 	v.step = v.len / 60;
 	if (v.step == 0)
 		v.step = 1;
 	v.next = v.step;
 	c = v.str;
-	while (*c)
+	while (c < end_ptr && *c)
 	{
 		v.pos = c - v.str;
 		if (v.pos >= v.next)
@@ -255,13 +287,13 @@ void	set_o(t_data *data, char *line, int i)
 				ft_objadd_back(&data->objs, v.new);
 			}
 		}
-		while (*c && *c != '\n')
+		while (c < end_ptr && *c && *c != '\n')
 			c++;
-		if (*c)
+		if (c < end_ptr && *c)
 			c++;
 	}
 	printf("\rParsing OBJ: [100%%] - OK.\n");
-	free(v.str);
+	munmap(v.str, file_size);
 	free(v.v);
 	free(v.vn);
 	free(v.vt);
