@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
+#    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/02/15 15:32:53 by titan            ###   ########.fr        #
+#    Updated: 2026/02/17 15:09:21 by gajanvie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,6 +35,7 @@ YELLOW=\033[0;33m
 SRC_DIR := srcs/
 UPDATED_DIR := update/
 SRCB_DIR := srcs_bonus/
+POOL_DIR := thread_pool/
 HIT_DIR := hit_objs/
 READ_DIR := read_rt/
 SETTER_DIR := setters/
@@ -57,6 +58,7 @@ SRCSB := $(SRCB_DIR)main_bonus.c \
 		$(SRCB_DIR)event_bonus.c \
 		$(SRCB_DIR)render_bonus.c \
 		$(SRCB_DIR)lights_bonus.c \
+		$(SRCB_DIR)$(POOL_DIR)init_threads_p.c \
 		$(SRCB_DIR)$(BVH_DIR)box_cy.c \
 		$(SRCB_DIR)$(BVH_DIR)box_hy.c \
 		$(SRCB_DIR)$(BVH_DIR)box_sp.c \

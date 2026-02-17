@@ -6,17 +6,51 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 11:32:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/17 12:40:36 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 15:34:03 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
+void	ft_lstadd_back_stack(t_thread_p **lst, t_thread_p *new)
+{
+	t_thread_p	*current;
+
+	if (!lst)
+		return ;
+	if (!*lst)
+	{
+		*lst = new;
+		return ;
+	}
+	current = *lst;
+	while (current->next)
+		current = current->next;
+	current->next = new;
+}
+
+t_thread_p	*ft_lstnew_stack(t_thread_info content, t_task func)
+{
+	t_thread_p	*new_node;
+
+	new_node = ft_calloc(1, sizeof(t_thread_p));
+	if (new_node)
+	{
+		new_node->info = content;
+		new_node->task = func;
+	}
+	return (new_node);
+}
+
+
 void	ft_lstdelone_stack(t_thread_p	*lst)
 {
+	t_thread_p	*tmp;
+
+	tmp = lst->next;
 	if (lst)
 		free(lst);
-	lst = lst->next;
+	lst = tmp;
 }
 
 void	ft_lstclear_stack(t_thread_p **lst)
@@ -30,7 +64,7 @@ void	ft_lstclear_stack(t_thread_p **lst)
 	while (current)
 	{
 		tmp = current->next;
-		ft_lstdelone(current);
+		ft_lstdelone_stack(current);
 		current = tmp;
 	}
 	*lst = NULL;
@@ -42,7 +76,6 @@ void	*routine(void	*arg)
 	t_thread_info	info;
 	t_thread_p		*stack;
 	t_task			function;
-	bool			run;
 
 	data = (t_data *)arg;
 	while (1)
@@ -62,7 +95,21 @@ void	*routine(void	*arg)
 			function(&info);
 		}
 		pthread_mutex_unlock(&data->mutex_stack);
+		usleep(200);
 	}
+	return (NULL);
+}
+
+void	add_task(t_data *data, t_task func, t_thread_info info)
+{
+	t_thread_p		*stack;
+
+	stack = ft_lstnew_stack(info, func);
+	if (!stack)
+		clean_exit(data, 1, "Malloc\n", 0);
+	pthread_mutex_lock(&data->mutex_stack);
+	ft_lstadd_back_stack(&data->stack, stack);
+	pthread_mutex_unlock(&data->mutex_stack);
 }
 
 void	stop_threads(t_data *data)
@@ -70,6 +117,9 @@ void	stop_threads(t_data *data)
 	int	i;
 
 	i = 0;
+	pthread_mutex_lock(&data->mutex_stack);
+	data->thread_running = false;
+	pthread_mutex_unlock(&data->mutex_stack);
 	while (i < THREADS_COUNT)
 	{
 		pthread_join(data->threads[i], NULL);
@@ -81,8 +131,9 @@ void	stop_threads(t_data *data)
 
 void	init_thread_p(t_data *data)
 {
-	int				i;
+	int	i;
 
+	i = 0;
 	pthread_mutex_init(&data->mutex_stack, NULL);
 	while (i < THREADS_COUNT)
 	{

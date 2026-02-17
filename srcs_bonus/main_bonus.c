@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/16 14:09:13 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 15:29:32 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 	data->has_checker = false;
 	data->checker_color = (mlx_color)(uint32_t){0x00000000};
 	data->debug = false;
+	data->thread_running = true;
 	data->is_full = false;
 	data->sorted_objs = NULL;
 	data->bvh_nodes = NULL;
@@ -57,10 +58,12 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 	data->cam.up_guide = (t_vec3){0, 1, 0};
 	data->speed = 0.5;
 	data->rot_speed = 0.05;
+	data->lines = false;
 	data->mlx = mlx_init();
 	if (!data->mlx)
 		clean_exit(data, 1, "Error init MLX\n", 0);
 	data->filename = av[1];
+	init_thread_p(data);
 	read_rt(data);
 	convert_list_to_arrays(data);
 	if (data->obj_count > 25)
