@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/16 14:06:24 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 12:40:12 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,6 +216,15 @@ typedef struct s_light
 	struct s_light	*next;
 }				t_light;
 
+typedef void	(*t_task)(void *arg);
+
+typedef struct s_thread_p
+{
+	t_thread_info		info;
+	t_task				*task;
+	struct s_thread_p	*next;
+}				t_thread_p;
+
 typedef struct s_alight
 {
 	int				type;
@@ -234,51 +243,55 @@ typedef struct s_view_p
 
 typedef struct s_data
 {
-	t_list			*textures;
-	mlx_color		checker_color;
-	bool			has_checker;
-	bool			diff_ok;
-	int				deph;
-	double			last_frame_time;
-	bool			use_bvh;
-	int				step;
-	bool			camera_is_set;
-	bool			ambient_is_set;
-	bool			light_is_set;
-	int				width;
-	int				height;
-	mlx_context		mlx;
-	mlx_color		a_color;
-	double			a_ratio;
-	t_vec3			a_final;
-	void			*win;
-	void			*img;
-	mlx_color		*pixels;
-	bool			is_full;
-	int				key_table[512];
-	int				old_key_table[512];
-	t_camera		cam;
-	int				nodes_used;
-	bool			debug;
-	int				debug_depth;
-	t_obj			*objs;
-	t_obj			**sorted_objs;
-	t_bvh_node		*bvh_nodes;
-	t_obj			*array_obj;
-	t_aabb			*obj_aabbs;
-	int				obj_count;
-	t_obj			*plane_array;
-	int				plane_count;
-	t_light			*light;
-	int				nodes_capacity;
-	t_alight		alight;
-	double			speed;
-	double			rot_speed;
-	int				s_per_pixs;
-	t_view_p		view_port;
-	int				scene_fd;
-	char			*scene_line;
-	char			*filename;
+	t_list					*textures;
+	mlx_color				checker_color;
+	bool					has_checker;
+	bool					diff_ok;
+	int						deph;
+	double					last_frame_time;
+	bool					use_bvh;
+	int						step;
+	bool					camera_is_set;
+	bool					ambient_is_set;
+	bool					light_is_set;
+	int						width;
+	int						height;
+	mlx_context				mlx;
+	mlx_color				a_color;
+	double					a_ratio;
+	t_vec3					a_final;
+	void					*win;
+	void					*img;
+	mlx_color				*pixels;
+	bool					is_full;
+	int						key_table[512];
+	int						old_key_table[512];
+	t_camera				cam;
+	int						nodes_used;
+	bool					debug;
+	int						debug_depth;
+	t_obj					*objs;
+	t_obj					**sorted_objs;
+	t_bvh_node				*bvh_nodes;
+	t_obj					*array_obj;
+	t_aabb					*obj_aabbs;
+	int						obj_count;
+	t_obj					*plane_array;
+	int						plane_count;
+	t_light					*light;
+	int						nodes_capacity;
+	t_alight				alight;
+	double					speed;
+	double					rot_speed;
+	int						s_per_pixs;
+	t_view_p				view_port;
+	int						scene_fd;
+	char					*scene_line;
+	char					*filename;
+	pthread_mutex_t			mutex_stack;
+	bool					thread_running;
+	pthread_t				threads[THREADS_COUNT];
+	struct s_thread_p		*stack;
 }				t_data;
 
 typedef struct s_thread_info

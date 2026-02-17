@@ -1,0 +1,72 @@
+# Blender 5.0.1 MTL File: 'SanFrancisco_City.blend'
+# www.blender.org
+
+newmtl SanFrancisco_Part-0.001
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/gajanvie/Downloads/San/Textures/SanFrancisco_Part-0.jpg
+
+newmtl SanFrancisco_Part-1.001
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/gajanvie/Downloads/San/Textures/SanFrancisco_Part-1.jpg
+
+newmtl SanFrancisco_Part-2.001
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/gajanvie/Downloads/San/Textures/SanFrancisco_Part-2.jpg
+
+newmtl SanFrancisco_Part-3.001
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/gajanvie/Downloads/San/Textures/SanFrancisco_Part-3.jpg
+
+newmtl SanFrancisco_Part-4.001
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/gajanvie/Downloads/San/Textures/SanFrancisco_Part-4.jpg
+
+newmtl SanFrancisco_Part-5.001
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd /home/gajanvie/Downloads/San/Textures/SanFrancisco_Part-5.jpg
+
+newmtl SanFrancisco_Part-6.001
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd san.jpg
