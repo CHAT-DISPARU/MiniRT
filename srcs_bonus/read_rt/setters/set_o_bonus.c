@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/17 18:09:42 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 18:43:03 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,13 @@ void	set_o(t_data *data, char *line, int i)
 	size_t		file_size = 0;
 	char		*end_ptr;
 	char		*c;
+	int			c_v;
+	int			c_vn;
+	int			c_vt;
 
+	c_v = BUFFER_SIZE;
+	c_vn = BUFFER_SIZE;
+	c_vt = BUFFER_SIZE;
 	line++;
 	check_missing_info(data, line, i);
 	v.t.center = parse_vec3(&line, data, i);
@@ -204,9 +210,9 @@ void	set_o(t_data *data, char *line, int i)
 	}
 	end_ptr = v.str + file_size;
 	free(v.file);
-	v.v = malloc(sizeof(t_vec3) * BUFFER_SIZE);
-	v.vn = malloc(sizeof(t_vec3) * BUFFER_SIZE);
-	v.vt = malloc(sizeof(t_vec3) * BUFFER_SIZE);
+	v.v = malloc(sizeof(t_vec3) * c_v);
+	v.vn = malloc(sizeof(t_vec3) * c_vn);
+	v.vt = malloc(sizeof(t_vec3) * c_vt);
 	if (!v.v || !v.vn || !v.vt)
 		clean_exit(data, 1, "Malloc fail\n", 0);
 	v.idx[0] = 0;
@@ -232,22 +238,31 @@ void	set_o(t_data *data, char *line, int i)
 			if (*(c + 1) == ' ')
 			{
 				c += 2;
-				if (v.idx[0] % BUFFER_SIZE == 0)
-					v.v = realloc(v.v, sizeof(v.v) + sizeof(t_vec3) * BUFFER_SIZE);
+				if (v.idx[0] >= c_v)
+				{
+					c_v *= 2;
+					v.v = realloc(v.v, sizeof(t_vec3) * c_v);
+				}
 				v.v[v.idx[0]++] = parse_vec_fast(&c, 1);
 			}
 			else if (*(c + 1) == 'n')
 			{
 				c += 3;
-				if (v.idx[1] % BUFFER_SIZE == 0)
-					v.vn = realloc(v.vn, sizeof(v.vn) + sizeof(t_vec3) * BUFFER_SIZE);
+				if (v.idx[1] >= c_vn)
+				{
+					c_vn *= 2;
+					v.vn = realloc(v.vn, sizeof(t_vec3) * c_vn);
+				}
 				v.vn[v.idx[1]++] = parse_vec_fast(&c, 1);
 			}
 			else if (*(c + 1) == 't')
 			{
 				c += 3;
-				if (v.idx[2] % BUFFER_SIZE == 0)
-					v.vt = realloc(v.vt, sizeof(v.vt) + sizeof(t_vec3) * BUFFER_SIZE);
+				if (v.idx[2] >= c_vt)
+				{
+					c_vt *= 2;
+					v.vt = realloc(v.vt, sizeof(t_vec3) * c_vt);
+				}
 				v.vt[v.idx[2]++] = parse_vec_fast(&c, 2);
 			}
 		}
