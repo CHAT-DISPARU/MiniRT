@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/02/17 16:32:19 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 17:46:03 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,10 +285,7 @@ void	render(void *arg)
 	t_idxs		idxs;
 	t_vec3		color_acc;
 	t_render_v	rv;
-	//int             lines_done = 0;
 	int             total_lines;
-	//int				mid_y = data->height / 2;
-	//bool			is_main_thread = (info->start_x == 0 && mid_y >= info->start_y && mid_y < info->end_y);
 
 	rv.inv_width = 1.0 / (data->width - 1);
 	rv.inv_height = 1.0 / (data->height - 1);
@@ -308,15 +305,8 @@ void	render(void *arg)
 			set_final_color(color_acc, data, idxs, info);
 			idxs.x += data->step;
 		}
-		/*if ((data->s_per_pixs > 1 || data->deph > 1) && is_main_thread)
-		{
-			lines_done++;
-			print_progress(lines_done, total_lines);
-		}*/
 		idxs.y += data->step;
 	}
-	//if ((data->s_per_pixs > 1 || data->deph > 1) && is_main_thread)
-	//	printf("\n");
 	pthread_mutex_lock(&data->finish_count);
 	data->finish++;
 	pthread_mutex_unlock(&data->finish_count);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_o_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/17 09:53:15 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/17 18:09:42 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,30 +34,6 @@ static char *map_file_fast(char *filename, size_t *size)
 	if (ptr == MAP_FAILED)
 		return (NULL);
 	return (ptr);
-}
-
-static void	count_data_fast(char *s, char *end, int *v, int *vn, int *vt)
-{
-	*v = 0; *vn = 0; *vt = 0;
-	while (s < end && *s)
-	{
-		if (*s == 'v')
-		{
-			if (s + 1 < end)
-			{
-				if (*(s + 1) == ' ')
-					(*v)++;
-				else if (*(s + 1) == 'n')
-					(*vn)++;
-				else if (*(s + 1) == 't')
-					(*vt)++;
-			}
-		}
-		while (s < end && *s && *s != '\n')
-			s++;
-		if (s < end && *s)
-			s++;
-	}
 }
 
 static double parse_double_fast(char **s)
@@ -228,10 +204,9 @@ void	set_o(t_data *data, char *line, int i)
 	}
 	end_ptr = v.str + file_size;
 	free(v.file);
-	count_data_fast(v.str, end_ptr, &v.cts[0], &v.cts[1], &v.cts[2]);
-	v.v = malloc(sizeof(t_vec3) * (v.cts[0] + 1));
-	v.vn = malloc(sizeof(t_vec3) * (v.cts[1] + 1));
-	v.vt = malloc(sizeof(t_vec3) * (v.cts[2] + 1));
+	v.v = malloc(sizeof(t_vec3) * BUFFER_SIZE);
+	v.vn = malloc(sizeof(t_vec3) * BUFFER_SIZE);
+	v.vt = malloc(sizeof(t_vec3) * BUFFER_SIZE);
 	if (!v.v || !v.vn || !v.vt)
 		clean_exit(data, 1, "Malloc fail\n", 0);
 	v.idx[0] = 0;
@@ -257,16 +232,22 @@ void	set_o(t_data *data, char *line, int i)
 			if (*(c + 1) == ' ')
 			{
 				c += 2;
+				if (v.idx[0] % BUFFER_SIZE == 0)
+					v.v = realloc(v.v, sizeof(v.v) + sizeof(t_vec3) * BUFFER_SIZE);
 				v.v[v.idx[0]++] = parse_vec_fast(&c, 1);
 			}
 			else if (*(c + 1) == 'n')
 			{
 				c += 3;
+				if (v.idx[1] % BUFFER_SIZE == 0)
+					v.vn = realloc(v.vn, sizeof(v.vn) + sizeof(t_vec3) * BUFFER_SIZE);
 				v.vn[v.idx[1]++] = parse_vec_fast(&c, 1);
 			}
 			else if (*(c + 1) == 't')
 			{
 				c += 3;
+				if (v.idx[2] % BUFFER_SIZE == 0)
+					v.vt = realloc(v.vt, sizeof(v.vt) + sizeof(t_vec3) * BUFFER_SIZE);
 				v.vt[v.idx[2]++] = parse_vec_fast(&c, 2);
 			}
 		}

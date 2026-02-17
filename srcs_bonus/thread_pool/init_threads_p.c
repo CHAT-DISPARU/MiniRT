@@ -6,28 +6,21 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 11:32:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/17 16:32:57 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 16:42:23 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-void	ft_lstadd_back_stack(t_thread_p **lst, t_thread_p *new)
+void	ft_lstadd_front_stack(t_thread_p **lst, t_thread_p *new)
 {
-	t_thread_p	*current;
-
-	if (!lst)
-		return ;
-	if (!*lst)
+	if (lst && new)
 	{
+		new->next = *lst;
 		*lst = new;
-		return ;
 	}
-	current = *lst;
-	while (current->next)
-		current = current->next;
-	current->next = new;
 }
+
 
 t_thread_p	*ft_lstnew_stack(t_thread_info content, t_task func)
 {
@@ -89,10 +82,12 @@ void	*routine(void	*arg)
 			tmp = data->stack;
 			data->stack = data->stack->next;
 			ft_lstdelone_stack(tmp);
+			pthread_mutex_unlock(&data->mutex_stack);
 			function(&info);
 		}
-		pthread_mutex_unlock(&data->mutex_stack);
-		usleep(20);
+		else
+			pthread_mutex_unlock(&data->mutex_stack);
+		usleep(100);
 	}
 	return (NULL);
 }
@@ -105,7 +100,7 @@ void	add_task(t_data *data, t_task func, t_thread_info info)
 	if (!stack)
 		clean_exit(data, 1, "Malloc\n", 0);
 	pthread_mutex_lock(&data->mutex_stack);
-	ft_lstadd_back_stack(&data->stack, stack);
+	ft_lstadd_front_stack(&data->stack, stack);
 	pthread_mutex_unlock(&data->mutex_stack);
 }
 

@@ -6,7 +6,7 @@
 #    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/02/17 15:09:21 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/02/17 17:35:03 by gajanvie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -134,7 +134,9 @@ SRCS := $(SRC_DIR)main.c \
 
 
 OBJ := $(patsubst $(SRC_DIR)%.c, $(BUILD_DIR)%.o, $(SRCS))
+DEP := $(patsubst $(SRC_DIR)%.c, $(BUILD_DIR)%.d, $(SRCS))
 OBJB := $(patsubst $(SRCB_DIR)%.c, $(BUILD_DIR)%.o, $(SRCSB))
+DEPB := $(patsubst $(SRCB_DIR)%.c, $(BUILD_DIR)%.d, $(SRCSB))
 
 
 HEADERS := includes/
@@ -142,7 +144,7 @@ HEADERSB := includes/ -I includes_bonus/
 
 CC := clang
 
-FLAGS := -Wall -Werror -Wextra -g -I libs/MacroLibX/includes -O3 -mavx2 -mfma -march=native -mtune=native -funroll-loops -fvectorize -ffp-contract=fast  -freciprocal-math -ffast-math -fstrict-aliasing  -fomit-frame-pointer -flto=full -mprefer-vector-width=256
+FLAGS := -Wall -Werror -Wextra -g -I libs/MacroLibX/includes -O3 -mavx2 -mfma -march=native -mtune=native -funroll-loops -fvectorize -ffp-contract=fast  -freciprocal-math -ffast-math -fstrict-aliasing  -fomit-frame-pointer -flto=full -mprefer-vector-width=256 -MMD -MP
 
 all: $(LIB) header ${NAME}
 
@@ -210,3 +212,5 @@ re: fclean all
 re_bonus:	fclean bonus
 
 .PHONY: clean fclean re all libft header
+
+-include $(DEP) $(DEPB)

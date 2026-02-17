@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/02/17 16:31:45 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 18:00:02 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,10 @@ void	thread_calls(t_data *data)
 	data->finish = 0;
 	set_indexs(indexs);
 	pthread_mutex_init(&data->finish_count, NULL);
+	pthread_mutex_lock(&data->finish_count);
+	finish = data->finish;
+	pthread_mutex_unlock(&data->finish_count);
+	print_progress(finish, THREADS_COUNT * NB_TASK_R);
 	while (i < THREADS_COUNT * NB_TASK_R)
 	{
 		current_col = indexs[i] % cols;
@@ -85,10 +89,12 @@ void	thread_calls(t_data *data)
 		pthread_mutex_lock(&data->finish_count);
 		finish = data->finish;
 		pthread_mutex_unlock(&data->finish_count);
+		print_progress(finish, THREADS_COUNT * NB_TASK_R);
 		if (finish == THREADS_COUNT * NB_TASK_R)
 			break ;
 		usleep(200);
 	}
+	printf("\n");
 	pthread_mutex_destroy(&data->finish_count);
 	if (data->lines)
 	{
@@ -109,10 +115,10 @@ void	thread_calls(t_data *data)
 			y++;
 		}
 		x = 0;
-		while (x < data->height)
+		while (x < data->width)
 		{
 			y = 0;
-			while (y < data->width)
+			while (y < data->height)
 			{
 				idx = (y) * data->width + (x);
 				data->pixels[idx] = (mlx_color)(uint32_t){0xFF0000FF};
