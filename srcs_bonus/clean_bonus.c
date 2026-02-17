@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:10:27 by titan             #+#    #+#             */
-/*   Updated: 2026/02/16 14:00:29 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 13:54:58 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 	t_texture	*tex;
 	t_list		*tmp_t;
 
+	stop_threads(data);
 	print_m_and_gnl(data, mess_eror, exit_code, i);
 	current = data->objs;
 	while (current)

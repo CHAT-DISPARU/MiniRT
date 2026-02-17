@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/02/15 15:40:19 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/17 15:24:36 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,7 +278,7 @@ void	set_final_color(t_vec3 color_acc, t_data *data, t_idxs idxs, t_thread_info 
 
 	couleur spec ​=C light​⋅ks​⋅(max(0,V⋅R)) exposant α
 */
-void	*render(void *arg)
+void	render(void *arg)
 {
 	t_thread_info	*info = (t_thread_info *)arg;
 	t_data			*data = info->data;
@@ -317,5 +317,7 @@ void	*render(void *arg)
 	}
 	if ((data->s_per_pixs > 1 || data->deph > 1) && is_main_thread)
 		printf("\n");
-	return (NULL);
+	pthread_mutex_lock(&data->finish_count);
+	data->finish++;
+	pthread_mutex_unlock(&data->finish_count);
 }

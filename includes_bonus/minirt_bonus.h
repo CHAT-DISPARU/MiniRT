@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/17 12:40:12 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 15:28:00 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,13 @@
 # include <mlx_extended.h>
 # include <time.h>
 # include <pthread.h>
+# include <unistd.h>
 # include <float.h>
 
 # define WIDTH			1500
 # define HEIGHT			1000
 # define S_PER_PIXS		100
+# define NB_TASK_R		1
 # define PI				3.14159265358979323846
 # define THREADS_COUNT	16
 # define MAX_BVH_DEPTH	17
@@ -216,15 +218,6 @@ typedef struct s_light
 	struct s_light	*next;
 }				t_light;
 
-typedef void	(*t_task)(void *arg);
-
-typedef struct s_thread_p
-{
-	t_thread_info		info;
-	t_task				*task;
-	struct s_thread_p	*next;
-}				t_thread_p;
-
 typedef struct s_alight
 {
 	int				type;
@@ -289,8 +282,11 @@ typedef struct s_data
 	char					*scene_line;
 	char					*filename;
 	pthread_mutex_t			mutex_stack;
+	pthread_mutex_t			finish_count;
+	int						finish;
 	bool					thread_running;
 	pthread_t				threads[THREADS_COUNT];
+	bool					lines;
 	struct s_thread_p		*stack;
 }				t_data;
 
@@ -302,6 +298,15 @@ typedef struct s_thread_info
 	int		start_x;
 	int		end_x;
 }				t_thread_info;
+
+typedef void	(*t_task)(void *arg);
+
+typedef struct s_thread_p
+{
+	t_thread_info		info;
+	t_task				task;
+	struct s_thread_p	*next;
+}				t_thread_p;
 
 typedef struct s_file_info
 {
@@ -332,7 +337,7 @@ typedef struct s_vars_obj
 typedef bool	(*t_calc_f)(t_obj *obj, t_ray ray, t_hit_r *rec);
 void		thread_calls(t_data *data);
 int			resize_win(t_data *data);
-void		*render(void *arg);
+void		render(void *arg);
 mlx_color	parse_color(char **line, t_data *data, int i);
 t_vec3		parse_vec3(char **line, t_data *data, int i);
 double		rt_atod(char **line);
@@ -423,5 +428,8 @@ t_texture	*load_texture(t_data *data, char *filepath, char *file_o);
 void		apply_bump(t_hit_r *rec, t_texture *bump_tex, double strength);
 void		clean(t_data *data);
 void		re_init(t_data *data);
+void		stop_threads(t_data *data);
+void		add_task(t_data *data, t_task func, t_thread_info info);
+void		init_thread_p(t_data *data);
 
 #endif

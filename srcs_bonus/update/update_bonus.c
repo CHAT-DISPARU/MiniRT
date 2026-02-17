@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:11:09 by titan             #+#    #+#             */
-/*   Updated: 2026/02/16 14:06:38 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 15:13:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,11 @@ void	update(void *param)
 		read_rt(data);
 		convert_list_to_arrays(data);
 		calcul_ambient(data);
+		movded = true;
+	}
+	if (data->key_table[15] && !data->old_key_table[15])
+	{
+		data->lines = !data->lines;
 		movded = true;
 	}
 	if (movded)
