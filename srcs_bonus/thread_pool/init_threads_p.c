@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 11:32:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/17 15:34:03 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 16:32:57 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,14 +43,10 @@ t_thread_p	*ft_lstnew_stack(t_thread_info content, t_task func)
 }
 
 
-void	ft_lstdelone_stack(t_thread_p	*lst)
+void	ft_lstdelone_stack(t_thread_p *lst)
 {
-	t_thread_p	*tmp;
-
-	tmp = lst->next;
 	if (lst)
 		free(lst);
-	lst = tmp;
 }
 
 void	ft_lstclear_stack(t_thread_p **lst)
@@ -74,7 +70,7 @@ void	*routine(void	*arg)
 {
 	t_data			*data;
 	t_thread_info	info;
-	t_thread_p		*stack;
+	t_thread_p		*tmp;
 	t_task			function;
 
 	data = (t_data *)arg;
@@ -86,16 +82,17 @@ void	*routine(void	*arg)
 			pthread_mutex_unlock(&data->mutex_stack);
 			break ;
 		}
-		stack = data->stack;
-		if (stack)
+		if (data->stack)
 		{
-			info = stack->info;
-			function = stack->task;
-			ft_lstdelone_stack(data->stack);
+			info = data->stack->info;
+			function = data->stack->task;
+			tmp = data->stack;
+			data->stack = data->stack->next;
+			ft_lstdelone_stack(tmp);
 			function(&info);
 		}
 		pthread_mutex_unlock(&data->mutex_stack);
-		usleep(200);
+		usleep(20);
 	}
 	return (NULL);
 }

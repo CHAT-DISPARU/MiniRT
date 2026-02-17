@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/02/17 15:24:35 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/17 16:31:45 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,24 @@
 
 void	set_indexs(int *indexs)
 {
-	int		i;
-	bool	is_new;
-	int		j;
+	int	i;
+	int	tmp;
+	int	j;
 
 	i = 0;
 	while (i < THREADS_COUNT * NB_TASK_R)
 	{
-		indexs[i] = rand() % (THREADS_COUNT * NB_TASK_R);
-		j = 0;
-		is_new = true;
-		while (j < i)
-		{
-			if (indexs[j] == indexs[i])
-			{
-				is_new = false;
-				break ;
-			}
-			j++;
-		}
-		if (!is_new)
-			continue ;
+		indexs[i] = i;
 		i++;
+	}
+	i = THREADS_COUNT * NB_TASK_R - 1;
+	while (i > 0)
+	{
+		j = rand() % (i + 1); 
+		tmp = indexs[i];
+		indexs[i] = indexs[j];
+		indexs[j] = tmp;
+		i--;
 	}
 }
 
@@ -44,7 +40,10 @@ void	thread_calls(t_data *data)
 	t_thread_info	infos;
 	int				indexs[THREADS_COUNT * NB_TASK_R];
 	int				i;
+	int				x;
+	int				y;
 	int				cols;
+	int				idx;
 	int				rows;
 	int				grid_w;
 	int				finish;
@@ -60,6 +59,7 @@ void	thread_calls(t_data *data)
 	grid_w = data->width / cols;
 	grid_h = data->height / rows;
 	i = 0;
+	data->finish = 0;
 	set_indexs(indexs);
 	pthread_mutex_init(&data->finish_count, NULL);
 	while (i < THREADS_COUNT * NB_TASK_R)
@@ -92,19 +92,33 @@ void	thread_calls(t_data *data)
 	pthread_mutex_destroy(&data->finish_count);
 	if (data->lines)
 	{
-		int y = 0;
+		if (grid_w == 0)
+			grid_w = 1;
+		if (grid_h == 0)
+			grid_h = 1;
+		y = 0;
 		while (y < data->height)
 		{
-			int x = 0;
+			x = 0;
 			while (x < data->width)
 			{
-				if (x % grid_w == 0 || y % grid_h == 0)
-				{
-					int idx = (y) * data->width + (x);
-					data->pixels[idx] = (mlx_color)(uint32_t){0xFF0000FF};
-				}
+				idx = (y) * data->width + (x);
+				data->pixels[idx] = (mlx_color)(uint32_t){0xFF0000FF};
+				x += grid_w;
 			}
 			y++;
+		}
+		x = 0;
+		while (x < data->height)
+		{
+			y = 0;
+			while (y < data->width)
+			{
+				idx = (y) * data->width + (x);
+				data->pixels[idx] = (mlx_color)(uint32_t){0xFF0000FF};
+				y += grid_h;
+			}
+			x++;
 		}
 	}
 	mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
