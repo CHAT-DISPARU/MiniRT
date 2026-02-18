@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:56:43 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 12:13:38 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/18 11:21:42 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ void	key_down(int key, void *param)
 {
 	t_data	*data;
 
-	printf("%d\n", key);
 	data = (t_data *)param;
 	if (key == 41)
 		mlx_loop_end(data->mlx);

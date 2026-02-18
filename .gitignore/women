@@ -1,10 +1,10 @@
 C 0,0,-20 0,0,1 70
 									         A 			       	0.2 255,255,255
 								
-sq 0,0,0     0,1,0    100 100    200,200,200	0.4 0.08
+sq 0,0,0     0,1,0    100 100    150,150,150	0.6 0.08
 
 L 0,35,0 0.5 255,255,255
 O 0,2.9,10 -0.99,0,0.12 200,50,50 3 0 0 .gitignore/women.obj .gitignore/kitchen.png
 
-O 10,2.9,5 -0.99,0,0.12 200,50,50 3 0 0 .gitignore/women2.obj .gitignore/women2.png
-O -10,2.9,5 -0.99,0,0.12 200,50,50 3 0 0 .gitignore/women3.obj .gitignore/women3.png
+O 4,2.9,5 -0.99,0,0.12 200,50,50 3 0 0 .gitignore/women2.obj .gitignore/women2.png
+O -4,2.9,5 -0.99,0,0.12 200,50,50 3 0 0 .gitignore/women3.obj .gitignore/women3.png
