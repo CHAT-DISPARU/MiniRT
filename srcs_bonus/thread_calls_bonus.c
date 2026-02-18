@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   thread_calls_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/02/17 18:00:02 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/18 11:18:56 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ void	thread_calls(t_data *data)
 			break ;
 		usleep(200);
 	}
-	printf("\n");
 	pthread_mutex_destroy(&data->finish_count);
 	if (data->lines)
 	{

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_o_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/17 18:43:03 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/18 11:13:05 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-static char *map_file_fast(char *filename, size_t *size)
+static char	*map_file_fast(char *filename, size_t *size)
 {
-	int         fd;
-	struct stat st;
-	char        *ptr;
+	int			fd;
+	struct stat	st;
+	char		*ptr;
 
 	fd = open(filename, O_RDONLY);
 	if (fd < 0)
@@ -36,7 +36,7 @@ static char *map_file_fast(char *filename, size_t *size)
 	return (ptr);
 }
 
-static double parse_double_fast(char **s)
+static double	parse_double_fast(char **s)
 {
 	double		res;
 	double		sign;
@@ -89,14 +89,24 @@ static t_vec3	parse_vec_fast(char **s, int type)
 	return (p);
 }
 
-static int	fast_atoi_move(char **s)
+static inline int	fast_atoi_move(char **s)
 {
 	int	res;
+	int	sign;
 
-	res = ft_atoi(*s);
-	while (**s && ft_isdigit(**s))
+	res = 0;
+	sign = 1;
+	if (**s == '-')
+	{
+		sign = -1;
 		(*s)++;
-	return (res);
+	}
+	while (**s >= '0' && **s <= '9')
+	{
+		res = res * 10 + (**s - '0');
+		(*s)++;
+	}
+	return (res * sign);
 }
 
 static t_triangle	parse_face_fast(char **s, t_vars_obj *v)
@@ -280,7 +290,8 @@ void	set_o(t_data *data, char *line, int i)
 					v.new->tex = v.tex;
 				v.new->reflectivity = v.t.reflectivity;
 				v.new->rought = v.t.rought;
-				ft_objadd_back(&data->objs, v.new);
+				v.new->next = data->objs;
+				data->objs = v.new;
 			}
 		}
 		while (c < end_ptr && *c && *c != '\n')
