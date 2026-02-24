@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   build_bvh.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 13:46:56 by titan             #+#    #+#             */
-/*   Updated: 2026/02/11 15:12:30 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/24 16:38:16 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,9 @@ void	build_bvh(t_data *data)
 		k++;
 	}
 	printf("BVH Terminé :\n");
-	printf("- Total Noeuds : %d\n", data->nodes_used);
-	printf("- Total Objets : %d\n", data->obj_count);
-	printf("- Total Feuilles : %d\n", leaf_count);
+	printf("-Total Noeuds : %d\n", data->nodes_used);
+	printf("-Total Objets : %d\n", data->obj_count);
+	printf("-Total Feuilles : %d\n", leaf_count);
 	if (leaf_count > 0)
 		printf("- Moyenne Obj/Feuille : %.2f\n", (double)data->obj_count / leaf_count);
 	else

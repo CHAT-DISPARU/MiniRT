@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_tr_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 14:38:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/15 14:29:50 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/24 17:28:49 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,5 +62,6 @@ void	set_tr(t_data *data, char *line, int i)
 	else
 		new_tr->has_bump = false;
 	new_tr->next = NULL;
-	ft_objadd_back(&data->objs, new_tr);
+	new_tr->next = data->objs;
+	data->objs = new_tr;
 }
