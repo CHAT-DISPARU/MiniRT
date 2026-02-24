@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/24 12:08:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/24 13:10:55 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 # define NB_TASK_R		24
 # define PI				3.14159265358979323846
 # define THREADS_COUNT	16
-# define MAX_BVH_DEPTH	17
+# define MAX_BVH_DEPTH	24
 # define EPSILON		1e-4
 
 typedef struct s_aabb

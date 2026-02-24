@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/17 16:17:09 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/24 16:51:59 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 	data->is_full = false;
 	data->sorted_objs = NULL;
 	data->bvh_nodes = NULL;
-	data->debug_depth = MAX_BVH_DEPTH;
+	data->debug_depth = 8;
 	data->scene_fd = -1;
 	data->scene_line = NULL;
 	if (ac == 4)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_o_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/18 11:13:05 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/24 14:38:48 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ static t_vec3	parse_vec_fast(char **s, int type)
 	return (p);
 }
 
-static inline int	fast_atoi_move(char **s)
+static inline int	atoi_move(char **s)
 {
 	int	res;
 	int	sign;
@@ -120,18 +120,18 @@ static t_triangle	parse_face_fast(char **s, t_vars_obj *v)
 	{
 		while (**s && !ft_isdigit(**s))
 			(*s)++;
-		idx[0][i] = fast_atoi_move(s);
+		idx[0][i] = atoi_move(s);
 		idx[1][i] = 0;
 		idx[2][i] = 0;
 		if (**s == '/')
 		{
 			(*s)++;
 			if (**s != '/')
-				idx[1][i] = fast_atoi_move(s);
+				idx[1][i] = atoi_move(s);
 			if (**s == '/')
 			{
 				(*s)++;
-				idx[2][i] = fast_atoi_move(s);
+				idx[2][i] = atoi_move(s);
 			}
 		}
 		while (**s && !is_space(**s) && **s != '\n')
