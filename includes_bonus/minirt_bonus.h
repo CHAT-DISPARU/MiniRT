@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/17 18:07:07 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/24 12:08:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@
 # define WIDTH			1500
 # define HEIGHT			1000
 # define S_PER_PIXS		100
-# define NB_TASK_R		8
+# define NB_TASK_R		24
 # define PI				3.14159265358979323846
 # define THREADS_COUNT	16
 # define MAX_BVH_DEPTH	17
