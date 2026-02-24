@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:04:41 by titan             #+#    #+#             */
-/*   Updated: 2026/02/16 13:51:32 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/24 12:24:05 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,18 @@ char	*jump_to_next_line(char *str)
 	return (str);
 }
 
+bool	verify_filename(char *filename)
+{
+	size_t	len;
+
+	len = ft_strlen(filename);
+	if (len < 3)
+		return (false);
+	if (!ft_strncmp(filename + len - 3, ".rt",3))
+		return (true);
+	return (false);
+}
+
 void	read_rt(t_data *data)
 {
 	struct stat	file_stat;
@@ -57,6 +69,8 @@ void	read_rt(t_data *data)
 	char		*line_start;
 	int			i;
 
+	if (verify_filename(data->filename) == false)
+		clean_exit(data, 1, "Error: File name\n", 0);
 	data->scene_fd = open(data->filename, O_RDONLY);
 	if (data->scene_fd < 0)
 		clean_exit(data, 1, "Error: Open failed\n", 0);
