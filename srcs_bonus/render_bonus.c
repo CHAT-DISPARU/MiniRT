@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/02/25 15:23:16 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/26 18:04:23 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 			rec.color.b = base_color.z * 255.0;
 		}
 		calc_lights(&lights, rec, data, light);
-		color_acc = vec_scale(lights.ambient, rec.obj_ptr->ka);
+		color_acc = lights.ambient;
 		view_dir = vec_normalize(vec_scale(ray.dir, -1.0));
 		while (light)
 		{

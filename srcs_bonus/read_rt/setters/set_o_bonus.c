@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/26 17:19:59 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/26 18:24:36 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,8 +244,12 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			i = 1;
 			mtl_node = NULL;
 			mtl_node = malloc(sizeof(t_mtl_info));
-			mtl_node->idx = ptr + 7;
+			mtl_node->idx = ft_strdup(ptr + 7);
 			mtl_node->tex = NULL;
+			mtl_node->ka = 0.2;
+			mtl_node->ks = 1;
+			mtl_node->kd = 0.8;
+			mtl_node->ns = 32;
 		}
 		if (!ft_strncmp("Ka ", ptr, 3) && i == 1)
 		{
@@ -467,10 +471,6 @@ void	set_o(t_data *data, char *line, int i)
 				v.new->reflectivity = v.t.reflectivity;
 				v.new->rought = v.t.rought;
 				v.new->next = data->objs;
-				mat.ka = 0.2;
-				mat.ks = 1;
-				mat.kd = 0.8;
-				mat.ns = 32;
 				v.new->ks = mat.ks;
 				v.new->kd = mat.kd;
 				v.new->ka = mat.ka;
