@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/25 16:50:15 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/26 11:05:39 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,7 @@ typedef struct s_mtl_info
 	double				ns;
 	double				kd;
 	double				ks;
-	int					idx;
+	char				*idx;
 	struct s_mtl_info	*next;
 }				t_mtl_info;
 
@@ -258,6 +258,7 @@ typedef struct s_data
 	int						deph;
 	double					last_frame_time;
 	bool					use_bvh;
+	t_mtl_info				*mtl_info;
 	int						step;
 	bool					camera_is_set;
 	bool					ambient_is_set;

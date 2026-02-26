@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   clean_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:10:27 by titan             #+#    #+#             */
-/*   Updated: 2026/02/18 11:19:18 by titan            ###   ########.fr       */
+/*   Updated: 2026/02/26 11:15:03 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	clean(t_data *data)
 	t_light		*tmp2;
 	t_texture	*tex;
 	t_list		*tmp_t;
+	t_mtl_info	*t;
 
 	printf("\n");
 	current = data->objs;
@@ -65,6 +66,15 @@ void	clean(t_data *data)
 		free(data->textures);
 		data->textures = tmp_t;
 	}
+	while (data->mtl_info)
+	{
+		if (data->mtl_info->idx)
+			free(data->mtl_info->idx);
+		t = data->mtl_info->next;
+		free(data->mtl_info);
+		data->mtl_info = t;
+	}
+	data->mtl_info = NULL;
 	data->textures = NULL;
 	data->objs = NULL;
 	while (data->light)
@@ -102,6 +112,7 @@ void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 	t_light		*tmp2;
 	t_texture	*tex;
 	t_list		*tmp_t;
+	t_mtl_info	*t;
 
 	printf("\n");
 	stop_threads(data);
@@ -125,6 +136,15 @@ void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 		free(data->textures);
 		data->textures = tmp_t;
 	}
+	while (data->mtl_info)
+	{
+		if (data->mtl_info->idx)
+			free(data->mtl_info->idx);
+		t = data->mtl_info->next;
+		free(data->mtl_info);
+		data->mtl_info = t;
+	}
+	data->mtl_info = NULL;
 	data->textures = NULL;
 	data->objs = NULL;
 	while (data->light)
