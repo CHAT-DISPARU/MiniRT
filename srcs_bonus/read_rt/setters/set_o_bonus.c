@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/26 11:42:11 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/26 12:31:27 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,7 +248,7 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			vec.x = parse_double_fast(&line2);
 			mtl_node->ns = vec.x;
 		}
-		if (ft_strcmp("\n", line) && i == 1)
+		if (!ft_strcmp("\n", line) && i == 1)
 		{
 			i = 0;
 			mtl_node->next = *mtl_info;
@@ -364,6 +364,7 @@ void	set_o(t_data *data, char *line, int i)
 	mat.ks = 1;
 	mat.kd = 0.8;
 	mat.ns = 32;
+	mat.tex = v.tex;
 	while (c < end_ptr && *c)
 	{
 		v.pos = c - v.str;
@@ -375,7 +376,7 @@ void	set_o(t_data *data, char *line, int i)
 		}
 		if (!ft_strncmp(c, "mtllib ", 7) && !data->mtl_info)
 			read_mtl(c + 7, &data->mtl_info, data);
-		if (!ft_strncmp(c, "usemtl ", 7) && !data->mtl_info)
+		if (!ft_strncmp(c, "usemtl ", 7) && data->mtl_info)
 			mat = find_mat(data->mtl_info, c + 7);
 		if (*c == 'v')
 		{
@@ -421,7 +422,7 @@ void	set_o(t_data *data, char *line, int i)
 				v.new->color = v.t.col;
 				v.new->has_texture = v.has_tex;
 				if (v.has_tex)
-					v.new->tex = v.tex;
+					v.new->tex = mat.tex;
 				v.new->reflectivity = v.t.reflectivity;
 				v.new->rought = v.t.rought;
 				v.new->next = data->objs;
