@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/26 12:31:27 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/26 16:33:50 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,8 +194,11 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 	char	*file;
 	int		i;
 	int		fd;
-	char	*line;
-	char	*line2;
+	struct stat	file_stat;
+	char		*cursor;
+	char		*line_start;
+	char		*line;
+	char		*ptr;
 	t_mtl_info	*mtl_node;
 	t_vec3		vec;
 
@@ -207,56 +210,93 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 	fd = open(file, O_RDONLY);
 	if (fd < 0)
 		clean_exit(data, 1, "open mtl fail\n", 0);
-	line = get_next_line(fd, 0);
+	if (fstat(fd, &file_stat) < 0)
+		clean_exit(data, 1, "Error: Fstat failed\n", 0);
+	if (S_ISDIR(file_stat.st_mode))
+		clean_exit(data, 1, "Error: Is a directory\n", 0);
+	line = malloc(sizeof(char) * (file_stat.st_size + 1));
+	if (!line)
+		clean_exit(data, 1, "Error: Malloc failed\n", 0);
+	if (read(fd, line, file_stat.st_size) == -1)
+		clean_exit(data, 1, "Error: Read failed\n", 0);
+	close(fd);
+	free(file);
 	i = 0;
-	while (line)
+	cursor = line;
+	while (*cursor)
 	{
-		if (!ft_strncmp("newmtl ", line, 7))
+		line_start = cursor;
+		while (*cursor && *cursor != '\n')
+			cursor++;
+		if (*cursor == '\n')
+		{
+			*cursor = '\0';
+			cursor++;
+		}
+		ptr = line_start;
+		if (!ft_strncmp("newmtl ", ptr, 7))
 		{
 			i = 1;
 			mtl_node = NULL;
 			mtl_node = malloc(sizeof(t_mtl_info));
-			mtl_node->idx = ft_strdup(line + 7);
+			mtl_node->idx = ptr + 7;
+			mtl_node->tex = NULL;
 		}
-		if (!ft_strncmp("Ka ", line, 3) && i == 1)
+		if (!ft_strncmp("Ka ", ptr, 3) && i == 1)
 		{
-			line2 = line + 3;
-			vec.x = parse_double_fast(&line2);
-			vec.y = parse_double_fast(&line2);
-			vec.z = parse_double_fast(&line2);
+			ptr = ptr + 3;
+			vec.x = parse_double_fast(&ptr);
+			vec.y = parse_double_fast(&ptr);
+			vec.z = parse_double_fast(&ptr);
 			mtl_node->ka = (vec.x + vec.y + vec.z) / 3;
 		}
-		if (!ft_strncmp("Ks ", line, 3) && i == 1)
+		if (!ft_strncmp("Ks ", ptr, 3) && i == 1)
 		{
-			line2 = line + 3;
-			vec.x = parse_double_fast(&line2);
-			vec.y = parse_double_fast(&line2);
-			vec.z = parse_double_fast(&line2);
+			ptr = ptr + 3;
+			vec.x = parse_double_fast(&ptr);
+			vec.y = parse_double_fast(&ptr);
+			vec.z = parse_double_fast(&ptr);
 			mtl_node->ks = (vec.x + vec.y + vec.z) / 3;
 		}
-		if (!ft_strncmp("Kd ", line, 3) && i == 1)
+		if (!ft_strncmp("Kd ", ptr, 3) && i == 1)
 		{
-			line2 = line + 3;
-			vec.x = parse_double_fast(&line2);
-			vec.y = parse_double_fast(&line2);
-			vec.z = parse_double_fast(&line2);
+			ptr = ptr + 3;
+			vec.x = parse_double_fast(&ptr);
+			vec.y = parse_double_fast(&ptr);
+			vec.z = parse_double_fast(&ptr);
 			mtl_node->kd = (vec.x + vec.y + vec.z) / 3;
 		}
-		if (!ft_strncmp("Ns ", line, 3) && i == 1)
+		if (!ft_strncmp("Ns ", ptr, 3) && i == 1)
 		{
-			line2 = line + 3;
-			vec.x = parse_double_fast(&line2);
+			ptr = ptr + 3;
+			vec.x = parse_double_fast(&ptr);
 			mtl_node->ns = vec.x;
 		}
-		if (!ft_strcmp("\n", line) && i == 1)
+		if (!ft_strcmp("\n", ptr) && i == 1)
 		{
 			i = 0;
 			mtl_node->next = *mtl_info;
 			*mtl_info = mtl_node;
 		}
-		free(line);
-		line = get_next_line(fd, 0);
+		if (!ft_strncmp("map_Kd ", ptr, 7) && i == 1)
+		{
+			ptr += 7;
+			if (!ft_strncmp(ptr, "-s", 2))
+			{
+				ptr += 2;
+				while (*ptr)
+				{
+					if (*ptr == '/')
+						break ;
+					ptr++;
+				}
+			}
+			char *tex_p = get_texture_path(&ptr);
+			if (tex_p)
+				mtl_node->tex = load_texture(data, tex_p, line);
+		}
 	}
+	free(line);
 	if (i == 1)
 	{
 		mtl_node->next = *mtl_info;
@@ -274,6 +314,7 @@ t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
 	mat.ks = 1;
 	mat.kd = 0.8;
 	mat.ns = 32;
+	mat.tex = NULL;
 	tmp = mtl_info;
 	while (tmp)
 	{
@@ -286,6 +327,7 @@ t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
 				mat.ns = tmp->ns;
 				mat.kd = tmp->kd;
 				mat.ks = tmp->ks;
+				mat.tex = tmp->tex;
 				return (mat);
 			}
 		}
@@ -364,7 +406,7 @@ void	set_o(t_data *data, char *line, int i)
 	mat.ks = 1;
 	mat.kd = 0.8;
 	mat.ns = 32;
-	mat.tex = v.tex;
+	mat.tex = NULL;
 	while (c < end_ptr && *c)
 	{
 		v.pos = c - v.str;
@@ -422,14 +464,23 @@ void	set_o(t_data *data, char *line, int i)
 				v.new->color = v.t.col;
 				v.new->has_texture = v.has_tex;
 				if (v.has_tex)
-					v.new->tex = mat.tex;
+					v.new->tex = v.tex;
 				v.new->reflectivity = v.t.reflectivity;
 				v.new->rought = v.t.rought;
 				v.new->next = data->objs;
+				mat.ka = 0.2;
+				mat.ks = 1;
+				mat.kd = 0.8;
+				mat.ns = 32;
 				v.new->ks = mat.ks;
 				v.new->kd = mat.kd;
 				v.new->ka = mat.ka;
 				v.new->ns = mat.ns;
+				if (mat.tex)
+				{
+					v.new->tex = mat.tex;
+					v.new->has_texture = true;
+				}
 				data->objs = v.new;
 			}
 		}
