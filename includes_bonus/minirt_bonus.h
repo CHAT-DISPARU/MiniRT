@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/26 11:05:39 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/26 12:14:25 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,6 +209,7 @@ typedef struct s_mtl_info
 	double				ns;
 	double				kd;
 	double				ks;
+	t_texture			*tex;
 	char				*idx;
 	struct s_mtl_info	*next;
 }				t_mtl_info;
