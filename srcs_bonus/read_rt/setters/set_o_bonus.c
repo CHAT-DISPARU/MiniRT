@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/25 17:02:28 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/26 11:42:11 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,31 +195,114 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 	int		i;
 	int		fd;
 	char	*line;
+	char	*line2;
+	t_mtl_info	*mtl_node;
+	t_vec3		vec;
 
+	i = 0;
 	while (filename[i] && filename[i] != '\n')
 		i++;
 	file = calloc(sizeof(char), (i + 1));
 	file = ft_strncat(file, filename, i);
 	fd = open(file, O_RDONLY);
 	if (fd < 0)
-		clean_exit(data, 1, "open fail\n", 0);
+		clean_exit(data, 1, "open mtl fail\n", 0);
 	line = get_next_line(fd, 0);
+	i = 0;
 	while (line)
 	{
-		
+		if (!ft_strncmp("newmtl ", line, 7))
+		{
+			i = 1;
+			mtl_node = NULL;
+			mtl_node = malloc(sizeof(t_mtl_info));
+			mtl_node->idx = ft_strdup(line + 7);
+		}
+		if (!ft_strncmp("Ka ", line, 3) && i == 1)
+		{
+			line2 = line + 3;
+			vec.x = parse_double_fast(&line2);
+			vec.y = parse_double_fast(&line2);
+			vec.z = parse_double_fast(&line2);
+			mtl_node->ka = (vec.x + vec.y + vec.z) / 3;
+		}
+		if (!ft_strncmp("Ks ", line, 3) && i == 1)
+		{
+			line2 = line + 3;
+			vec.x = parse_double_fast(&line2);
+			vec.y = parse_double_fast(&line2);
+			vec.z = parse_double_fast(&line2);
+			mtl_node->ks = (vec.x + vec.y + vec.z) / 3;
+		}
+		if (!ft_strncmp("Kd ", line, 3) && i == 1)
+		{
+			line2 = line + 3;
+			vec.x = parse_double_fast(&line2);
+			vec.y = parse_double_fast(&line2);
+			vec.z = parse_double_fast(&line2);
+			mtl_node->kd = (vec.x + vec.y + vec.z) / 3;
+		}
+		if (!ft_strncmp("Ns ", line, 3) && i == 1)
+		{
+			line2 = line + 3;
+			vec.x = parse_double_fast(&line2);
+			mtl_node->ns = vec.x;
+		}
+		if (ft_strcmp("\n", line) && i == 1)
+		{
+			i = 0;
+			mtl_node->next = *mtl_info;
+			*mtl_info = mtl_node;
+		}
+		free(line);
 		line = get_next_line(fd, 0);
 	}
+	if (i == 1)
+	{
+		mtl_node->next = *mtl_info;
+		*mtl_info = mtl_node;
+	}
+}
+
+t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
+{
+	t_mtl_info	mat;
+	t_mtl_info	*tmp;
+	int			len;
+
+	mat.ka = 0.2;
+	mat.ks = 1;
+	mat.kd = 0.8;
+	mat.ns = 32;
+	tmp = mtl_info;
+	while (tmp)
+	{
+		if (tmp->idx)
+		{
+			len = ft_strlen(tmp->idx);
+			if (!ft_strncmp(tmp->idx, s, len))
+			{
+				mat.ka = tmp->ka;
+				mat.ns = tmp->ns;
+				mat.kd = tmp->kd;
+				mat.ks = tmp->ks;
+				return (mat);
+			}
+		}
+		tmp = tmp->next;
+	}
+	return (mat);
 }
 
 void	set_o(t_data *data, char *line, int i)
 {
 	t_vars_obj	v;
+	t_mtl_info	mat;
 	size_t		file_size = 0;
 	char		*end_ptr;
 	char		*c;
 	int			c_v;
 	int			c_vn;
-	t_mtl_info	*mtl_info;
 	int			c_vt;
 
 	c_v = BUFFER_SIZE;
@@ -275,7 +358,12 @@ void	set_o(t_data *data, char *line, int i)
 		v.step = 1;
 	v.next = v.step;
 	c = v.str;
-	mtl_info = NULL;
+	data->mtl_info = NULL;
+	mat.idx = NULL;
+	mat.ka = 0.2;
+	mat.ks = 1;
+	mat.kd = 0.8;
+	mat.ns = 32;
 	while (c < end_ptr && *c)
 	{
 		v.pos = c - v.str;
@@ -285,8 +373,10 @@ void	set_o(t_data *data, char *line, int i)
 			fflush(stdout);
 			v.next += v.step;
 		}
-		if (!ft_strncmp(c, "mtllib ", 7) && !mtl_info)
-			read_mtl(c + 7, &mtl_info, data);
+		if (!ft_strncmp(c, "mtllib ", 7) && !data->mtl_info)
+			read_mtl(c + 7, &data->mtl_info, data);
+		if (!ft_strncmp(c, "usemtl ", 7) && !data->mtl_info)
+			mat = find_mat(data->mtl_info, c + 7);
 		if (*c == 'v')
 		{
 			if (*(c + 1) == ' ')
@@ -335,13 +425,10 @@ void	set_o(t_data *data, char *line, int i)
 				v.new->reflectivity = v.t.reflectivity;
 				v.new->rought = v.t.rought;
 				v.new->next = data->objs;
-				if (!mtl_info)
-				{
-					v.new->ks = 1;
-					v.new->kd = 0.8;
-					v.new->ka = 0.2;
-					v.new->ns = 32;
-				}
+				v.new->ks = mat.ks;
+				v.new->kd = mat.kd;
+				v.new->ka = mat.ka;
+				v.new->ns = mat.ns;
 				data->objs = v.new;
 			}
 		}
