@@ -1,525 +1,502 @@
 # Blender 5.0.1 MTL File: 'Untitled.blend'
 # www.blender.org
 
-newmtl 12_-_Car_Paint
-Ns 902.500000
+newmtl int_window
+Ns 250.000000
 Ka 1.000000 1.000000 1.000000
-Ks 0.000000 0.000000 0.000000
+Kd 0.007726 0.007726 0.007726
+Ks 0.048000 0.048000 0.048000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
-illum 1
-map_Kd /home/gajanvie/Documents/textures/Image_34.png
+illum 2
 
-newmtl BLACK
-Ns 902.500000
+newmtl int_window_0
+Ns 1.788865
 Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_42.png
 
-newmtl BODY
-Ns 250.000000
+newmtl int_window_1
+Ns 884.674255
 Ka 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
+Kd 0.960208 0.960208 0.960208
+Ks 0.310096 0.310096 0.310096
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_19.png
-map_Bump -bm 0.540954 /home/gajanvie/Documents/textures/Image_21.png
+illum 3
 
-newmtl CAMERAS
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Kd 0.001649 0.001649 0.001649
-Ks 0.440000 0.440000 0.440000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_1.png
-
-newmtl CAMERA_TOP
+newmtl int_window_10
 Ns 0.000000
-Ka 0.705526 0.705526 0.705526
-Ks 0.100000 0.100000 0.100000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 3
-map_Kd /home/gajanvie/Documents/textures/Image_22.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_23.png
-
-newmtl DRSON
-Ns 0.100000
 Ka 1.000000 1.000000 1.000000
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 1
-map_Kd /home/gajanvie/Documents/textures/Image_33.png
-
-newmtl Details
-Ns 360.000000
-Ka 1.000000 1.000000 1.000000
+Kd 0.000000 0.000000 0.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_37.png
-map_d /home/gajanvie/Documents/textures/Image_37.png
-
-newmtl EXHAUST
-Ns 216.356369
-Ka 1.000000 1.000000 1.000000
-Ks 0.350000 0.350000 0.350000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
 d 1.000000
 illum 3
-map_Kd /home/gajanvie/Documents/textures/Image_26.png
 
-newmtl FLASKS
-Ns 250.000000
+newmtl int_window_11
+Ns 1.788865
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
-Ks 0.440000 0.440000 0.440000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_1.png
 
-newmtl FONDPLAT
-Ns 250.000000
+newmtl int_window_12
+Ns 0.000000
 Ka 1.000000 1.000000 1.000000
-Ks 0.440000 0.440000 0.440000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd -s 1300 1300 1 /home/gajanvie/Documents/textures/Image_30.png
-map_Bump -s 1300 1300 1 -bm 0.766479 /home/gajanvie/Documents/textures/Image_1.png
-
-newmtl FRONT_RIMS
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Ks 0.200000 0.200000 0.200000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_9.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_1.png
-
-newmtl GEARBOX
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Ks 0.440000 0.440000 0.440000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_27.png
-map_Bump -bm 0.711621 /home/gajanvie/Documents/textures/Image_1.png
-
-newmtl GLASS
-Ns 10.000005
-Ka 1.000000 1.000000 1.000000
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-illum 1
-map_Kd /home/gajanvie/Documents/textures/Image_4.png
-map_d /home/gajanvie/Documents/textures/Image_4.png
-
-newmtl INT_Decals
-Ns 360.000000
-Ka 1.000000 1.000000 1.000000
-Ks 0.100000 0.100000 0.100000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_59.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_60.png
-
-newmtl INT_Details_Alu
-Ns 193.600006
-Ka 1.000000 1.000000 1.000000
-Ks 0.440000 0.440000 0.440000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_57.png
-
-newmtl INT_Details_Carbon
-Ns 10.000005
-Ka 1.000000 1.000000 1.000000
-Ks 0.300000 0.300000 0.300000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_57.png
-
-newmtl INT_Details_Metal
-Ns 193.600006
-Ka 1.000000 1.000000 1.000000
-Ks 0.440000 0.440000 0.440000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_57.png
-
-newmtl INT_Steer_Decals_Alpha
-Ns 902.500000
-Ka 1.000000 1.000000 1.000000
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-illum 1
-map_Kd /home/gajanvie/Documents/textures/Image_36.png
-map_d /home/gajanvie/Documents/textures/Image_36.png
-
-newmtl Material_102
-Ns 108.899986
-Ka 1.000000 1.000000 1.000000
-Ks 0.240000 0.240000 0.240000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_46.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_47.png
-
-newmtl Material_105
-Ns 94.043129
-Ka 0.778669 0.778669 0.778669
-Ks 0.240000 0.240000 0.240000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
-map_Kd /home/gajanvie/Documents/textures/Image_15.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_16.png
 
-newmtl Material_97
-Ns 108.899986
-Ka 0.760383 0.760383 0.760383
-Ks 0.240000 0.240000 0.240000
+newmtl int_window_13
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
-map_Kd /home/gajanvie/Documents/textures/Image_17.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_18.png
 
-newmtl Mesh_1750.rip
-Ns 39.999996
+newmtl int_window_14
+Ns 1000.000000
 Ka 1.000000 1.000000 1.000000
-Ks 0.300000 0.300000 0.300000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_30.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_40.png
-
-newmtl Mesh_1754.rip
-Ns 902.500000
-Ka 1.000000 1.000000 1.000000
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 1
-map_Kd /home/gajanvie/Documents/textures/Image_41.png
-
-newmtl NUMBERS
-Ns 62.500000
-Ka 1.000000 1.000000 1.000000
-Ks 0.215000 0.215000 0.215000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_64.png
-map_d /home/gajanvie/Documents/textures/Image_64.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_1.png
-
-newmtl REAR_RIMS
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Ks 0.200000 0.200000 0.200000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_44.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_1.png
-
-newmtl STICKERS
-Ns 41.227352
-Ka 0.912765 0.912765 0.912765
-Ks 0.215000 0.215000 0.215000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 3
-map_Kd /home/gajanvie/Documents/textures/Image_8.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_1.png
 
-newmtl SUSPENSIONS
-Ns 250.000000
+newmtl int_window_15
+Ns 1.788865
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_16
+Ns 896.177429
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl int_window_17
+Ns 1.788865
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl int_window_18
+Ns 51.722691
+Ka 0.486097 0.486097 0.486097
+Kd 0.012518 0.012518 0.012518
+Ks 0.500000 0.500000 0.500000
+Ke 1.874291 1.874291 1.874291
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_19
+Ns 1.788865
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_2
+Ns 564.930054
+Ka 0.809145 0.809145 0.809145
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_20
+Ns 817.215454
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_21
+Ns 966.757019
+Ka 1.000000 1.000000 1.000000
+Kd 0.235093 0.235093 0.235093
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 0.250000
+illum 6
+
+newmtl int_window_22
+Ns 1.788865
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl int_window_23
+Ns 1.788865
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl int_window_24
+Ns 34.136051
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_25
+Ns 1.788865
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl int_window_26
+Ns 351.816956
+Ka 0.888384 0.888384 0.888384
+Kd 0.049770 0.589781 0.819302
+Ks 0.334477 0.334477 0.334477
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_27
+Ns 942.933289
+Ka 1.000000 1.000000 1.000000
+Kd 0.013325 0.018705 0.018083
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 0.291048
+illum 6
+
+newmtl int_window_28
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_29
+Ns 1.788865
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl int_window_3
+Ns 1.788865
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl int_window_30
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.289525 0.289525 0.289525
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_31
+Ns 485.475891
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_32
+Ns 63.406902
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_33
+Ns 1.788865
+Ka 0.833526 0.833526 0.833526
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_34
+Ns 1.788865
+Ka 0.644573 0.644573 0.644573
+Kd 0.048259 0.048259 0.048259
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_35
+Ns 1.788865
+Ka 1.000000 1.000000 1.000000
+Kd 0.032830 0.032830 0.032830
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_36
+Ns 1.788865
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl int_window_37
+Ns 537.776550
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_38
+Ns 1.788865
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl int_window_39
+Ns 7.610003
+Ka 0.931050 0.931050 0.931050
 Kd 0.001712 0.001712 0.001712
-Ks 0.440000 0.440000 0.440000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
-illum 2
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_1.png
+illum 3
 
-newmtl Seatbelt
-Ns 10.000005
+newmtl int_window_4
+Ns 1.788865
 Ka 1.000000 1.000000 1.000000
-Ks 0.050000 0.050000 0.050000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_58.png
-
-newmtl Seatbelt_Details
-Ns 39.999996
-Ka 1.000000 1.000000 1.000000
-Ks 0.100000 0.100000 0.100000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_55.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_56.png
-
-newmtl avance
-Ns 902.500000
-Ka 1.000000 1.000000 1.000000
-Ks 0.000000 0.000000 0.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 1
-map_Kd /home/gajanvie/Documents/textures/Image_35.png
-
-newmtl baked_FIX_ROUE
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Ks 0.440000 0.440000 0.440000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_13.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_1.png
-
-newmtl baked_INT_OCC_Carbon3
-Ns 10.000005
-Ka 1.000000 1.000000 1.000000
-Ks 0.050000 0.050000 0.050000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_61.png
-
-newmtl baked_REAR_LIGHT
-Ns 520.045776
-Ka 1.000000 1.000000 1.000000
-Ks 0.000000 0.000000 0.000000
-Ke 5.653350 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 1
-map_Kd /home/gajanvie/Documents/textures/Image_3.png
-
-newmtl brakes_in
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Ks 0.440000 0.440000 0.440000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_6.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_1.png
-
-newmtl cables_black
-Ns 39.999996
-Ka 1.000000 1.000000 1.000000
-Ks 0.100000 0.100000 0.100000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_42.png
-
-newmtl cables_red
-Ns 39.999996
-Ka 1.000000 1.000000 1.000000
-Ks 0.100000 0.100000 0.100000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_41.png
-
-newmtl carbon_cockpit
-Ns 159.999985
-Ka 1.000000 1.000000 1.000000
-Ks 0.300000 0.300000 0.300000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_42.png
-
-newmtl chrome
-Ns 902.500000
-Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_54.png
 
-newmtl cockpit_legs_support
-Ns 250.000000
+newmtl int_window_40
+Ns 1000.000000
 Ka 1.000000 1.000000 1.000000
-Ks 0.100000 0.100000 0.100000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_48.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_50.png
+illum 3
 
-newmtl cpit_in_carbon
-Ns 202.500000
+newmtl int_window_41
+Ns 1.788865
 Ka 1.000000 1.000000 1.000000
-Ks 0.050000 0.050000 0.050000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd -s 1300 1300 1 /home/gajanvie/Documents/textures/Image_62.png
-map_Bump -s 1300 1300 1 -bm 1.000000 /home/gajanvie/Documents/textures/Image_63.png
-
-newmtl gp21_cockpit_details
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Ks 0.150000 0.150000 0.150000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_51.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_53.png
-
-newmtl gp21_cockpit_metal
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Ks 0.150000 0.150000 0.150000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_51.png
-map_Bump -bm 1.000000 /home/gajanvie/Documents/textures/Image_53.png
-
-newmtl ledv
-Ns 10.000005
-Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_25.png
 
-newmtl material
-Ns 39.999996
+newmtl int_window_42
+Ns 452.094818
 Ka 1.000000 1.000000 1.000000
-Ks 0.300000 0.300000 0.300000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_38.png
+illum 3
 
-newmtl mirror_placement
-Ns 10.000005
+newmtl int_window_43
+Ns 1.788865
 Ka 1.000000 1.000000 1.000000
-Ks 0.100000 0.100000 0.100000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_29.png
-
-newmtl pack_leds
-Ns 10.000005
-Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_32.png
 
-newmtl plastic_interior
-Ns 10.000005
+newmtl int_window_44
+Ns 1.788865
+Ka 0.754288 0.754288 0.754288
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_45
+Ns 592.752258
 Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_46
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.075896 0.075896 0.075896
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_42.png
 
-newmtl stickers_wheel
-Ns 902.500000
+newmtl int_window_47
+Ns 1.788865
 Ka 1.000000 1.000000 1.000000
-Ks 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
-illum 1
-map_Kd /home/gajanvie/Documents/textures/Image_39.png
-map_d /home/gajanvie/Documents/textures/Image_39.png
+d 1.000000
+illum 3
 
-newmtl sw_decals
-Ns 902.500000
+newmtl int_window_48
+Ns 270.398499
 Ka 1.000000 1.000000 1.000000
-Ks 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
-illum 1
-map_Kd /home/gajanvie/Documents/textures/Image_43.png
-map_d /home/gajanvie/Documents/textures/Image_43.png
+d 1.000000
+illum 3
 
-newmtl tube
-Ns 10.000005
+newmtl int_window_5
+Ns 1.788865
+Ka 0.784764 0.784764 0.784764
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_6
+Ns 1.788865
 Ka 1.000000 1.000000 1.000000
-Ks 0.225000 0.225000 0.225000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.500000
 d 1.000000
 illum 2
-map_Kd /home/gajanvie/Documents/textures/Image_6.png
+
+newmtl int_window_7
+Ns 57.416187
+Ka 0.504382 0.504382 0.504382
+Kd 0.005573 0.005573 0.005573
+Ks 0.023619 0.023619 0.023619
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_8
+Ns 564.930054
+Ka 0.961527 0.961527 0.961527
+Kd 0.023329 0.085674 0.125547
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl int_window_9
+Ns 1.788865
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
