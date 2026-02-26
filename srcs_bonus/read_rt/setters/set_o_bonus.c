@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/26 16:33:50 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/26 17:19:59 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,6 +236,11 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 		ptr = line_start;
 		if (!ft_strncmp("newmtl ", ptr, 7))
 		{
+			if (i == 1)
+			{
+				mtl_node->next = *mtl_info;
+				*mtl_info = mtl_node;
+			}
 			i = 1;
 			mtl_node = NULL;
 			mtl_node = malloc(sizeof(t_mtl_info));
@@ -271,12 +276,6 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			ptr = ptr + 3;
 			vec.x = parse_double_fast(&ptr);
 			mtl_node->ns = vec.x;
-		}
-		if (!ft_strcmp("\n", ptr) && i == 1)
-		{
-			i = 0;
-			mtl_node->next = *mtl_info;
-			*mtl_info = mtl_node;
 		}
 		if (!ft_strncmp("map_Kd ", ptr, 7) && i == 1)
 		{
