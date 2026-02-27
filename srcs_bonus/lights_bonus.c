@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 10:27:40 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/26 18:12:01 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/27 11:43:25 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ void	calc_lights(t_color_c *lights, t_hit_r rec, t_data *data, t_light *light)
 	lights->diffuse.z = light->color.b / 255.0;
 }
 
-void	final_diffuse(t_color_c *lights, t_light *light, double diff_strength)
+void	final_diffuse(t_color_c *lights, t_light *light, double diff_strength, t_vec3 kd)
 {
-	lights->diffuse.x *= lights->obj_r * light->ratio * diff_strength;
-	lights->diffuse.y *= lights->obj_g * light->ratio * diff_strength;
-	lights->diffuse.z *= lights->obj_b * light->ratio * diff_strength;
+	lights->diffuse.x *= lights->obj_r * light->ratio * diff_strength * kd.x;
+	lights->diffuse.y *= lights->obj_g * light->ratio * diff_strength * kd.y;
+	lights->diffuse.z *= lights->obj_b * light->ratio * diff_strength * kd.z;
 }

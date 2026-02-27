@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 17:06:16 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/25 16:35:54 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/27 12:00:14 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,9 +60,9 @@ void	set_hy(t_data *data, char *line, int i)
 	new_hy->inverse_transform = mat4_inverse(&t.final);
 	new_hy->reflectivity = t.reflectivity;
 	new_hy->rought = t.rought;
-	new_hy->ks = 1;
-	new_hy->kd = 0.8;
-	new_hy->ka = 0.2;
+	new_hy->ka = (t_vec3){0.2, 0.2, 0.2};
+	new_hy->ks = (t_vec3){1, 1, 1};
+	new_hy->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_hy->ns = 32;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);

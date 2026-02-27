@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 14:38:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/25 16:34:11 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/27 11:58:56 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ void	set_tr(t_data *data, char *line, int i)
 	new_tr->type = CALC_TR;
 	new_tr->color = t.col;
 	new_tr->reflectivity = t.reflectivity;
-	new_tr->ks = 1;
-	new_tr->kd = 0.8;
-	new_tr->ka = 0.2;
+	new_tr->ka = (t_vec3){0.2, 0.2, 0.2};
+	new_tr->ks = (t_vec3){1, 1, 1};
+	new_tr->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_tr->ns = 32;
 	new_tr->rought = t.rought;
 	char	*path = get_texture_path(&line);

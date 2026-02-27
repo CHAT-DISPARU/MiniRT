@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/26 18:24:36 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/27 14:01:20 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,34 +246,25 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			mtl_node = malloc(sizeof(t_mtl_info));
 			mtl_node->idx = ft_strdup(ptr + 7);
 			mtl_node->tex = NULL;
-			mtl_node->ka = 0.2;
-			mtl_node->ks = 1;
-			mtl_node->kd = 0.8;
+			mtl_node->ka = (t_vec3){0.2, 0.2, 0.2};
+			mtl_node->ks = (t_vec3){1, 1, 1};
+			mtl_node->kd = (t_vec3){0.8, 0.8, 0.8};
 			mtl_node->ns = 32;
 		}
 		if (!ft_strncmp("Ka ", ptr, 3) && i == 1)
 		{
 			ptr = ptr + 3;
-			vec.x = parse_double_fast(&ptr);
-			vec.y = parse_double_fast(&ptr);
-			vec.z = parse_double_fast(&ptr);
-			mtl_node->ka = (vec.x + vec.y + vec.z) / 3;
+			mtl_node->ka = parse_vec_fast(&ptr, 1);
 		}
 		if (!ft_strncmp("Ks ", ptr, 3) && i == 1)
 		{
 			ptr = ptr + 3;
-			vec.x = parse_double_fast(&ptr);
-			vec.y = parse_double_fast(&ptr);
-			vec.z = parse_double_fast(&ptr);
-			mtl_node->ks = (vec.x + vec.y + vec.z) / 3;
+			mtl_node->ks = parse_vec_fast(&ptr, 1);
 		}
 		if (!ft_strncmp("Kd ", ptr, 3) && i == 1)
 		{
 			ptr = ptr + 3;
-			vec.x = parse_double_fast(&ptr);
-			vec.y = parse_double_fast(&ptr);
-			vec.z = parse_double_fast(&ptr);
-			mtl_node->kd = (vec.x + vec.y + vec.z) / 3;
+			mtl_node->kd = parse_vec_fast(&ptr, 1);
 		}
 		if (!ft_strncmp("Ns ", ptr, 3) && i == 1)
 		{
@@ -284,9 +275,8 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 		if (!ft_strncmp("map_Kd ", ptr, 7) && i == 1)
 		{
 			ptr += 7;
-			if (!ft_strncmp(ptr, "-s", 2))
+			if (!ft_strncmp(ptr, "-", 1))
 			{
-				ptr += 2;
 				while (*ptr)
 				{
 					if (*ptr == '/')
@@ -313,9 +303,9 @@ t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
 	t_mtl_info	*tmp;
 	int			len;
 
-	mat.ka = 0.2;
-	mat.ks = 1;
-	mat.kd = 0.8;
+	mat.ka = (t_vec3){0.2, 0.2, 0.2};
+	mat.ks = (t_vec3){1, 1, 1};
+	mat.kd = (t_vec3){0.8, 0.8, 0.8};
 	mat.ns = 32;
 	mat.tex = NULL;
 	tmp = mtl_info;
@@ -405,9 +395,9 @@ void	set_o(t_data *data, char *line, int i)
 	c = v.str;
 	data->mtl_info = NULL;
 	mat.idx = NULL;
-	mat.ka = 0.2;
-	mat.ks = 1;
-	mat.kd = 0.8;
+	mat.ka = (t_vec3){0.2, 0.2, 0.2};
+	mat.ks = (t_vec3){1, 1, 1};
+	mat.kd = (t_vec3){0.8, 0.8, 0.8};
 	mat.ns = 32;
 	mat.tex = NULL;
 	while (c < end_ptr && *c)

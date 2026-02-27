@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:39 by titan             #+#    #+#             */
-/*   Updated: 2026/02/25 16:35:32 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/27 12:00:33 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,9 @@ void	set_sp(t_data *data, char *line, int i)
 	new_sp->inverse_transform = mat4_inverse(&t.final);
 	new_sp->reflectivity = t.reflectivity;
 	new_sp->rought = t.rought;
-	new_sp->ks = 1;
-	new_sp->kd = 0.8;
-	new_sp->ka = 0.2;
+	new_sp->ka = (t_vec3){0.2, 0.2, 0.2};
+	new_sp->ks = (t_vec3){1, 1, 1};
+	new_sp->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_sp->ns = 32;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);

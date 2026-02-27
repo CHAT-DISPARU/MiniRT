@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/26 12:14:25 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/27 11:55:00 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include "gajanvielib_math.h"
 # include "lib_vec.h"
 # include "lib_mat.h"
+# include <stdatomic.h>
 # include <stdio.h>
 # include <math.h>
 # include <sys/time.h>
@@ -185,10 +186,10 @@ typedef struct s_obj
 	double			rad_1;
 	double			rad_2;
 	double			height;
-	double			ka;
+	t_vec3			ka;
 	double			ns;
-	double			kd;
-	double			ks;
+	t_vec3			kd;
+	t_vec3			ks;
 	int				type;
 	t_triangle		tri;
 	t_mat4			transform;
@@ -205,10 +206,10 @@ typedef struct s_obj
 
 typedef struct s_mtl_info
 {
-	double				ka;
+	t_vec3				ka;
 	double				ns;
-	double				kd;
-	double				ks;
+	t_vec3				kd;
+	t_vec3				ks;
 	t_texture			*tex;
 	char				*idx;
 	struct s_mtl_info	*next;
@@ -300,6 +301,7 @@ typedef struct s_data
 	char					*filename;
 	pthread_mutex_t			mutex_stack;
 	pthread_mutex_t			finish_count;
+	_Atomic int						proccessed_objs;
 	int						finish;
 	bool					thread_running;
 	pthread_t				threads[THREADS_COUNT];
@@ -314,7 +316,10 @@ typedef struct s_thread_info
 	int		end_y;
 	int		start_x;
 	int		end_x;
+	int		current_line;
+	int		total_lines;
 }				t_thread_info;
+
 
 typedef void	(*t_task)(void *arg);
 
@@ -393,8 +398,8 @@ t_vec3		get_right_vector(t_vec3 dir);
 void		calcul_ambient(t_data *data);
 double		rand_double(void);
 void		ft_objadd_back(t_obj **lst, t_obj *new);
-void		final_diffuse(t_color_c *lights,
-				t_light *light, double diff_strength);
+void		final_diffuse(t_color_c *lights, t_light *light, double diff_strength,
+				t_vec3 kd);
 void		calc_lights(t_color_c *lights, t_hit_r rec,
 				t_data *data, t_light *light);
 void		update_rot(t_data *data, t_vec3 right, bool *movded);

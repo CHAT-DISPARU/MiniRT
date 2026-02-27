@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 13:46:56 by titan             #+#    #+#             */
-/*   Updated: 2026/02/25 11:34:52 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/27 14:04:19 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,9 @@ int	recursive_build(t_data *data, int start, int count, int depth, t_vec3 branch
 		node->start_idx = start;
 		node->obj_count = count;
 		node->debug_color = (t_vec3){0.0, 0.0, 1.0};
+		data->proccessed_objs += count;
+		if (data->proccessed_objs % 5 == 0)
+			printf("\r%d/%d", data->proccessed_objs, data->obj_count);
 		return (node_idx);
 	}
 	node->obj_count = 0;
@@ -64,6 +67,7 @@ void	build_bvh(t_data *data)
 	if (data->obj_count == 0)
 		return;
 	i = 0;
+	data->proccessed_objs = 0;
 	data->sorted_objs = malloc(sizeof(t_obj *) * data->obj_count);
 	if (!data->sorted_objs)
 		clean_exit(data, 1, "Malloc", 0);

@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:23 by titan             #+#    #+#             */
-/*   Updated: 2026/02/25 16:34:31 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/27 11:59:12 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,9 @@ void	set_sq(t_data *data, char *line, int i)
 	new_sq->inverse_transform = mat4_inverse(&t.final);
 	new_sq->reflectivity = t.reflectivity;
 	new_sq->rought = t.rought;
-	new_sq->ks = 1;
-	new_sq->kd = 0.8;
-	new_sq->ka = 0.2;
+	new_sq->ka = (t_vec3){0.2, 0.2, 0.2};
+	new_sq->ks = (t_vec3){1, 1, 1};
+	new_sq->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_sq->ns = 32;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);
