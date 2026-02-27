@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:55 by titan             #+#    #+#             */
-/*   Updated: 2026/02/25 16:36:06 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/27 12:00:05 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,9 @@ void	set_cy(t_data *data, char *line, int i)
 	new_cy->inverse_transform = mat4_inverse(&t.final);
 	new_cy->reflectivity = t.reflectivity;
 	new_cy->rought = t.rought;
-	new_cy->ks = 1;
-	new_cy->kd = 0.8;
-	new_cy->ka = 0.2;
+	new_cy->ka = (t_vec3){0.2, 0.2, 0.2};
+	new_cy->ks = (t_vec3){1, 1, 1};
+	new_cy->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_cy->ns = 32;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);

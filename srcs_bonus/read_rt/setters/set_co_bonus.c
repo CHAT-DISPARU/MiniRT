@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 12:25:02 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/25 16:36:29 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/27 11:59:58 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,9 @@ void	set_co(t_data *data, char *line, int i)
 	new_co->inverse_transform = mat4_inverse(&t.final);
 	new_co->reflectivity = t.reflectivity;
 	new_co->rought = t.rought;
-	new_co->ks = 1;
-	new_co->kd = 0.8;
-	new_co->ka = 0.2;
+	new_co->ka = (t_vec3){0.2, 0.2, 0.2};
+	new_co->ks = (t_vec3){1, 1, 1};
+	new_co->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_co->ns = 32;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);

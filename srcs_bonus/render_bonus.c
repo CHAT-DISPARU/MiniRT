@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/02/26 18:04:23 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/27 11:54:27 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,8 +115,7 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 				diff_strength = vec_dot_scal(rec.normal, light_dir);
 				if (diff_strength > 0)
 				{
-					diff_strength = diff_strength * rec.obj_ptr->kd;
-					final_diffuse(&lights, light, diff_strength);
+					final_diffuse(&lights, light, diff_strength, rec.obj_ptr->kd);
 					diffuse_total = vec_add(diffuse_total, lights.diffuse);
 					minus_l = vec_scale(light_dir, -1.0);
 					reflect_dir = vec_normalize(vec_sub(minus_l, vec_scale(rec.normal, 2.0 * vec_dot_scal(minus_l, rec.normal))));
@@ -124,7 +123,10 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 					if (spec_factor > 0)
 					{
 						spec_factor = pow(spec_factor, rec.obj_ptr->ns);
-						specular_total = vec_add(specular_total, vec_scale(l_col, spec_factor * light->ratio * rec.obj_ptr->ks));
+						double intensity = spec_factor * light->ratio;
+						t_vec3	scaled_light = vec_scale(l_col, intensity);
+						t_vec3	final_spec = vec_mult(scaled_light, rec.obj_ptr->ks);
+						specular_total = vec_add(specular_total, final_spec);
 					}
 				}
 			}
