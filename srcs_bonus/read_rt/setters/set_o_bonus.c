@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_o_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/27 14:01:20 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/28 13:38:27 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ static char	*map_file_fast(char *filename, size_t *size)
 		return (NULL);
 	}
 	*size = st.st_size;
-	ptr = mmap(NULL, *size, PROT_READ, MAP_PRIVATE, fd, 0);
+	ptr = mmap(NULL, *size, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0);
 	close(fd);
 	if (ptr == MAP_FAILED)
 		return (NULL);
@@ -171,7 +171,7 @@ static t_triangle	parse_face_fast(char **s, t_vars_obj *v)
 	return (tri);
 }
 
-static char	*pars_file_n(char **line)
+char	*pars_file_n(char **line)
 {
 	int		len;
 	char	*result;
@@ -250,6 +250,11 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			mtl_node->ks = (t_vec3){1, 1, 1};
 			mtl_node->kd = (t_vec3){0.8, 0.8, 0.8};
 			mtl_node->ns = 32;
+			mtl_node->color = (mlx_color)(uint32_t){0xFFFFFFFF};
+			mtl_node->reflectivity = -1.0;
+			mtl_node->rought = -1.0;
+			mtl_node->has_col = false;
+			mtl_node->bump = NULL;
 		}
 		if (!ft_strncmp("Ka ", ptr, 3) && i == 1)
 		{
@@ -288,6 +293,53 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			if (tex_p)
 				mtl_node->tex = load_texture(data, tex_p, line);
 		}
+		if ((!ft_strncmp("map_bump ", ptr, 9) || !ft_strncmp("bump ", ptr, 5)) && i == 1)
+		{
+			char *bump_start = ptr;
+			if (!ft_strncmp(bump_start, "map_bump ", 9))
+				ptr += 9;
+			else
+				ptr += 5;
+			if (!ft_strncmp(ptr, "-", 1))
+			{
+				while (*ptr)
+				{
+					if (*ptr == '/')
+						break ;
+					ptr++;
+				}
+			}
+			char *bump_p = get_texture_path(&ptr);
+			if (bump_p)
+				mtl_node->bump = load_texture(data, bump_p, line);
+		}
+		if (!ft_strncmp("RGB ", ptr, 4) && i == 1)
+		{
+			ptr = ptr + 4;
+			mtl_node->color.r = (uint8_t)parse_double_fast(&ptr);
+			mtl_node->color.g = (uint8_t)parse_double_fast(&ptr);
+			mtl_node->color.b = (uint8_t)parse_double_fast(&ptr);
+			mtl_node->color.a = 255;
+			mtl_node->has_col = true;
+		}
+		if (!ft_strncmp("Re ", ptr, 3) && i == 1)
+		{
+			ptr = ptr + 3;
+			mtl_node->reflectivity = parse_double_fast(&ptr);
+			if (mtl_node->reflectivity > 1.0)
+				mtl_node->reflectivity = 1.0;
+			if (mtl_node->reflectivity < 0.0)
+				mtl_node->reflectivity = 0.0;
+		}
+		if (!ft_strncmp("Ro ", ptr, 3) && i == 1)
+		{
+			ptr = ptr + 3;
+			mtl_node->rought = parse_double_fast(&ptr);
+			if (mtl_node->rought > 1.0)
+				mtl_node->rought = 1.0;
+			if (mtl_node->rought < 0.0)
+				mtl_node->rought = 0.0;
+		}
 	}
 	free(line);
 	if (i == 1)
@@ -321,6 +373,11 @@ t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
 				mat.kd = tmp->kd;
 				mat.ks = tmp->ks;
 				mat.tex = tmp->tex;
+				mat.color = tmp->color;
+				mat.reflectivity = tmp->reflectivity;
+				mat.rought = tmp->rought;
+				mat.has_col = tmp->has_col;
+				mat.bump = tmp->bump;
 				return (mat);
 			}
 		}
@@ -465,11 +522,24 @@ void	set_o(t_data *data, char *line, int i)
 				v.new->kd = mat.kd;
 				v.new->ka = mat.ka;
 				v.new->ns = mat.ns;
+				if (mat.reflectivity >= 0.0)
+					v.new->reflectivity = mat.reflectivity;
+				if (mat.rought >= 0.0)
+					v.new->rought = mat.rought;
+				if (mat.has_col)
+					v.new->color = mat.color;
 				if (mat.tex)
 				{
 					v.new->tex = mat.tex;
 					v.new->has_texture = true;
 				}
+				if (mat.bump)
+				{
+					v.new->bump = mat.bump;
+					v.new->has_bump = true;
+				}
+				else
+					v.new->has_bump = false;
 				data->objs = v.new;
 			}
 		}

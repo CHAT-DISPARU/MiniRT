@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   build_bvh.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 13:46:56 by titan             #+#    #+#             */
-/*   Updated: 2026/02/27 14:04:19 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/28 10:31:00 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ int	recursive_build(t_data *data, int start, int count, int depth, t_vec3 branch
 {
 	int			node_idx;
 	t_bvh_node	*node;
-	int			axis;
 	int			mid;
 
 	node_idx = data->nodes_used++;
@@ -34,25 +33,14 @@ int	recursive_build(t_data *data, int start, int count, int depth, t_vec3 branch
 		node->obj_count = count;
 		node->debug_color = (t_vec3){0.0, 0.0, 1.0};
 		data->proccessed_objs += count;
-		if (data->proccessed_objs % 5 == 0)
+		if (data->proccessed_objs % 500 == 0)
 			printf("\r%d/%d", data->proccessed_objs, data->obj_count);
 		return (node_idx);
 	}
 	node->obj_count = 0;
-	t_vec3 size = vec_sub(node->box.max, node->box.min);
-	if (size.x >= size.y && size.x >= size.z)
-		axis = 0;
-	else if (size.y >= size.z)
-		axis = 1;
-	else
-		axis = 2;
-	if (axis == 0)
-		qsort(&data->sorted_objs[start], count, sizeof(t_obj *), cmp_x);
-	else if (axis == 1)
-		qsort(&data->sorted_objs[start], count, sizeof(t_obj *), cmp_y);
-	else
-		qsort(&data->sorted_objs[start], count, sizeof(t_obj *), cmp_z);
-	mid = find_best_split_sah(data, start, count);
+	mid = find_best_split_all_axes(data, start, count);
+	if (mid <= 0 || mid >= count)
+		mid = count / 2;
 	node->left = recursive_build(data, start, mid, depth + 1, (t_vec3){0.0, 1.0, 0.0});
 	node->right = recursive_build(data, start + mid, count - mid, depth + 1, (t_vec3){1.0, 0.0, 0.0});
 	return (node_idx);
@@ -83,6 +71,7 @@ void	build_bvh(t_data *data)
 	data->nodes_used = 0;
 	printf("Construction BVH (Max Depth: %d)...\n", MAX_BVH_DEPTH);
 	recursive_build(data, 0, data->obj_count, 0, (t_vec3){1.0, 1.0, 0.0});
+	printf("\r%d/%d", data->proccessed_objs, data->obj_count);
 	leaf_count = 0;
 	k = 0;
 	while (k < data->nodes_used)
@@ -91,7 +80,7 @@ void	build_bvh(t_data *data)
 			leaf_count++;
 		k++;
 	}
-	printf("BVH finish :\n");
+	printf("\nBVH finish :\n");
 	printf("-Total nodes : %d\n", data->nodes_used);
 	printf("-Total Objects : %d\n", data->obj_count);
 	printf("-Total leafs : %d\n", leaf_count);
