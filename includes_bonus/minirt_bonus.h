@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/27 11:55:00 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/28 14:37:23 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 # include <unistd.h>
 # include <float.h>
 
+# define CHUNK_SIZE (64 * 1024 * 1024)
 # define WIDTH			1500
 # define HEIGHT			1000
 # define S_PER_PIXS		100
@@ -207,11 +208,16 @@ typedef struct s_obj
 typedef struct s_mtl_info
 {
 	t_vec3				ka;
+	t_texture			*bump;
 	double				ns;
 	t_vec3				kd;
 	t_vec3				ks;
 	t_texture			*tex;
 	char				*idx;
+	double				reflectivity;
+	double				rought;
+	mlx_color			color;
+	bool				has_col;
 	struct s_mtl_info	*next;
 }				t_mtl_info;
 
@@ -306,6 +312,7 @@ typedef struct s_data
 	bool					thread_running;
 	pthread_t				threads[THREADS_COUNT];
 	bool					lines;
+	int						scale;
 	struct s_thread_p		*stack;
 }				t_data;
 
@@ -355,6 +362,40 @@ typedef struct s_vars_obj
 	size_t		step;
 	size_t		next;
 }				t_vars_obj;
+
+typedef enum e_ply_type
+{
+	PLY_FLOAT,
+	PLY_UCHAR,
+	PLY_INT,
+	PLY_UINT,
+	PLY_DOUBLE,
+	PLY_SHORT,
+	PLY_USHORT,
+	PLY_UNKNOWN
+}	t_ply_type;
+
+typedef struct s_ply_prop
+{
+	char		name[64];
+	t_ply_type	type;
+	int			offset;
+	int			size;
+}	t_ply_prop;
+
+typedef struct s_ply_header
+{
+	int			vertex_count;
+	int			face_count;
+	t_ply_prop	props[16];
+	int			prop_count;
+	int			vertex_size;
+	int			has_nx;
+	int			has_r;
+	int			has_s;
+	int			data_offset;
+	bool		is_binary;
+}	t_ply_header;
 
 typedef bool	(*t_calc_f)(t_obj *obj, t_ray ray, t_hit_r *rec);
 void		thread_calls(t_data *data);
@@ -431,7 +472,6 @@ int			cmp_x(const void *a, const void *b);
 int			cmp_y(const void *a, const void *b);
 int			cmp_z(const void *a, const void *b);
 void		build_bvh(t_data *data);
-int			find_best_split_sah(t_data *data, int start, int count);
 bool		intersect_aabb(t_ray ray, t_aabb box, double t_max);
 bool		hit_bvh(t_data *data, int node_idx, t_ray ray, t_hit_r *rec);
 void		display_fps(t_data *data);
@@ -444,14 +484,18 @@ void		get_sphere_uv(t_vec3 normal, double *u, double *v);
 void		get_pl_uv(t_vec3 p, t_vec3 normal, double *u, double *v);
 void		get_sq_uv(t_vec3 p, t_vec3 center, t_vec3 normal, double side_size, double *u, double *v);
 void		get_cycohy_uv(t_vec3 p, t_vec3 center, t_vec3 axis, double height, double *u, double *v);
-mlx_color	get_texture_color(t_texture *tex, double u, double v);
+mlx_color	get_texture_color(t_texture *tex, double u, double v, double scale);
 char		*get_texture_path(char **ptr);
 t_texture	*load_texture(t_data *data, char *filepath, char *file_o);
-void		apply_bump(t_hit_r *rec, t_texture *bump_tex, double strength);
+void		apply_bump(t_hit_r *rec, t_texture *bump_tex, double strength, double scale);
 void		clean(t_data *data);
 void		re_init(t_data *data);
 void		stop_threads(t_data *data);
 void		add_task(t_data *data, t_task func, t_thread_info info);
 void		init_thread_p(t_data *data);
+t_aabb		aabb_union(t_aabb a, t_aabb b);
+int			find_best_split_all_axes(t_data *data, int start, int count);
+void		set_ply(t_data *data, char *line, int i);
+char		*pars_file_n(char **line);
 
 #endif

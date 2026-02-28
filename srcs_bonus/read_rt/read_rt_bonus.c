@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   read_rt_bonus.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:04:41 by titan             #+#    #+#             */
-/*   Updated: 2026/02/24 17:31:31 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/28 12:15:23 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ void	call_setters(t_data *data, char *ptr, int i)
 		set_tr(data, ptr + 2, i);
 	else if (!ft_strncmp("co", ptr, 2) && is_space(ptr[2]))
 		set_co(data, ptr + 2, i);
+	else if (!ft_strncmp(ptr, "ply", 3) && is_space(ptr[3]))
+		set_ply(data, ptr + 3, i);
 	else if (*ptr == '#')
 		return ;
 	else

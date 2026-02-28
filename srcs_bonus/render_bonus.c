@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/02/27 11:54:27 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/28 14:37:38 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,9 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 		col_a.y = rec.obj_ptr->color.g / 255.0;
 		col_a.z = rec.obj_ptr->color.b / 255.0;
 		if (rec.obj_ptr->has_texture && rec.obj_ptr->tex) 
-			rec.color = get_texture_color(rec.obj_ptr->tex, rec.u, rec.v);
+			rec.color = get_texture_color(rec.obj_ptr->tex, rec.u, rec.v, data->scale);
 		if (rec.obj_ptr->bump && rec.obj_ptr->has_bump)
-			apply_bump(&rec, rec.obj_ptr->bump, 10);
+			apply_bump(&rec, rec.obj_ptr->bump, 10, data->scale);
 		if (data->has_checker)
 		{
 			col_b.x = data->checker_color.r / 255.0;

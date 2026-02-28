@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   texture.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/13 13:47:56 by titan             #+#    #+#             */
-/*   Updated: 2026/02/14 14:18:24 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/28 14:34:11 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,11 @@ t_texture	*load_texture(t_data *data, char *filepath, char *file_o)
 	return (tex);
 }
 
-mlx_color	get_texture_color(t_texture *tex, double u, double v)
+mlx_color	get_texture_color(t_texture *tex, double u, double v, double scale)
 {
 	int	x;
 	int	y;
 	int	index;
-	double	scale = 1;
 
 	u = u * scale;
 	v = v * scale;

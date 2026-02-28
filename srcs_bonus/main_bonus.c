@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/27 12:13:10 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/28 14:39:21 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,10 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 {
 	data->camera_is_set = false;
 	if (ac >= 3)
-		data->step = ft_atoi(av[2]);
-	else if (ac < 3 || data->step <= 0)
-		data->step = 1;
+		data->scale = ft_atoi(av[2]);
+	else if (ac < 3 || data->scale <= 0)
+		data->scale = 1;
+	data->step = 1;
 	data->ambient_is_set = false;
 	data->width = WIDTH;
 	data->diff_ok = false;

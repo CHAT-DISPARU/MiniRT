@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   update_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:11:09 by titan             #+#    #+#             */
-/*   Updated: 2026/02/17 17:06:52 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/02/28 14:23:15 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,10 @@ void	change_speed(t_data *data, bool *movded)
 void	update_fov(bool *movded, t_data *data)
 {
 	if (data->key_table[42] && !data->old_key_table[42])
+	{
 		data->diff_ok = !data->diff_ok;
+		*movded = true;
+	}
 	if (data->key_table[46])
 	{
 		data->cam.fov -= 2;
