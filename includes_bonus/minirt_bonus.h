@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/02 21:03:43 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/03 10:26:07 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,11 +211,13 @@ typedef struct s_mtl_info
 {
 	t_vec3				ka;
 	t_texture			*bump;
+	char				*bumpc;
 	double				ns;
 	t_vec3				kd;
 	t_vec3				ks;
 	double				opacity;
 	t_texture			*tex;
+	char				*texc;
 	char				*idx;
 	double				reflectivity;
 	double				rought;

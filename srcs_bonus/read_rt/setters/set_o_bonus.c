@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/03 10:11:29 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/03 10:30:51 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -261,28 +261,28 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			mtl_node->has_col = false;
 			mtl_node->bump = NULL;
 		}
-		if (!ft_strncmp("Ka ", ptr, 3) && i == 1)
+		else if (!ft_strncmp("Ka ", ptr, 3) && i == 1)
 		{
 			ptr = ptr + 3;
 			mtl_node->ka = parse_vec_fast(&ptr, 1);
 		}
-		if (!ft_strncmp("Ks ", ptr, 3) && i == 1)
+		else if (!ft_strncmp("Ks ", ptr, 3) && i == 1)
 		{
 			ptr = ptr + 3;
 			mtl_node->ks = parse_vec_fast(&ptr, 1);
 		}
-		if (!ft_strncmp("Kd ", ptr, 3) && i == 1)
+		else if (!ft_strncmp("Kd ", ptr, 3) && i == 1)
 		{
 			ptr = ptr + 3;
 			mtl_node->kd = parse_vec_fast(&ptr, 1);
 		}
-		if (!ft_strncmp("Ns ", ptr, 3) && i == 1)
+		else if (!ft_strncmp("Ns ", ptr, 3) && i == 1)
 		{
 			ptr = ptr + 3;
 			vec.x = parse_double_fast(&ptr);
 			mtl_node->ns = vec.x;
 		}
-		if (!ft_strncmp("d ", ptr, 2) && i == 1)
+		else if (!ft_strncmp("d ", ptr, 2) && i == 1)
 		{
 			ptr = ptr + 2;
 			mtl_node->opacity = parse_double_fast(&ptr);
@@ -291,7 +291,7 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			if (mtl_node->opacity < 0.0)
 				mtl_node->opacity = 0.0;
 		}
-		if (!ft_strncmp("map_Kd ", ptr, 7) && i == 1)
+		else if (!ft_strncmp("map_Kd ", ptr, 7) && i == 1)
 		{
 			ptr += 7;
 			int s = 1;
@@ -306,16 +306,9 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 					ptr++;
 				}
 			}
-			char *tex_p = get_texture_path(&ptr);
-			printf("%s\n", tex_p);
-			if (tex_p)
-			{
-				mtl_node->tex = load_texture(data, tex_p, NULL);
-				if (s > 1)
-					mtl_node->tex->scale = s;
-			}
+			mtl_node->texc = get_texture_path(&ptr);
 		}
-		if ((!ft_strncmp("map_bump ", ptr, 9) || !ft_strncmp("bump ", ptr, 5)) && i == 1)
+		else if ((!ft_strncmp("map_bump ", ptr, 9) || !ft_strncmp("bump ", ptr, 5)) && i == 1)
 		{
 			char *bump_start = ptr;
 			if (!ft_strncmp(bump_start, "map_bump ", 9))
@@ -331,12 +324,9 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 					ptr++;
 				}
 			}
-			char *bump_p = get_texture_path(&ptr);
-			printf("%s\n", bump_p);
-			if (bump_p)
-				mtl_node->bump = load_texture(data, bump_p, NULL);
+			mtl_node->bumpc = get_texture_path(&ptr);
 		}
-		if (!ft_strncmp("RGB ", ptr, 4) && i == 1)
+		else if (!ft_strncmp("RGB ", ptr, 4) && i == 1)
 		{
 			ptr = ptr + 4;
 			mtl_node->color.r = (uint8_t)parse_double_fast(&ptr);
@@ -345,7 +335,7 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			mtl_node->color.a = 255;
 			mtl_node->has_col = true;
 		}
-		if (!ft_strncmp("Re ", ptr, 3) && i == 1)
+		else if (!ft_strncmp("Re ", ptr, 3) && i == 1)
 		{
 			ptr = ptr + 3;
 			mtl_node->reflectivity = parse_double_fast(&ptr);
@@ -354,7 +344,7 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			if (mtl_node->reflectivity < 0.0)
 				mtl_node->reflectivity = 0.0;
 		}
-		if (!ft_strncmp("Ro ", ptr, 3) && i == 1)
+		else if (!ft_strncmp("Ro ", ptr, 3) && i == 1)
 		{
 			ptr = ptr + 3;
 			mtl_node->rought = parse_double_fast(&ptr);
@@ -370,6 +360,16 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 		*mtl_info = mtl_node;
 	}
 	munmap(v.str, v.len);
+	t_mtl_info	*tmp;
+	tmp = *mtl_info;
+	while (tmp)
+	{
+		if (tmp->bumpc)
+			mtl_node->bump = load_texture(data, tmp->bumpc, NULL);
+		if (tmp->texc)
+			mtl_node->tex = load_texture(data, tmp->texc, NULL);
+		tmp = tmp->next;
+	}
 }
 
 t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
