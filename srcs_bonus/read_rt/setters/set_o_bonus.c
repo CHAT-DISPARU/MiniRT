@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/03 10:30:51 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/03 11:25:58 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,7 +194,6 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 	char	*file;
 	int		i;
 	char		*cursor;
-	char		*line_start;
 	t_vars_obj	v;
 	char		*ptr;
 	t_mtl_info	*mtl_node;
@@ -209,7 +208,7 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 	v.str = map_file_fast(file, &v.len);
 	if (!v.str)
 	{
-		free(v.file);
+		free(file);
 		clean_exit(data, 1, "Error: Read Fail\n", 0);
 	}
 	free(file);
@@ -218,24 +217,18 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 	v.step = v.len / 60;
 	if (v.step == 0)
 		v.step = 1;
+	v.next = v.step;
 	cursor = v.str;
 	while (cursor < end_ptr && *cursor)
 	{
+		v.pos = cursor - v.str;
 		if (v.pos >= v.next)
 		{
 			printf("\rParsing MTL: [%3lu%%]", (v.pos * 100) / v.len);
 			fflush(stdout);
 			v.next += v.step;
 		}
-		line_start = cursor;
-		while (*cursor && *cursor != '\n' && *cursor != '\r')
-			cursor++;
-		if (*cursor == '\n' && *cursor != '\r')
-		{
-			*cursor = '\0';
-			cursor++;
-		}
-		ptr = line_start;
+		ptr = cursor;
 		while (is_space(*ptr))
 			ptr++;
 		if (!ft_strncmp("newmtl ", ptr, 7))
@@ -259,6 +252,8 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			mtl_node->rought = -1.0;
 			mtl_node->opacity = -1.0;
 			mtl_node->has_col = false;
+			mtl_node->bumpc = NULL;
+			mtl_node->texc = NULL;
 			mtl_node->bump = NULL;
 		}
 		else if (!ft_strncmp("Ka ", ptr, 3) && i == 1)
@@ -307,6 +302,7 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 				}
 			}
 			mtl_node->texc = get_texture_path(&ptr);
+			printf("%s\n", mtl_node->texc);
 		}
 		else if ((!ft_strncmp("map_bump ", ptr, 9) || !ft_strncmp("bump ", ptr, 5)) && i == 1)
 		{
@@ -325,6 +321,7 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 				}
 			}
 			mtl_node->bumpc = get_texture_path(&ptr);
+			printf("%s\n", mtl_node->bumpc);
 		}
 		else if (!ft_strncmp("RGB ", ptr, 4) && i == 1)
 		{
@@ -353,6 +350,10 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			if (mtl_node->rought < 0.0)
 				mtl_node->rought = 0.0;
 		}
+		while (cursor < end_ptr && *cursor && *cursor != '\n')
+			cursor++;
+		if (cursor < end_ptr && *cursor)
+			cursor++;
 	}
 	if (i == 1)
 	{
@@ -365,9 +366,15 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 	while (tmp)
 	{
 		if (tmp->bumpc)
-			mtl_node->bump = load_texture(data, tmp->bumpc, NULL);
+		{
+			tmp->bump = load_texture(data, tmp->bumpc, NULL);
+			tmp->bumpc = NULL;
+		}
 		if (tmp->texc)
-			mtl_node->tex = load_texture(data, tmp->texc, NULL);
+		{
+			tmp->tex = load_texture(data, tmp->texc, NULL);
+			tmp->texc = NULL;
+		}
 		tmp = tmp->next;
 	}
 }
