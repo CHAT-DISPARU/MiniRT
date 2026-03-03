@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 14:41:51 by titan             #+#    #+#             */
-/*   Updated: 2026/02/11 15:29:45 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/02 22:13:42 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,10 @@ bool	call_func(t_obj *objs, t_ray shadow_ray, double light_dist)
 	if (functions[objs->type](objs, shadow_ray, &shadow_rec))
 	{
 		if (shadow_rec.t < light_dist && shadow_rec.t > EPSILON)
-			return (true);
+		{
+			if (objs->opacity == 1.0)
+				return (true);
+		}
 	}
 	return (false);
 }

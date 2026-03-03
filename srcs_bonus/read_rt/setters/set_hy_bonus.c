@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_hy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 17:06:16 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/27 12:00:14 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/02 21:25:31 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ void	set_hy(t_data *data, char *line, int i)
 	new_hy->ks = (t_vec3){1, 1, 1};
 	new_hy->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_hy->ns = 32;
+	new_hy->opacity = 1;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);
 	check_extra_info(data, line, i);

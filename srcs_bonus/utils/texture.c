@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/13 13:47:56 by titan             #+#    #+#             */
-/*   Updated: 2026/02/28 14:34:11 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/01 14:33:00 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ t_texture	*load_texture(t_data *data, char *filepath, char *file_o)
 			free(file_o);
 		clean_exit(data, 1, "img load\n", 0);
 	}
+	tex->scale = 1;
 	tex->pixels = malloc(sizeof(mlx_color) * tex->height * tex->width);
 	if (!tex->pixels)
 	{
@@ -62,14 +63,14 @@ t_texture	*load_texture(t_data *data, char *filepath, char *file_o)
 	return (tex);
 }
 
-mlx_color	get_texture_color(t_texture *tex, double u, double v, double scale)
+mlx_color	get_texture_color(t_texture *tex, double u, double v)
 {
 	int	x;
 	int	y;
 	int	index;
 
-	u = u * scale;
-	v = v * scale;
+	u = u * tex->scale;
+	v = v * tex->scale;
 	u = u - floor(u);
 	v = v - floor(v);
 	x = (int)(u * tex->width);

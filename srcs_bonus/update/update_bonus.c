@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:11:09 by titan             #+#    #+#             */
-/*   Updated: 2026/02/28 14:23:15 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/01 20:21:51 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,14 +78,14 @@ void	change_speed(t_data *data, bool *movded)
 {
 	if (data->key_table[224] && !data->old_key_table[224])
 	{
-		if (data->speed == 0.5)
+		if (data->speed == 0.3)
 		{
-			data->speed = 2;
+			data->speed = 4;
 			data->rot_speed = 0.1;
 		}
 		else
 		{
-			data->speed = 0.5;
+			data->speed = 0.3;
 			data->rot_speed = 0.05;
 		}
 	}

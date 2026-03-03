@@ -6,17 +6,17 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/15 14:33:01 by titan             #+#    #+#             */
-/*   Updated: 2026/02/28 14:36:58 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/01 14:31:03 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-double	get_texture_intens(t_texture *bump_tex, double u, double v, double scale)
+double	get_texture_intens(t_texture *bump_tex, double u, double v)
 {
 	mlx_color	color;
 
-	color = get_texture_color(bump_tex, u, v, scale);
+	color = get_texture_color(bump_tex, u, v);
 	return ((double)(color.r + color.g + color.b) / 765);
 }
 
@@ -25,7 +25,7 @@ double	get_texture_intens(t_texture *bump_tex, double u, double v, double scale)
 	bump_tex : La texture de bump
 	Nouvelle Normale = Ancienne + (PenteU * Tangente) + (PenteV * Bitangente)
 */
-void	apply_bump(t_hit_r *rec, t_texture *bump_tex, double strength, double scale)
+void	apply_bump(t_hit_r *rec, t_texture *bump_tex, double strength)
 {
 	double	i_center;
 	double	i_u;
@@ -36,11 +36,11 @@ void	apply_bump(t_hit_r *rec, t_texture *bump_tex, double strength, double scale
 	t_vec3	up_guide;
 
 	up_guide = (t_vec3){0, 1, 0};
-	i_center = get_texture_intens(bump_tex, rec->u, rec->v, scale);
+	i_center = get_texture_intens(bump_tex, rec->u, rec->v);
 	i_u = get_texture_intens(bump_tex,
-		rec->u + (1.0 / bump_tex->width), rec->v, scale);
+		rec->u + (1.0 / bump_tex->width), rec->v);
 	i_v = get_texture_intens(bump_tex, rec->u,
-		rec->v + (1.0 / bump_tex->height), scale);
+		rec->v + (1.0 / bump_tex->height));
 	double d_u = (i_center - i_u) * strength;
 	double d_v = (i_center - i_v) * strength;
 	if (fabs(vec_dot_scal(rec->normal, up_guide)) > 0.99)

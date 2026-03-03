@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/28 14:37:23 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/02 21:03:43 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,6 +180,7 @@ typedef struct s_texture
 	mlx_color	*pixels;
 	int			width;
 	int			height;
+	int			scale;
 }				t_texture;
 
 typedef struct s_obj
@@ -189,6 +190,7 @@ typedef struct s_obj
 	double			height;
 	t_vec3			ka;
 	double			ns;
+	double			opacity;
 	t_vec3			kd;
 	t_vec3			ks;
 	int				type;
@@ -212,6 +214,7 @@ typedef struct s_mtl_info
 	double				ns;
 	t_vec3				kd;
 	t_vec3				ks;
+	double				opacity;
 	t_texture			*tex;
 	char				*idx;
 	double				reflectivity;
@@ -484,10 +487,10 @@ void		get_sphere_uv(t_vec3 normal, double *u, double *v);
 void		get_pl_uv(t_vec3 p, t_vec3 normal, double *u, double *v);
 void		get_sq_uv(t_vec3 p, t_vec3 center, t_vec3 normal, double side_size, double *u, double *v);
 void		get_cycohy_uv(t_vec3 p, t_vec3 center, t_vec3 axis, double height, double *u, double *v);
-mlx_color	get_texture_color(t_texture *tex, double u, double v, double scale);
+mlx_color	get_texture_color(t_texture *tex, double u, double v);
 char		*get_texture_path(char **ptr);
 t_texture	*load_texture(t_data *data, char *filepath, char *file_o);
-void		apply_bump(t_hit_r *rec, t_texture *bump_tex, double strength, double scale);
+void		apply_bump(t_hit_r *rec, t_texture *bump_tex, double strength);
 void		clean(t_data *data);
 void		re_init(t_data *data);
 void		stop_threads(t_data *data);

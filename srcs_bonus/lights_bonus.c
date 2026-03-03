@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lights_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 10:27:40 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/27 11:43:25 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/01 13:17:50 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ void	calc_lights(t_color_c *lights, t_hit_r rec, t_data *data, t_light *light)
 	lights->obj_r = rec.color.r / 255.0;
 	lights->obj_g = rec.color.g / 255.0;
 	lights->obj_b = rec.color.b / 255.0;
-	lights->ambient.x = lights->obj_r * data->a_final.x;// * rec.obj_ptr->ka;
-	lights->ambient.y = lights->obj_g * data->a_final.y; //* rec.obj_ptr->ka;
-	lights->ambient.z = lights->obj_b * data->a_final.z; //* rec.obj_ptr->ka;
+	lights->ambient.x = lights->obj_r * data->a_final.x * rec.obj_ptr->ka.x;
+	lights->ambient.y = lights->obj_g * data->a_final.y * rec.obj_ptr->ka.y;
+	lights->ambient.z = lights->obj_b * data->a_final.z * rec.obj_ptr->ka.z;
 	lights->diffuse.x = light->color.r / 255.0;
 	lights->diffuse.y = light->color.g / 255.0;
 	lights->diffuse.z = light->color.b / 255.0;
