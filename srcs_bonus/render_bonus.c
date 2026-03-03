@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/02/28 14:37:38 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/02 21:32:07 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,10 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 		col_a.x = rec.obj_ptr->color.r / 255.0;
 		col_a.y = rec.obj_ptr->color.g / 255.0;
 		col_a.z = rec.obj_ptr->color.b / 255.0;
-		if (rec.obj_ptr->has_texture && rec.obj_ptr->tex) 
-			rec.color = get_texture_color(rec.obj_ptr->tex, rec.u, rec.v, data->scale);
+		if (rec.obj_ptr->has_texture && rec.obj_ptr->tex)
+			rec.color = get_texture_color(rec.obj_ptr->tex, rec.u, rec.v);
 		if (rec.obj_ptr->bump && rec.obj_ptr->has_bump)
-			apply_bump(&rec, rec.obj_ptr->bump, 10, data->scale);
+			apply_bump(&rec, rec.obj_ptr->bump, 10);
 		if (data->has_checker)
 		{
 			col_b.x = data->checker_color.r / 255.0;
@@ -148,31 +148,71 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 			t_vec3	final_diff = {0, 0, 0};
 			double	r = rec.obj_ptr->reflectivity;
 
-			if (r > 0.0) 
+			if (rec.obj_ptr->opacity < 1)
 			{
-				r = rec.obj_ptr->reflectivity;
-				perfect_reflect = vec_sub(ray.dir, vec_scale(rec.normal, 2.0 * vec_dot_scal(ray.dir, rec.normal)));
-				fuzz = vec_scale(vec_random_in_unit_sphere(), rec.obj_ptr->rought);
-				spec_dir = vec_normalize(vec_add(perfect_reflect, fuzz));
-				spec_ray.origin = vec_add(rec.p, vec_scale(rec.normal, EPSILON));
-				spec_ray.dir = spec_dir;
-				spec_color = check_hit(data, spec_ray, deph - 1);
-				final_spec = vec_scale(spec_color, r);
+				t_ray	through_ray;
+				t_vec3	through_color;
+				t_vec3	glass_tint;
+				t_vec3	reflect_color;
+				double	cos_theta;
+				double	fresnel;
+				double	op;
+
+				op = rec.obj_ptr->opacity;
+				through_ray.origin = vec_add(rec.p, vec_scale(ray.dir, EPSILON));
+				through_ray.dir = ray.dir;
+				through_color = check_hit(data, through_ray, deph - 1);
+				glass_tint.x = rec.obj_ptr->color.r / 255.0;
+				glass_tint.y = rec.obj_ptr->color.g / 255.0;
+				glass_tint.z = rec.obj_ptr->color.b / 255.0;
+				cos_theta = fabs(vec_dot_scal(ray.dir, rec.normal));
+				fresnel = 0.04 + (1.0 - 0.04) * pow(1.0 - cos_theta, 5.0);
+				fresnel = fresnel * rec.obj_ptr->reflectivity;
+				reflect_color = (t_vec3){0, 0, 0};
+				if (fresnel > 0.0)
+				{
+					t_ray	reflect_ray;
+					t_vec3	perfect_reflect;
+					perfect_reflect = vec_sub(ray.dir, vec_scale(rec.normal,
+								2.0 * vec_dot_scal(ray.dir, rec.normal)));
+					reflect_ray.origin = vec_add(rec.p, vec_scale(rec.normal, EPSILON));
+					reflect_ray.dir = vec_normalize(perfect_reflect);
+					reflect_color = check_hit(data, reflect_ray, deph - 1);
+				}
+				through_color = vec_mult(through_color, glass_tint);
+				color_acc.x = color_acc.x * op + through_color.x * (1.0 - fresnel) * (1.0 - op) + reflect_color.x * fresnel;
+				color_acc.y = color_acc.y * op + through_color.y * (1.0 - fresnel) * (1.0 - op) + reflect_color.y * fresnel;
+				color_acc.z = color_acc.z * op + through_color.z * (1.0 - fresnel) * (1.0 - op) + reflect_color.z * fresnel;
 			}
-			if (r < 1.0 && data->diff_ok)
+			else
 			{
-				diff_dir = random_hemisphere_dir(rec.normal);
-				diff_ray.origin = vec_add(rec.p, vec_scale(rec.normal, EPSILON));
-				diff_ray.dir = diff_dir;
-				diff_color = check_hit(data, diff_ray, deph - 1);
-				obj_col.x = rec.color.r / 255.0;
-				obj_col.y = rec.color.g / 255.0;
-				obj_col.z = rec.color.b / 255.0;
-				final_diff = vec_scale(vec_mult(obj_col, diff_color), (1.0 - r) * 0.5);
+				if (r > 0.0) 
+				{
+					r = rec.obj_ptr->reflectivity;
+					perfect_reflect = vec_sub(ray.dir, vec_scale(rec.normal, 2.0 * vec_dot_scal(ray.dir, rec.normal)));
+					fuzz = vec_scale(vec_random_in_unit_sphere(), rec.obj_ptr->rought);
+					spec_dir = vec_normalize(vec_add(perfect_reflect, fuzz));
+					spec_ray.origin = vec_add(rec.p, vec_scale(rec.normal, EPSILON));
+					spec_ray.dir = spec_dir;
+					spec_color = check_hit(data, spec_ray, deph - 1);
+					final_spec = vec_scale(spec_color, r);
+				}
+				if (r < 1.0 && data->diff_ok)
+				{
+					diff_dir = random_hemisphere_dir(rec.normal);
+					diff_ray.origin = vec_add(rec.p, vec_scale(rec.normal, EPSILON));
+					diff_ray.dir = diff_dir;
+					diff_color = check_hit(data, diff_ray, deph - 1);
+					obj_col.x = rec.color.r / 255.0;
+					obj_col.y = rec.color.g / 255.0;
+					obj_col.z = rec.color.b / 255.0;
+					final_diff = vec_scale(vec_mult(obj_col, diff_color), (1.0 - r) * 0.5);
+				}
+				color_acc = vec_add(color_acc, vec_add(final_spec, final_diff));
 			}
-			color_acc = vec_add(color_acc, vec_add(final_spec, final_diff));
 		}
 	}
+	
 	if (data->debug && data->bvh_nodes)
 	{
 		int			k = 0;

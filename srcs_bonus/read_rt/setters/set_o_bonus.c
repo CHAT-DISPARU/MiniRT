@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/28 13:38:27 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/02 21:20:29 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,7 +203,7 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 	t_vec3		vec;
 
 	i = 0;
-	while (filename[i] && filename[i] != '\n')
+	while (filename[i] && filename[i] != '\n' && filename[i] != '\r')
 		i++;
 	file = calloc(sizeof(char), (i + 1));
 	file = ft_strncat(file, filename, i);
@@ -234,6 +234,8 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			cursor++;
 		}
 		ptr = line_start;
+		while (is_space(*ptr))
+			ptr++;
 		if (!ft_strncmp("newmtl ", ptr, 7))
 		{
 			if (i == 1)
@@ -253,6 +255,7 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			mtl_node->color = (mlx_color)(uint32_t){0xFFFFFFFF};
 			mtl_node->reflectivity = -1.0;
 			mtl_node->rought = -1.0;
+			mtl_node->opacity = -1.0;
 			mtl_node->has_col = false;
 			mtl_node->bump = NULL;
 		}
@@ -277,9 +280,21 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			vec.x = parse_double_fast(&ptr);
 			mtl_node->ns = vec.x;
 		}
+		if (!ft_strncmp("d ", ptr, 2) && i == 1)
+		{
+			ptr = ptr + 2;
+			mtl_node->opacity = parse_double_fast(&ptr);
+			if (mtl_node->opacity > 1.0)
+				mtl_node->opacity = 1.0;
+			if (mtl_node->opacity < 0.0)
+				mtl_node->opacity = 0.0;
+		}
 		if (!ft_strncmp("map_Kd ", ptr, 7) && i == 1)
 		{
 			ptr += 7;
+			int s = 1;
+			if (!ft_strncmp(ptr, "-s", 2))
+				s = ft_atoi(ptr + 2);
 			if (!ft_strncmp(ptr, "-", 1))
 			{
 				while (*ptr)
@@ -290,8 +305,13 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 				}
 			}
 			char *tex_p = get_texture_path(&ptr);
+			printf("%s\n", tex_p);
 			if (tex_p)
+			{
 				mtl_node->tex = load_texture(data, tex_p, line);
+				if (s > 1)
+					mtl_node->tex->scale = s;
+			}
 		}
 		if ((!ft_strncmp("map_bump ", ptr, 9) || !ft_strncmp("bump ", ptr, 5)) && i == 1)
 		{
@@ -355,11 +375,17 @@ t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
 	t_mtl_info	*tmp;
 	int			len;
 
+	mat.tex = NULL;
 	mat.ka = (t_vec3){0.2, 0.2, 0.2};
 	mat.ks = (t_vec3){1, 1, 1};
 	mat.kd = (t_vec3){0.8, 0.8, 0.8};
 	mat.ns = 32;
-	mat.tex = NULL;
+	mat.color = (mlx_color)(uint32_t){0xFFFFFFFF};
+	mat.reflectivity = -1.0;
+	mat.rought = -1.0;
+	mat.opacity = -1.0;
+	mat.has_col = false;
+	mat.bump = NULL;
 	tmp = mtl_info;
 	while (tmp)
 	{
@@ -377,6 +403,7 @@ t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
 				mat.reflectivity = tmp->reflectivity;
 				mat.rought = tmp->rought;
 				mat.has_col = tmp->has_col;
+				mat.opacity = tmp->opacity;
 				mat.bump = tmp->bump;
 				return (mat);
 			}
@@ -518,6 +545,7 @@ void	set_o(t_data *data, char *line, int i)
 				v.new->reflectivity = v.t.reflectivity;
 				v.new->rought = v.t.rought;
 				v.new->next = data->objs;
+				v.new->opacity = 1.0;
 				v.new->ks = mat.ks;
 				v.new->kd = mat.kd;
 				v.new->ka = mat.ka;
@@ -526,6 +554,8 @@ void	set_o(t_data *data, char *line, int i)
 					v.new->reflectivity = mat.reflectivity;
 				if (mat.rought >= 0.0)
 					v.new->rought = mat.rought;
+				if (mat.opacity >= 0.0)
+            		v.new->opacity = mat.opacity;
 				if (mat.has_col)
 					v.new->color = mat.color;
 				if (mat.tex)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_tr_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 14:38:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/27 11:58:56 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/02 21:24:43 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void	set_tr(t_data *data, char *line, int i)
 	new_tr->ks = (t_vec3){1, 1, 1};
 	new_tr->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_tr->ns = 32;
+	new_tr->opacity = 1;
 	new_tr->rought = t.rought;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);

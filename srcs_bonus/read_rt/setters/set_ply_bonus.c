@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/28 11:47:48 by titan             #+#    #+#             */
-/*   Updated: 2026/02/28 12:48:21 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/02 21:25:14 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -367,6 +367,7 @@ void	set_ply(t_data *data, char *line, int i)
 			new->ks = (t_vec3){1, 1, 1};
 			new->kd = (t_vec3){0.8, 0.8, 0.8};
 			new->ns = 32;
+			new->opacity = 1;
 			new->next = data->objs;
 			data->objs = new;
 		}

@@ -6,7 +6,7 @@
 /*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/28 14:39:21 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/01 21:54:49 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,17 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 {
 	data->camera_is_set = false;
 	if (ac >= 3)
-		data->scale = ft_atoi(av[2]);
-	else if (ac < 3 || data->scale <= 0)
-		data->scale = 1;
-	data->step = 1;
+		data->step = ft_atoi(av[2]);
+	else if (ac < 3 || data->step <= 0)
+		data->step = 1;
+	if (ac >= 4)
+		data->deph = ft_atoi(av[3]);
+	else if (ac < 4 || data->deph <= 0)
+		data->deph = 1;
 	data->ambient_is_set = false;
 	data->width = WIDTH;
 	data->diff_ok = false;
 	data->height = HEIGHT;
-	data->deph = 1;
 	data->has_checker = false;
 	data->checker_color = (mlx_color)(uint32_t){0x00000000};
 	data->debug = false;
@@ -48,9 +50,9 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 	data->debug_depth = 8;
 	data->scene_fd = -1;
 	data->scene_line = NULL;
-	if (ac == 4)
-		data->s_per_pixs = ft_atoi(av[3]);
-	else if (ac != 4 || data->s_per_pixs <= 0)
+	if (ac == 5)
+		data->s_per_pixs = ft_atoi(av[4]);
+	else if (ac != 5 || data->s_per_pixs <= 0)
 		data->s_per_pixs = 1;
 	data->objs = NULL;
 	data->light = NULL;
@@ -94,7 +96,7 @@ int	main(int ac, char **av)
 	t_data					*data;
 	mlx_window_create_info	info;
 
-	if (ac < 2 || ac > 4)
+	if (ac < 2 || ac > 5)
 	{
 		ft_putstr_fd("invalid argument:\n./MiniRT <file.rt>\n Optional : ./MiniRT <file.rt> <sample per pixel> <resolution>\n", 2);
 		return (1);

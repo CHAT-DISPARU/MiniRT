@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_co_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 12:25:02 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/27 11:59:58 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/02 21:25:49 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	set_co(t_data *data, char *line, int i)
 	new_co->ks = (t_vec3){1, 1, 1};
 	new_co->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_co->ns = 32;
+	new_co->opacity = 1;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);
 	check_extra_info(data, line, i);

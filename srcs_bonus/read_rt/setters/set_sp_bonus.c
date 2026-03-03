@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_sp_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:39 by titan             #+#    #+#             */
-/*   Updated: 2026/02/27 12:00:33 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/02 21:24:59 by titan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	set_sp(t_data *data, char *line, int i)
 	new_sp->ks = (t_vec3){1, 1, 1};
 	new_sp->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_sp->ns = 32;
+	new_sp->opacity = 1;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);
 	check_extra_info(data, line, i);
