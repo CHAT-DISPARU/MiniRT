@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_o_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/02 21:20:29 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/03 10:11:29 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,42 +193,44 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 {
 	char	*file;
 	int		i;
-	int		fd;
-	struct stat	file_stat;
 	char		*cursor;
 	char		*line_start;
-	char		*line;
+	t_vars_obj	v;
 	char		*ptr;
 	t_mtl_info	*mtl_node;
 	t_vec3		vec;
+	char		*end_ptr;
 
 	i = 0;
 	while (filename[i] && filename[i] != '\n' && filename[i] != '\r')
 		i++;
 	file = calloc(sizeof(char), (i + 1));
 	file = ft_strncat(file, filename, i);
-	fd = open(file, O_RDONLY);
-	if (fd < 0)
-		clean_exit(data, 1, "open mtl fail\n", 0);
-	if (fstat(fd, &file_stat) < 0)
-		clean_exit(data, 1, "Error: Fstat failed\n", 0);
-	if (S_ISDIR(file_stat.st_mode))
-		clean_exit(data, 1, "Error: Is a directory\n", 0);
-	line = malloc(sizeof(char) * (file_stat.st_size + 1));
-	if (!line)
-		clean_exit(data, 1, "Error: Malloc failed\n", 0);
-	if (read(fd, line, file_stat.st_size) == -1)
-		clean_exit(data, 1, "Error: Read failed\n", 0);
-	close(fd);
-	free(file);
-	i = 0;
-	cursor = line;
-	while (*cursor)
+	v.str = map_file_fast(file, &v.len);
+	if (!v.str)
 	{
+		free(v.file);
+		clean_exit(data, 1, "Error: Read Fail\n", 0);
+	}
+	free(file);
+	end_ptr = v.str + v.len;
+	i = 0;
+	v.step = v.len / 60;
+	if (v.step == 0)
+		v.step = 1;
+	cursor = v.str;
+	while (cursor < end_ptr && *cursor)
+	{
+		if (v.pos >= v.next)
+		{
+			printf("\rParsing MTL: [%3lu%%]", (v.pos * 100) / v.len);
+			fflush(stdout);
+			v.next += v.step;
+		}
 		line_start = cursor;
-		while (*cursor && *cursor != '\n')
+		while (*cursor && *cursor != '\n' && *cursor != '\r')
 			cursor++;
-		if (*cursor == '\n')
+		if (*cursor == '\n' && *cursor != '\r')
 		{
 			*cursor = '\0';
 			cursor++;
@@ -308,7 +310,7 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			printf("%s\n", tex_p);
 			if (tex_p)
 			{
-				mtl_node->tex = load_texture(data, tex_p, line);
+				mtl_node->tex = load_texture(data, tex_p, NULL);
 				if (s > 1)
 					mtl_node->tex->scale = s;
 			}
@@ -330,8 +332,9 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 				}
 			}
 			char *bump_p = get_texture_path(&ptr);
+			printf("%s\n", bump_p);
 			if (bump_p)
-				mtl_node->bump = load_texture(data, bump_p, line);
+				mtl_node->bump = load_texture(data, bump_p, NULL);
 		}
 		if (!ft_strncmp("RGB ", ptr, 4) && i == 1)
 		{
@@ -361,12 +364,12 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 				mtl_node->rought = 0.0;
 		}
 	}
-	free(line);
 	if (i == 1)
 	{
 		mtl_node->next = *mtl_info;
 		*mtl_info = mtl_node;
 	}
+	munmap(v.str, v.len);
 }
 
 t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
@@ -478,12 +481,17 @@ void	set_o(t_data *data, char *line, int i)
 	v.next = v.step;
 	c = v.str;
 	data->mtl_info = NULL;
-	mat.idx = NULL;
+	mat.tex = NULL;
 	mat.ka = (t_vec3){0.2, 0.2, 0.2};
 	mat.ks = (t_vec3){1, 1, 1};
 	mat.kd = (t_vec3){0.8, 0.8, 0.8};
 	mat.ns = 32;
-	mat.tex = NULL;
+	mat.color = (mlx_color)(uint32_t){0xFFFFFFFF};
+	mat.reflectivity = -1.0;
+	mat.rought = -1.0;
+	mat.opacity = -1.0;
+	mat.has_col = false;
+	mat.bump = NULL;
 	while (c < end_ptr && *c)
 	{
 		v.pos = c - v.str;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shadow_rays_bonus.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 14:41:51 by titan             #+#    #+#             */
-/*   Updated: 2026/03/02 22:13:42 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/03 09:51:01 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ bool	call_func(t_obj *objs, t_ray shadow_ray, double light_dist)
 	{
 		if (shadow_rec.t < light_dist && shadow_rec.t > EPSILON)
 		{
-			if (objs->opacity == 1.0)
+			if (objs->opacity == 1.0 || objs->opacity >= 0.999999999999)
 				return (true);
 		}
 	}
