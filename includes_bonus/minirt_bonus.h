@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/03 10:26:07 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/04 14:44:19 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,6 +181,7 @@ typedef struct s_texture
 	int			width;
 	int			height;
 	int			scale;
+	char		*name;
 }				t_texture;
 
 typedef struct s_obj
@@ -245,6 +246,20 @@ typedef struct s_light
 	mlx_color		color;
 	struct s_light	*next;
 }				t_light;
+
+typedef struct s_aabb_edge
+{
+	double	tx1;
+	double	tx2;
+	double	ty2;
+	double	ty1;
+	double	thickness;
+	double	tz1;
+	double	tz2;
+	double	tmin;
+	double	tmax;
+	double	t_enter;
+}				t_aabb_edge;
 
 typedef struct s_alight
 {

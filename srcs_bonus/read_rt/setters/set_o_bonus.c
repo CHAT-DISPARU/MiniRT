@@ -6,12 +6,13 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/03 11:25:58 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/04 14:45:49 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 #include <sys/stat.h>
+#include <string.h>
 #include <sys/mman.h>
 
 char	*ft_strncat(char *dest, char *src, unsigned int nb)
@@ -201,15 +202,19 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 	char		*end_ptr;
 
 	i = 0;
-	while (filename[i] && filename[i] != '\n' && filename[i] != '\r')
+	while (filename[i])
+	{
+		if (filename[i] == '\n' || filename[i] == '\r')
+			break ;
 		i++;
+	}
 	file = calloc(sizeof(char), (i + 1));
-	file = ft_strncat(file, filename, i);
+	file = strncpy(file, filename, i);
 	v.str = map_file_fast(file, &v.len);
 	if (!v.str)
 	{
 		free(file);
-		clean_exit(data, 1, "Error: Read Fail\n", 0);
+		clean_exit(data, 1, "Error: Read Fail mtl\n", 0);
 	}
 	free(file);
 	end_ptr = v.str + v.len;
@@ -302,12 +307,11 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 				}
 			}
 			mtl_node->texc = get_texture_path(&ptr);
-			printf("%s\n", mtl_node->texc);
 		}
-		else if ((!ft_strncmp("map_bump ", ptr, 9) || !ft_strncmp("bump ", ptr, 5)) && i == 1)
+		else if ((!ft_strncmp("map_bump ", ptr, 9) || !ft_strncmp("bump ", ptr, 5) || !ft_strncmp("map_Bump ", ptr, 9)) && i == 1)
 		{
 			char *bump_start = ptr;
-			if (!ft_strncmp(bump_start, "map_bump ", 9))
+			if (!ft_strncmp(bump_start, "map_bump ", 9) || !ft_strncmp("map_Bump ", ptr, 9))
 				ptr += 9;
 			else
 				ptr += 5;
@@ -321,7 +325,6 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 				}
 			}
 			mtl_node->bumpc = get_texture_path(&ptr);
-			printf("%s\n", mtl_node->bumpc);
 		}
 		else if (!ft_strncmp("RGB ", ptr, 4) && i == 1)
 		{
@@ -362,16 +365,19 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 	}
 	munmap(v.str, v.len);
 	t_mtl_info	*tmp;
+	printf("\rParsing MTL: [100%%] - OK.\n");
 	tmp = *mtl_info;
 	while (tmp)
 	{
 		if (tmp->bumpc)
 		{
+			printf("%s\n", tmp->bumpc);
 			tmp->bump = load_texture(data, tmp->bumpc, NULL);
 			tmp->bumpc = NULL;
 		}
 		if (tmp->texc)
 		{
+			printf("%s\n", tmp->texc);
 			tmp->tex = load_texture(data, tmp->texc, NULL);
 			tmp->texc = NULL;
 		}
@@ -385,23 +391,25 @@ t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
 	t_mtl_info	*tmp;
 	int			len;
 
-	mat.tex = NULL;
 	mat.ka = (t_vec3){0.2, 0.2, 0.2};
 	mat.ks = (t_vec3){1, 1, 1};
 	mat.kd = (t_vec3){0.8, 0.8, 0.8};
 	mat.ns = 32;
+	mat.tex = NULL;
+	mat.bump = NULL;
+	mat.has_col = false;
 	mat.color = (mlx_color)(uint32_t){0xFFFFFFFF};
 	mat.reflectivity = -1.0;
 	mat.rought = -1.0;
 	mat.opacity = -1.0;
-	mat.has_col = false;
-	mat.bump = NULL;
 	tmp = mtl_info;
+	len = 0;
 	while (tmp)
 	{
 		if (tmp->idx)
 		{
-			len = ft_strlen(tmp->idx);
+			while (s[len] && s[len] != '\r' && s[len] != '\n' && !is_space(s[len]))
+    			len++;
 			if (!ft_strncmp(tmp->idx, s, len))
 			{
 				mat.ka = tmp->ka;
@@ -469,7 +477,7 @@ void	set_o(t_data *data, char *line, int i)
 	if (!v.str)
 	{
 		free(v.file);
-		clean_exit(data, 1, "Error: Read Fail\n", 0);
+		clean_exit(data, 1, "Error: Read Fail obj\n", 0);
 	}
 	end_ptr = v.str + file_size;
 	free(v.file);
@@ -488,17 +496,18 @@ void	set_o(t_data *data, char *line, int i)
 	v.next = v.step;
 	c = v.str;
 	data->mtl_info = NULL;
-	mat.tex = NULL;
+	mat.idx = NULL;
 	mat.ka = (t_vec3){0.2, 0.2, 0.2};
 	mat.ks = (t_vec3){1, 1, 1};
 	mat.kd = (t_vec3){0.8, 0.8, 0.8};
 	mat.ns = 32;
+	mat.tex = NULL;
+	mat.bump = NULL;
+	mat.has_col = false;
 	mat.color = (mlx_color)(uint32_t){0xFFFFFFFF};
 	mat.reflectivity = -1.0;
 	mat.rought = -1.0;
 	mat.opacity = -1.0;
-	mat.has_col = false;
-	mat.bump = NULL;
 	while (c < end_ptr && *c)
 	{
 		v.pos = c - v.str;

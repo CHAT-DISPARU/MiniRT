@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   slice_cost.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 15:02:25 by titan             #+#    #+#             */
-/*   Updated: 2026/02/28 10:38:49 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/04 14:47:36 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,10 +83,23 @@ static int	sah_axis(t_obj **objs, int count, int axis, double *out_cost)
 	return (best_mid);
 }
 
+void	setmidaxis(int *best_axis, int count, t_obj ***tmp, int *mid)
+{
+	double	cost[3];
+
+	mid[0] = sah_axis(tmp[0], count, 0, &cost[0]);
+	mid[1] = sah_axis(tmp[1], count, 1, &cost[1]);
+	mid[2] = sah_axis(tmp[2], count, 2, &cost[2]);
+	*best_axis = 0;
+	if (cost[1] < cost[*best_axis])
+		*best_axis = 1;
+	if (cost[2] < cost[*best_axis])
+		*best_axis = 2;
+}
+
 int	find_best_split_all_axes(t_data *data, int start, int count)
 {
 	t_obj	**tmp[3];
-	double	cost[3];
 	int		mid[3];
 	int		best_axis;
 	int		i;
@@ -104,14 +117,7 @@ int	find_best_split_all_axes(t_data *data, int start, int count)
 		ft_memcpy(tmp[i], &data->sorted_objs[start], sizeof(t_obj *) * count);
 		i++;
 	}
-	mid[0] = sah_axis(tmp[0], count, 0, &cost[0]);
-	mid[1] = sah_axis(tmp[1], count, 1, &cost[1]);
-	mid[2] = sah_axis(tmp[2], count, 2, &cost[2]);
-	best_axis = 0;
-	if (cost[1] < cost[best_axis])
-		best_axis = 1;
-	if (cost[2] < cost[best_axis])
-		best_axis = 2;
+	setmidaxis(&best_axis, count, tmp, mid);
 	ft_memcpy(&data->sorted_objs[start], tmp[best_axis], sizeof(t_obj *) * count);
 	free(tmp[0]);
 	free(tmp[1]);

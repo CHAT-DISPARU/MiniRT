@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pars_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 12:17:03 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 14:12:27 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/03 13:07:59 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,10 +82,10 @@ char	*get_texture_path(char **ptr)
 
 	while (**ptr && is_space(**ptr))
 		(*ptr)++;
-	if (!**ptr || **ptr == '\n')
+	if (!**ptr || **ptr == '\n' || **ptr == '\r')
 		return (NULL);
 	len = 0;
-	while ((*ptr)[len] && !is_space((*ptr)[len]) && (*ptr)[len] != '\n')
+	while ((*ptr)[len] && !is_space((*ptr)[len]) && ((*ptr)[len] != '\n' || (*ptr)[len] != '\r'))
 		len++;
 	path = malloc(sizeof(char) * (len + 1));
 	if (!path)
