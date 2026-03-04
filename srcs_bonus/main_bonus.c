@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/01 21:54:49 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/03 13:34:40 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 	data->has_checker = false;
 	data->checker_color = (mlx_color)(uint32_t){0x00000000};
 	data->debug = false;
+	data->textures = NULL;
 	data->thread_running = true;
 	data->is_full = false;
 	data->sorted_objs = NULL;

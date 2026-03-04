@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   texture.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/13 13:47:56 by titan             #+#    #+#             */
-/*   Updated: 2026/03/01 14:33:00 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/03 13:40:36 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,9 @@
 t_texture	*load_texture(t_data *data, char *filepath, char *file_o)
 {
 	t_texture	*tex;
+	t_list		*tmp;
 	t_list		*node;
-
+	t_texture	*tex_tmp;
 
 	if (access(filepath, F_OK | R_OK) == -1)
 	{
@@ -24,6 +25,20 @@ t_texture	*load_texture(t_data *data, char *filepath, char *file_o)
 			free(file_o);
 		free(filepath);
 		clean_exit(data, 1, "Error: Texture file missing or permission denied\n", 0);
+	}
+	tmp = data->textures;
+	while (tmp)
+	{
+		tex_tmp = (t_texture *)tmp->content;
+		if (tex_tmp)
+		{
+			if (!ft_strcmp(filepath, tex_tmp->name))
+			{
+    			free(filepath);
+    			return (tex_tmp);
+			}
+		}
+		tmp = tmp->next;
 	}
 	tex = ft_calloc(1, sizeof(t_texture));
 	if (!tex)
@@ -44,6 +59,7 @@ t_texture	*load_texture(t_data *data, char *filepath, char *file_o)
 	}
 	ft_lstadd_back(&data->textures, node);
 	tex->img = mlx_new_image_from_file(data->mlx, filepath, &tex->width, &tex->height);
+	tex->name = ft_strdup(filepath);
 	free(filepath);
 	if (!tex->img)
 	{

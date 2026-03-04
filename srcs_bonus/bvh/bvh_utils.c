@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   bvh_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 11:16:50 by titan             #+#    #+#             */
-/*   Updated: 2026/02/15 16:10:26 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/04 14:39:22 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,38 +70,43 @@ static bool	is_on_edge(t_vec3 p, t_aabb box, double thick)
 	return (on_face >= 2); 
 }
 
+void	set_tcoords(t_aabb_edge *utils, t_ray ray, t_aabb box, t_vec3 inv_dir)
+{
+	utils->tx1 = (box.min.x - ray.origin.x) * inv_dir.x;
+	utils->tx2 = (box.max.x - ray.origin.x) * inv_dir.x;
+	utils->tmin = fmin(utils->tx1, utils->tx2);
+	utils->tmax = fmax(utils->tx1, utils->tx2);
+	utils->ty1 = (box.min.y - ray.origin.y) * inv_dir.y;
+	utils->ty2 = (box.max.y - ray.origin.y) * inv_dir.y;
+	utils->tmin = fmax(utils->tmin, fmin(utils->ty1, utils->ty2));
+	utils->tmax = fmin(utils->tmax, fmax(utils->ty1, utils->ty2));
+	utils->tz1 = (box.min.z - ray.origin.z) * inv_dir.z;
+	utils->tz2 = (box.max.z - ray.origin.z) * inv_dir.z;
+	utils->tmin = fmax(utils->tmin, fmin(utils->tz1, utils->tz2));
+	utils->tmax = fmin(utils->tmax, fmax(utils->tz1, utils->tz2));
+}
+
 double	hit_aabb_edge(t_ray ray, t_aabb box)
 {
-	double	tmin, tmax, t_enter;
-	t_vec3	inv_dir;
-	t_vec3	p;
+	t_vec3		inv_dir;
+	t_vec3		p;
+	t_aabb_edge	utils;
 
 	inv_dir.x = 1.0 / ray.dir.x;
 	inv_dir.y = 1.0 / ray.dir.y;
 	inv_dir.z = 1.0 / ray.dir.z;
-	double tx1 = (box.min.x - ray.origin.x) * inv_dir.x;
-	double tx2 = (box.max.x - ray.origin.x) * inv_dir.x;
-	tmin = fmin(tx1, tx2);
-	tmax = fmax(tx1, tx2);
-	double ty1 = (box.min.y - ray.origin.y) * inv_dir.y;
-	double ty2 = (box.max.y - ray.origin.y) * inv_dir.y;
-	tmin = fmax(tmin, fmin(ty1, ty2));
-	tmax = fmin(tmax, fmax(ty1, ty2));
-	double tz1 = (box.min.z - ray.origin.z) * inv_dir.z;
-	double tz2 = (box.max.z - ray.origin.z) * inv_dir.z;
-	tmin = fmax(tmin, fmin(tz1, tz2));
-	tmax = fmin(tmax, fmax(tz1, tz2));
-	if (tmax < tmin || tmax < 0)
+	set_tcoords(&utils, ray, box, inv_dir);
+	if (utils.tmax < utils.tmin || utils.tmax < 0)
 		return (DBL_MAX);
-	t_enter = tmin;
-	if (t_enter < EPSILON)
-		t_enter = tmax;
-	if (t_enter < EPSILON)
+	utils.t_enter = utils.tmin;
+	if (utils.t_enter < EPSILON)
+		utils.t_enter = utils.tmax;
+	if (utils.t_enter < EPSILON)
 		return (DBL_MAX);
-	p = vec_add(ray.origin, vec_scale(ray.dir, t_enter));
-	double thickness = 0.006 * t_enter; 
-	if (is_on_edge(p, box, thickness))
-		return (t_enter);
+	p = vec_add(ray.origin, vec_scale(ray.dir, utils.t_enter));
+	utils.thickness = 0.006 * utils.t_enter; 
+	if (is_on_edge(p, box, utils.thickness))
+		return (utils.t_enter);
 	return (DBL_MAX);
 }
 
