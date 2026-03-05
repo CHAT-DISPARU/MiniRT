@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_hy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 17:06:16 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/02 21:25:31 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/05 17:16:35 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,14 @@ void	set_hy(t_data *data, char *line, int i)
 	t_mat_t	t;
 
 	read_hy(data, &line, i, &t);
+	skip_spaces(&line);
+	double	opacity = 1.0;
+	double	ni = 1.0;
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+		opacity = rt_atod(&line);
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+		ni = rt_atod(&line);
 	new_hy = ft_calloc(1, sizeof(t_obj));
 	if (!new_hy)
 		clean_exit(data, 1, "malloc fail\n", 0);
@@ -64,7 +72,8 @@ void	set_hy(t_data *data, char *line, int i)
 	new_hy->ks = (t_vec3){1, 1, 1};
 	new_hy->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_hy->ns = 32;
-	new_hy->opacity = 1;
+	new_hy->opacity = opacity;
+	new_hy->ni = ni;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);
 	check_extra_info(data, line, i);

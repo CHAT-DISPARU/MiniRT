@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_sq_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:23 by titan             #+#    #+#             */
-/*   Updated: 2026/03/02 21:24:52 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/05 17:16:15 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,14 @@ void	set_sq(t_data *data, char *line, int i)
 	t_mat_t		t;
 
 	read_sq(data, &line, i, &t);
+	skip_spaces(&line);
+	double	opacity = 1.0;
+	double	ni = 1.0;
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+		opacity = rt_atod(&line);
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+		ni = rt_atod(&line);
 	new_sq = ft_calloc(1, sizeof(t_obj));
 	if (!new_sq)
 		clean_exit(data, 1, "malloc fail\n", 0);
@@ -57,7 +65,8 @@ void	set_sq(t_data *data, char *line, int i)
 	new_sq->ks = (t_vec3){1, 1, 1};
 	new_sq->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_sq->ns = 32;
-	new_sq->opacity = 1;
+	new_sq->opacity = opacity;
+	new_sq->ni = ni;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);
 	check_extra_info(data, line, i);

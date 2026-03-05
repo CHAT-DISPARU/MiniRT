@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_co_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 12:25:02 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/02 21:25:49 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/05 17:16:47 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,14 @@ void	set_co(t_data *data, char *line, int i)
 	t_mat_t	t;
 
 	read_co(data, &line, i, &t);
+	skip_spaces(&line);
+	double	opacity = 1.0;
+	double	ni = 1.0;
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+		opacity = rt_atod(&line);
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+		ni = rt_atod(&line);
 	new_co = ft_calloc(1, sizeof(t_obj));
 	if (!new_co)
 		clean_exit(data, 1, "malloc fail\n", 0);
@@ -57,7 +65,8 @@ void	set_co(t_data *data, char *line, int i)
 	new_co->ks = (t_vec3){1, 1, 1};
 	new_co->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_co->ns = 32;
-	new_co->opacity = 1;
+	new_co->opacity = opacity;
+	new_co->ni = ni;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);
 	check_extra_info(data, line, i);
