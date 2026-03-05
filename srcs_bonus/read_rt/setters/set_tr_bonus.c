@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_tr_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 14:38:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/02 21:24:43 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/05 17:16:06 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,14 @@ void	set_tr(t_data *data, char *line, int i)
 	check_missing_info(data, line, i);
 	t.tri.p3 = parse_vec3(&line, data, i);
 	read_tr(data, &line, i, &t);
+	skip_spaces(&line);
+	double	opacity = 1.0;
+	double	ni = 1.0;
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+		opacity = rt_atod(&line);
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+		ni = rt_atod(&line);
 	new_tr = ft_calloc(1, sizeof(t_obj));
 	if (!new_tr)
 		clean_exit(data, 1, "malloc fail\n", 0);
@@ -47,7 +55,8 @@ void	set_tr(t_data *data, char *line, int i)
 	new_tr->ks = (t_vec3){1, 1, 1};
 	new_tr->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_tr->ns = 32;
-	new_tr->opacity = 1;
+	new_tr->opacity = opacity;
+	new_tr->ni = ni;
 	new_tr->rought = t.rought;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);

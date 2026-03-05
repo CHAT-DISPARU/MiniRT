@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_cy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:55 by titan             #+#    #+#             */
-/*   Updated: 2026/03/02 21:25:39 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/05 17:16:42 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,14 @@ void	set_cy(t_data *data, char *line, int i)
 	t_mat_t	t;
 
 	read_cy(data, &line, i, &t);
+	skip_spaces(&line);
+	double	opacity = 1.0;
+	double	ni = 1.0;
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+		opacity = rt_atod(&line);
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+		ni = rt_atod(&line);
 	new_cy = ft_calloc(1, sizeof(t_obj));
 	if (!new_cy)
 		clean_exit(data, 1, "malloc fail\n", 0);
@@ -58,7 +66,8 @@ void	set_cy(t_data *data, char *line, int i)
 	new_cy->ks = (t_vec3){1, 1, 1};
 	new_cy->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_cy->ns = 32;
-	new_cy->opacity = 1;
+	new_cy->opacity = opacity;
+	new_cy->ni = ni;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);
 	check_extra_info(data, line, i);

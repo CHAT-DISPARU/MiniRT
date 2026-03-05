@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hit_hy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 16:43:40 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/13 13:15:30 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/05 13:09:10 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,71 +32,81 @@
 	Z : La dérivée de −kz2 −2kz
 */
 
-bool	hit_hyperboloid(t_obj *hy, t_ray ray, t_hit_r *rec)
+void	set_vars(t_hy_utils *hy_u, t_obj *hy, t_ray ray)
 {
-	t_hit   hit;
-	t_vec3  oc, dir;
-	double  a, b, c, delta;
-	double  t1, t2, t_final;
-	bool    v1, v2;
-	double r_min = hy->rad_1;
-	double r_max = hy->rad_2;
-	double h     = hy->height;
-	double half_h = h / 2.0;
-	double k = (pow(r_max, 2) - pow(r_min, 2)) / pow(half_h, 2);
+	hy_u->co_p.v1 = false;
+	hy_u->co_p.v2 = false;
+	hy_u->r_min = hy->rad_1;
+	hy_u->r_max = hy->rad_2;
+	hy_u->h = hy->height;
+	hy_u->half_h = hy_u->h / 2.0;
+	hy_u->k = (pow(hy_u->r_max, 2) - pow(hy_u->r_min, 2)) / pow(hy_u->half_h, 2);
+	hy_u->hit.l_ray.origin = mat4_mult_vec3(&hy->inverse_transform, ray.origin, 1.0);
+	hy_u->hit.l_ray.dir = mat4_mult_vec3(&hy->inverse_transform, ray.dir, 0.0);
+	hy_u->dir = hy_u->hit.l_ray.dir;
+	hy_u->oc = hy_u->hit.l_ray.origin;
+	hy_u->poly.x = (hy_u->dir.x * hy_u->dir.x) + (hy_u->dir.y * hy_u->dir.y) - hy_u->k * (hy_u->dir.z * hy_u->dir.z);
+	hy_u->poly.y = (hy_u->oc.x * hy_u->dir.x) + (hy_u->oc.y * hy_u->dir.y) - hy_u->k * (hy_u->oc.z * hy_u->dir.z);
+	hy_u->poly.z = (hy_u->oc.x * hy_u->oc.x) + (hy_u->oc.y * hy_u->oc.y) - hy_u->k * (hy_u->oc.z * hy_u->oc.z) - (hy_u->r_min * hy_u->r_min);
+	hy_u->delta = (hy_u->poly.y * hy_u->poly.y) - (hy_u->poly.x * hy_u->poly.z);
+}
 
-	hit.l_ray.origin = mat4_mult_vec3(&hy->inverse_transform, ray.origin, 1.0);
-	hit.l_ray.dir = mat4_mult_vec3(&hy->inverse_transform, ray.dir, 0.0);
-	dir = hit.l_ray.dir;
-	oc = hit.l_ray.origin;
-	a = (dir.x * dir.x) + (dir.y * dir.y) - k * (dir.z * dir.z);
-	b = (oc.x * dir.x) + (oc.y * dir.y) - k * (oc.z * dir.z);
-	c = (oc.x * oc.x) + (oc.y * oc.y) - k * (oc.z * oc.z) - (r_min * r_min);
-	delta = (b * b) - (a * c);
-	if (delta < 0)
-		return (false);
-	t1 = (-b - sqrt(delta)) / a;
-	t2 = (-b + sqrt(delta)) / a;
-	v1 = false;
-	v2 = false;
-	if (t1 > EPSILON && t1 < rec->t)
+void	fuck_norm(t_hy_utils *hy_u)
+{
+	if (hy_u->co_p.t1 < hy_u->co_p.t2)
+		hy_u->co_p.t_final = hy_u->co_p.t1;
+	else
+		hy_u->co_p.t_final = hy_u->co_p.t2;
+}
+
+bool	calc_sols(t_hy_utils *hy_u, t_hit_r *rec)
+{
+	if (hy_u->co_p.t1 > EPSILON && hy_u->co_p.t1 < rec->t)
 	{
-		double z = oc.z + t1 * dir.z;
-		if (fabs(z) <= half_h)
-			v1 = true;
+		hy_u->z = hy_u->oc.z + hy_u->co_p.t1 * hy_u->dir.z;
+		if (fabs(hy_u->z) <= hy_u->half_h)
+			hy_u->co_p.v1 = true;
 	}
-	if (t2 > EPSILON && t2 < rec->t)
+	if (hy_u->co_p.t2 > EPSILON && hy_u->co_p.t2 < rec->t)
 	{
-		double z = oc.z + t2 * dir.z;
-		if (fabs(z) <= half_h)
-			v2 = true;
+		hy_u->z = hy_u->oc.z + hy_u->co_p.t2 * hy_u->dir.z;
+		if (fabs(hy_u->z) <= hy_u->half_h)
+			hy_u->co_p.v2 = true;
 	}
-	if (v1 && v2)
-	{
-		if (t1 < t2)
-			t_final = t1;
-		else
-			t_final = t2;
-	}
-	else if (v1)
-		t_final = t1;
-	else if (v2)
-		t_final = t2;
+	if (hy_u->co_p.v1 && hy_u->co_p.v2)
+		fuck_norm(hy_u);
+	else if (hy_u->co_p.v1)
+		hy_u->co_p.t_final = hy_u->co_p.t1;
+	else if (hy_u->co_p.v2)
+		hy_u->co_p.t_final = hy_u->co_p.t2;
 	else
 		return (false);
+	return (true);
+}
+
+bool	hit_hyperboloid(t_obj *hy, t_ray ray, t_hit_r *rec)
+{
+	t_hy_utils	hy_u;
+
+	set_vars(&hy_u, hy, ray);
+	if (hy_u.delta < 0)
+		return (false);
+	hy_u.co_p.t1 = (-hy_u.poly.y - sqrt(hy_u.delta)) / hy_u.poly.x;
+	hy_u.co_p.t2 = (-hy_u.poly.y + sqrt(hy_u.delta)) / hy_u.poly.x;
+	if (calc_sols(&hy_u, rec) == false)
+		return (false);
 	rec->color = hy->color;
-	rec->t = t_final;
+	rec->t = hy_u.co_p.t_final;
 	rec->obj_ptr = hy;
 	rec->p = vec_add(ray.origin, vec_scale(ray.dir, rec->t));
-	t_vec3 local_hit = vec_add(oc, vec_scale(dir, rec->t));
-	double phi = atan2(local_hit.y, local_hit.x);
-	rec->u = (phi + PI) / (2.0 * PI);
-	rec->v = (local_hit.z + half_h) / h;
-	t_vec3 local_normal;
-	local_normal.x = local_hit.x;
-	local_normal.y = local_hit.y;
-	local_normal.z = -k * local_hit.z;
-	rec->normal = mat4_mult_vec3(&hy->transform, local_normal, 0.0);
+	hy_u.local_hit = vec_add(hy_u.oc, vec_scale(hy_u.dir, rec->t));
+	hy_u.phi = atan2(hy_u.local_hit.y, hy_u.local_hit.x);
+	rec->u = (hy_u.phi + PI) / (2.0 * PI);
+	rec->v = (hy_u.local_hit.z + hy_u.half_h) / hy_u.h;
+	hy_u.local_normal.x = hy_u.local_hit.x;
+	hy_u.local_normal.y = hy_u.local_hit.y;
+	hy_u.local_normal.z = -hy_u.k * hy_u.local_hit.z;
+	rec->normal = mat4_mult_vec3(&hy->transform, hy_u.local_normal, 0.0);
 	rec->normal = vec_normalize(rec->normal);
 	if (vec_dot_scal(ray.dir, rec->normal) > 0)
 		rec->normal = vec_scale(rec->normal, -1.0);

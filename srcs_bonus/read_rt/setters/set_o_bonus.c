@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/04 14:45:49 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/05 16:06:27 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,6 +260,7 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			mtl_node->bumpc = NULL;
 			mtl_node->texc = NULL;
 			mtl_node->bump = NULL;
+			mtl_node->ni = 1;
 		}
 		else if (!ft_strncmp("Ka ", ptr, 3) && i == 1)
 		{
@@ -344,6 +345,15 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
 			if (mtl_node->reflectivity < 0.0)
 				mtl_node->reflectivity = 0.0;
 		}
+		else if (!ft_strncmp("Ni ", ptr, 3) && i == 1)
+		{
+			ptr = ptr + 3;
+			mtl_node->ni = parse_double_fast(&ptr);
+			if (mtl_node->ni > 10.0)
+				mtl_node->ni = 10.0;
+			if (mtl_node->ni < 0.001)
+				mtl_node->ni = 0.001;
+		}
 		else if (!ft_strncmp("Ro ", ptr, 3) && i == 1)
 		{
 			ptr = ptr + 3;
@@ -395,6 +405,7 @@ t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
 	mat.ks = (t_vec3){1, 1, 1};
 	mat.kd = (t_vec3){0.8, 0.8, 0.8};
 	mat.ns = 32;
+	mat.ni = 1;
 	mat.tex = NULL;
 	mat.bump = NULL;
 	mat.has_col = false;
@@ -502,6 +513,7 @@ void	set_o(t_data *data, char *line, int i)
 	mat.kd = (t_vec3){0.8, 0.8, 0.8};
 	mat.ns = 32;
 	mat.tex = NULL;
+	mat.ni = 1;
 	mat.bump = NULL;
 	mat.has_col = false;
 	mat.color = (mlx_color)(uint32_t){0xFFFFFFFF};

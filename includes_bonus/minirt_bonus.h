@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/04 14:44:19 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/05 16:53:32 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ typedef struct s_cy_utils
 	double	closest_t;
 	int		hit_zone;
 	double	half_h;
+	double	k;
 }				t_cy_utils;
 
 typedef struct s_ray
@@ -191,6 +192,7 @@ typedef struct s_obj
 	double			height;
 	t_vec3			ka;
 	double			ns;
+	double			ni;
 	double			opacity;
 	t_vec3			kd;
 	t_vec3			ks;
@@ -216,6 +218,7 @@ typedef struct s_mtl_info
 	double				ns;
 	t_vec3				kd;
 	t_vec3				ks;
+	double				ni;
 	double				opacity;
 	t_texture			*tex;
 	char				*texc;
@@ -247,6 +250,13 @@ typedef struct s_light
 	struct s_light	*next;
 }				t_light;
 
+typedef struct s_sah
+{
+	t_aabb	*prefix;
+	t_aabb	*suffix;
+	int		i;
+}				t_sah;
+
 typedef struct s_aabb_edge
 {
 	double	tx1;
@@ -276,6 +286,34 @@ typedef struct s_view_p
 	double		aspect_ratio;
 	double		viewport_width;
 }				t_view_p;
+
+typedef struct s_poly_co
+{
+	double	t1;
+	double	t2;
+	bool	v1;
+	bool	v2;
+	double	t_final;
+}				t_poly_co;
+
+typedef struct s_hy_utils
+{
+	t_hit		hit;
+	t_vec3		oc;
+	t_vec3		dir;
+	t_vec3		poly;
+	double		delta;
+	t_poly_co	co_p;
+	double		z;
+	t_vec3		local_normal;
+	double		phi;
+	t_vec3		local_hit;
+	double		r_min;
+	double		r_max;
+	double		h;
+	double		half_h;
+	double		k;
+}				t_hy_utils;
 
 typedef struct s_data
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_pl_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:44 by titan             #+#    #+#             */
-/*   Updated: 2026/03/02 21:25:22 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/05 17:16:22 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,14 @@ void	set_pl(t_data *data, char *line, int i)
 	t.col = parse_color(&line, data, i);
 	t.reflectivity = parse_reflectivity(&line);
 	t.rought = parse_roughness(&line);
+	skip_spaces(&line);
+	double	opacity = 1.0;
+	double	ni = 1.0;
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+		opacity = rt_atod(&line);
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+		ni = rt_atod(&line);
 	new_pl = ft_calloc(1, sizeof(t_obj));
 	if (!new_pl)
 		clean_exit(data, 1, "malloc fail\n", 0);
@@ -43,7 +51,8 @@ void	set_pl(t_data *data, char *line, int i)
 	new_pl->ks = (t_vec3){1, 1, 1};
 	new_pl->kd = (t_vec3){0.8, 0.8, 0.8};
 	new_pl->ns = 32;
-	new_pl->opacity = 1;
+	new_pl->opacity = opacity;
+	new_pl->ni = ni;
 	char	*path = get_texture_path(&line);
 	char	*path2 = get_texture_path(&line);
 	check_extra_info(data, line, i);

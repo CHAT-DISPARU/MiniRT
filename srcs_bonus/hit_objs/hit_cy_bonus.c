@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hit_cy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:59:51 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 13:18:40 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/05 12:03:32 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,16 @@ bool	hit_border_cy(t_ray ray, double x_plane, double *t_out)
 	t²(d1 + d2) + 2t(d1 * o1 + d2 * o2) + 2o2² - r²
 */
 
+void	set_rec2(t_cy_utils utils, t_hit *hit, t_hit_r *rec, t_vec3 local_p)
+{
+	if (utils.hit_zone == 2)
+		hit->local_normal = (t_vec3){1, 0, 0};
+	else
+		hit->local_normal = (t_vec3){-1, 0, 0};
+	rec->u = (local_p.y + 1.0) * 0.5;
+	rec->v = (local_p.z + 1.0) * 0.5;
+}
+
 t_hit_r	set_rec(t_ray ray, t_cy_utils utils, t_obj *cy, t_hit hit)
 {
 	t_hit_r	rec;
@@ -69,14 +79,7 @@ t_hit_r	set_rec(t_ray ray, t_cy_utils utils, t_obj *cy, t_hit hit)
 		rec.v = (local_p.x + 1.0) * 0.5;
 	}
 	else if (utils.hit_zone == 2 || utils.hit_zone == 3)
-	{
-		if (utils.hit_zone == 2)
-			hit.local_normal = (t_vec3){1, 0, 0};
-		else
-			hit.local_normal = (t_vec3){-1, 0, 0};
-		rec.u = (local_p.y + 1.0) * 0.5;
-		rec.v = (local_p.z + 1.0) * 0.5;
-	}
+		set_rec2(utils, &hit, &rec, local_p);
 	rec.normal = mat4_mult_vec3(&cy->transform, hit.local_normal, 0.0);
 	rec.normal = vec_normalize(rec.normal);
 	if (vec_dot_scal(ray.dir, rec.normal) > 0)
