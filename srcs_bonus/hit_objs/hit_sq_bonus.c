@@ -3,14 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   hit_sq_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:59:36 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 13:15:00 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/06 15:39:59 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
+
+void	set_n_sq(t_hit_r *rec, t_obj *sq, t_ray ray)
+{
+	rec->normal = (t_vec3){0, 1, 0};
+	rec->normal = mat4_mult_vec3(&sq->transform, rec->normal, 0.0);
+	rec->normal = vec_normalize(rec->normal);
+	if (vec_dot_scal(ray.dir, rec->normal) > 0)
+		rec->normal = vec_scale(rec->normal, -1.0);
+}
 
 bool	hit_square(t_obj *sq, t_ray ray, t_hit_r *rec)
 {
@@ -36,10 +45,6 @@ bool	hit_square(t_obj *sq, t_ray ray, t_hit_r *rec)
 	rec->p = vec_add(ray.origin, vec_scale(ray.dir, t));
 	rec->u = (p.x + 1.0) * 0.5;
 	rec->v = (p.z + 1.0) * 0.5;
-	rec->normal = (t_vec3){0, 1, 0};
-	rec->normal = mat4_mult_vec3(&sq->transform, rec->normal, 0.0);
-	rec->normal = vec_normalize(rec->normal);
-	if (vec_dot_scal(ray.dir, rec->normal) > 0)
-		rec->normal = vec_scale(rec->normal, -1.0);
+	set_n_sq(rec, sq, ray);
 	return (true);
 }

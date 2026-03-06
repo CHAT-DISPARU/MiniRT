@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:39 by titan             #+#    #+#             */
-/*   Updated: 2026/03/05 17:14:10 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/06 16:01:35 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,10 @@ void	set_sp(t_data *data, char *line, int i)
 	skip_spaces(&line);
 	double	opacity = 1.0;
 	double	ni = 1.0;
-	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0' && ft_isdigit(*line))
 		opacity = rt_atod(&line);
 	skip_spaces(&line);
-	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0' && ft_isdigit(*line))
 		ni = rt_atod(&line);
 	new_sp = ft_calloc(1, sizeof(t_obj));
 	if (!new_sp)

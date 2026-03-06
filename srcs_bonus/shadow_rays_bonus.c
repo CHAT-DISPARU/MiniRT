@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 14:41:51 by titan             #+#    #+#             */
-/*   Updated: 2026/03/03 09:51:01 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/06 12:53:36 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,23 +35,48 @@ bool	call_func(t_obj *objs, t_ray shadow_ray, double light_dist)
 	return (false);
 }
 
+bool	hit_bvh_shadow(t_data *data, int node_idx, t_ray ray,
+			double light_dist)
+{
+	t_bvh_node	*node;
+	int			i;
+	t_obj		*obj;
+
+	if (node_idx == -1)
+		return (false);
+	node = &data->bvh_nodes[node_idx];
+	if (!intersect_aabb(ray, node->box, light_dist))
+		return (false);
+	if (node->left == -1)
+	{
+		i = 0;
+		while (i < node->obj_count)
+		{
+			obj = data->sorted_objs[node->start_idx + i];
+			if (call_func(obj, ray, light_dist))
+				return (true);
+			i++;
+		}
+		return (false);
+	}
+	if (hit_bvh_shadow(data, node->left, ray, light_dist))
+		return (true);
+	return (hit_bvh_shadow(data, node->right, ray, light_dist));
+}
+
+
 bool	is_in_shadow(t_data *data, t_hit_r *rec, t_light *light)
 {
 	t_ray	shadow_ray;
 	t_vec3	light_dir;
 	double	light_dist;
-	t_hit_r	shadow_rec;
 
 	light_dir = vec_sub(light->origin, rec->p);
 	light_dist = sqrt(vec_dot_scal(light_dir, light_dir));
 	shadow_ray.dir = vec_normalize(light_dir);
 	shadow_ray.origin = vec_add(rec->p, vec_scale(rec->normal, EPSILON));
-	shadow_rec.t = light_dist;
 	if (data->use_bvh && data->bvh_nodes)
-	{
-		if (hit_bvh(data, 0, shadow_ray, &shadow_rec))
-			return (true);
-	}
+		return (hit_bvh_shadow(data, 0, shadow_ray, light_dist));
 	else
 	{
 		int i = 0;

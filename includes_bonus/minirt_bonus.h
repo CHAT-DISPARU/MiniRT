@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/05 16:53:32 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/06 15:43:10 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,6 +174,27 @@ typedef struct s_mat_t
 	double		reflectivity;
 	double		rought;
 }				t_mat_t;
+
+typedef struct s_bi_tr
+{
+	t_vec3	edge1;
+	t_vec3	edge2;
+	t_vec3	pvec;
+	t_vec3	tvec;
+	t_vec3	qvec;
+	double	det;
+	double	u;
+	double	v;
+	double	t;
+}				t_bi_tr;
+
+typedef struct s_hit_bvh
+{
+	bool		hit_any;
+	bool		hit_left;
+	bool		hit_right;
+	int			i;
+}				t_hit_bvh;
 
 typedef struct s_texture
 {
