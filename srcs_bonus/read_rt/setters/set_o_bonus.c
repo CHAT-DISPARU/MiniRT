@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/05 16:06:27 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/06 11:28:53 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -467,6 +467,14 @@ void	set_o(t_data *data, char *line, int i)
 	v.t.reflectivity = rt_atod(&line);
 	v.t.rought = parse_roughness(&line);
 	skip_spaces(&line);
+	double	opacity = 1.0;
+	double	ni = 1.0;
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0' && ft_isdigit(*line))
+		opacity = rt_atod(&line);
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0' && ft_isdigit(*line))
+		ni = rt_atod(&line);
+	skip_spaces(&line);
 	v.file = pars_file_n(&line);
 	v.tex_p = get_texture_path(&line);
 	v.tex = NULL;
@@ -513,13 +521,13 @@ void	set_o(t_data *data, char *line, int i)
 	mat.kd = (t_vec3){0.8, 0.8, 0.8};
 	mat.ns = 32;
 	mat.tex = NULL;
-	mat.ni = 1;
+	mat.ni = ni;
 	mat.bump = NULL;
 	mat.has_col = false;
 	mat.color = (mlx_color)(uint32_t){0xFFFFFFFF};
 	mat.reflectivity = -1.0;
 	mat.rought = -1.0;
-	mat.opacity = -1.0;
+	mat.opacity = opacity;
 	while (c < end_ptr && *c)
 	{
 		v.pos = c - v.str;
