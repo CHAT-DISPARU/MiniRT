@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/13 13:47:56 by titan             #+#    #+#             */
-/*   Updated: 2026/03/03 13:40:36 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/06 16:03:19 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ t_texture	*load_texture(t_data *data, char *filepath, char *file_o)
 	{
 		if (file_o)
 			free(file_o);
+		if (filepath)
+			printf("%s\n", filepath);
 		free(filepath);
 		clean_exit(data, 1, "Error: Texture file missing or permission denied\n", 0);
 	}

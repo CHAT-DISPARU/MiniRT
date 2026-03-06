@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:59:19 by titan             #+#    #+#             */
-/*   Updated: 2026/03/06 12:03:38 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/06 12:22:28 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,12 @@
 	t = -O /D
 */
 
-void	set_rec(t_hit_r *rec, t_obj *pl, t_vec3 local_p)
+void	set_rec_pl(t_hit_r *rec, t_obj *pl, t_vec3 local_p)
 {
 	double	scale;
 	t_vec3	local_normal;
 
+	scale = 0.2;
 	rec->u = (local_p.x * scale) - floor(local_p.x * scale);
 	rec->v = (local_p.z * scale) - floor(local_p.z * scale);
 	local_normal = (t_vec3){0, 1, 0};
@@ -43,7 +44,6 @@ bool	hit_plane(t_obj *pl, t_ray ray, t_hit_r *rec)
 	double	denom;
 	t_vec3	local_p;
 
-	scale = 0.2;
 	l_ray.origin = mat4_mult_vec3(&pl->inverse_transform, ray.origin, 1.0);
 	l_ray.dir = mat4_mult_vec3(&pl->inverse_transform, ray.dir, 0.0);
 	denom = l_ray.dir.y;
@@ -57,7 +57,7 @@ bool	hit_plane(t_obj *pl, t_ray ray, t_hit_r *rec)
 	rec->color = pl->color;
 	rec->p = vec_add(ray.origin, vec_scale(ray.dir, t));
 	local_p = vec_add(l_ray.origin, vec_scale(l_ray.dir, t));
-	set_rec(rec, pl, local_p);
+	set_rec_pl(rec, pl, local_p);
 	if (vec_dot_scal(ray.dir, rec->normal) > 0)
 		rec->normal = vec_scale(rec->normal, -1.0);
 	return (true);

@@ -3,14 +3,34 @@
 /*                                                        :::      ::::::::   */
 /*   hit_sp_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:59:41 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 13:08:13 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/06 15:46:54 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
+
+bool	calc_sp(t_vec3 poly, t_hit_r *rec)
+{
+	double	delta;
+	double	t;
+
+	delta = (poly.y * poly.y) - (poly.x * poly.z);
+	if (delta < 0)
+		return (false);
+	t = (-poly.y - sqrt(delta)) / (poly.x);
+	if (t < EPSILON || t > rec->t)
+	{
+		t = (-poly.y + sqrt(delta)) / (poly.x);
+		if (t < EPSILON || t > rec->t)
+			return (false);
+	}
+	rec->t = t;
+	return (true);
+}
+
 /*
 	D direction O origine t inconue
 
@@ -31,13 +51,10 @@
 	(OC * OC) + 2t(OC * D) + t²(D * D) = r²
 	(OC * OC) + 2t(OC * D) + t²(D * D) - r² = 0
 */
-
 bool	hit_sphere(t_obj *sp, t_ray ray, t_hit_r *rec)
 {
 	t_ray	l_ray;
 	t_vec3	poly;
-	double	delta;
-	double	t;
 	t_vec3	local_normal;
 
 	l_ray.origin = mat4_mult_vec3(&sp->inverse_transform, ray.origin, 1.0);
@@ -45,17 +62,8 @@ bool	hit_sphere(t_obj *sp, t_ray ray, t_hit_r *rec)
 	poly.x = vec_dot_scal(l_ray.dir, l_ray.dir);
 	poly.y = vec_dot_scal(l_ray.origin, l_ray.dir);
 	poly.z = vec_dot_scal(l_ray.origin, l_ray.origin) - 1.0;
-	delta = (poly.y * poly.y) - (poly.x * poly.z);
-	if (delta < 0)
+	if (calc_sp(poly, rec) == false)
 		return (false);
-	t = (-poly.y - sqrt(delta)) / (poly.x);
-	if (t < EPSILON || t > rec->t)
-	{
-		t = (-poly.y + sqrt(delta)) / (poly.x);
-		if (t < EPSILON || t > rec->t)
-			return (false);
-	}
-	rec->t = t;
 	rec->obj_ptr = sp;
 	rec->color = sp->color;
 	rec->p = vec_add(ray.origin, vec_scale(ray.dir, rec->t));
