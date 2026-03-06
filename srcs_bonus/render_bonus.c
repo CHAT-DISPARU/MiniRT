@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/03/05 17:35:51 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/06 11:41:19 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,8 +157,6 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 				t_vec3	refract_color = {0, 0, 0};
 				t_vec3	r_dir_part1;
 				t_vec3	r_dir_part2;
-				t_vec3	absorbance;
-				t_vec3	attenuation;
 				double	eta_i;
 				double	eta_t;
 				double	eta_ratio;
@@ -167,10 +165,8 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 				double	cos_theta_t;
 				double	r0;
 				double	fresnel;
-				double	density;
 				bool	is_inside;
 
-				density = 0.15;
 				cos_theta_i = vec_dot_scal(ray.dir, rec.normal);
 				if (cos_theta_i < 0.0)
 				{
@@ -191,7 +187,8 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 				r0 = (eta_i - eta_t) / (eta_i + eta_t);
 				r0 = r0 * r0;
 				fresnel = r0 + (1.0 - r0) * pow(1.0 - cos_theta_i, 5.0);
-				reflect_ray.dir = vec_normalize(vec_sub(ray.dir, vec_scale(out_normal, 2.0 * vec_dot_scal(ray.dir, out_normal))));
+				reflect_ray.dir = vec_normalize(vec_sub(ray.dir,
+							vec_scale(out_normal, 2.0 * vec_dot_scal(ray.dir, out_normal))));
 				reflect_ray.origin = vec_add(rec.p, vec_scale(out_normal, EPSILON));
 				reflect_color = check_hit(data, reflect_ray, deph - 1);
 				sin2_theta_t = eta_ratio * eta_ratio * (1.0 - cos_theta_i * cos_theta_i);
@@ -210,26 +207,15 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 				tint.x = rec.obj_ptr->color.r / 255.0;
 				tint.y = rec.obj_ptr->color.g / 255.0;
 				tint.z = rec.obj_ptr->color.b / 255.0;
-				double  tint_strength = 1.0 - rec.obj_ptr->opacity;
 				t_vec3  tinted_refract;
-				tinted_refract.x = refract_color.x * (1.0 - tint_strength) + refract_color.x * tint.x * tint_strength;
-				tinted_refract.y = refract_color.y * (1.0 - tint_strength) + refract_color.y * tint.y * tint_strength;
-				tinted_refract.z = refract_color.z * (1.0 - tint_strength) + refract_color.z * tint.z * tint_strength;
-				color_acc.x = tinted_refract.x * (1.0 - fresnel) + reflect_color.x * fresnel;
-				color_acc.y = tinted_refract.y * (1.0 - fresnel) + reflect_color.y * fresnel;
-				color_acc.z = tinted_refract.z * (1.0 - fresnel) + reflect_color.z * fresnel;
-				if (is_inside)
-				{
-					absorbance.x = (1.0 - (rec.obj_ptr->color.r / 255.0)) * density;
-					absorbance.y = (1.0 - (rec.obj_ptr->color.g / 255.0)) * density;
-					absorbance.z = (1.0 - (rec.obj_ptr->color.b / 255.0)) * density;
-					attenuation.x = exp(-absorbance.x * rec.t);
-					attenuation.y = exp(-absorbance.y * rec.t);
-					attenuation.z = exp(-absorbance.z * rec.t);
-					color_acc.x *= attenuation.x;
-					color_acc.y *= attenuation.y;
-					color_acc.z *= attenuation.z;
-				}
+				t_vec3  glass_tint;
+				tinted_refract.x = refract_color.x * tint.x;
+				tinted_refract.y = refract_color.y * tint.y;
+				tinted_refract.z = refract_color.z * tint.z;
+				glass_tint.x = tinted_refract.x * (1.0 - fresnel) + reflect_color.x * fresnel;
+				glass_tint.y = tinted_refract.y * (1.0 - fresnel) + reflect_color.y * fresnel;
+				glass_tint.z = tinted_refract.z * (1.0 - fresnel) + reflect_color.z * fresnel;
+				color_acc = vec_add(glass_tint, color_acc);
 			}
 			else
 			{
