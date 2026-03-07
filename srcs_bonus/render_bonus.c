@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/03/06 11:41:19 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/07 13:05:52 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ t_ray	calc_ray(t_render_v rv, t_data *data)
 	rebond
 	R=I−2(I⋅N)N
 */
-
 t_vec3	vec_random_in_unit_sphere(void)
 {
 	t_vec3	p;

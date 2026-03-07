@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/06 15:43:10 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/07 13:00:40 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,8 @@ typedef struct s_mat_t
 	t_triangle	tri;
 	double		reflectivity;
 	double		rought;
+	double		ni;
+	double		opacity;
 }				t_mat_t;
 
 typedef struct s_bi_tr
@@ -386,7 +388,7 @@ typedef struct s_data
 	char					*filename;
 	pthread_mutex_t			mutex_stack;
 	pthread_mutex_t			finish_count;
-	_Atomic int						proccessed_objs;
+	_Atomic int				proccessed_objs;
 	int						finish;
 	bool					thread_running;
 	pthread_t				threads[THREADS_COUNT];
@@ -576,5 +578,6 @@ t_aabb		aabb_union(t_aabb a, t_aabb b);
 int			find_best_split_all_axes(t_data *data, int start, int count);
 void		set_ply(t_data *data, char *line, int i);
 char		*pars_file_n(char **line);
+void		set_tex(t_data *data, char **line, int i, t_obj *new);
 
 #endif
