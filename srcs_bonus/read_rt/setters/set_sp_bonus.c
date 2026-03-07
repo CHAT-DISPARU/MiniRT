@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:39 by titan             #+#    #+#             */
-/*   Updated: 2026/03/06 16:01:35 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/07 17:11:44 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,14 +60,14 @@ void	set_sp(t_data *data, char *line, int i)
 	if (path)
 	{
 		new_sp->has_texture = true;
-		new_sp->tex = load_texture(data, path, NULL);
+		new_sp->tex = load_texture(data, path, NULL, 1);
 	}
 	else
 		new_sp->has_texture = false;
 	if (path2)
 	{
 		new_sp->has_bump = true;
-		new_sp->bump = load_texture(data, path2, NULL);
+		new_sp->bump = load_texture(data, path2, NULL, 1);
 	}
 	else
 		new_sp->has_bump = false;

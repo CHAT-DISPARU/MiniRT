@@ -6,109 +6,13 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/07 12:35:40 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/07 17:12:02 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <sys/mman.h>
 
-char	*ft_strncat(char *dest, char *src, unsigned int nb)
-{
-	unsigned int	i;
-	unsigned int	j;
-
-	i = 0;
-	j = 0;
-	while (dest[i])
-		i ++;
-	while (j < nb && src[j] != '\0')
-	{
-		dest[i + j] = src[j];
-		j ++;
-	}
-	dest[i + j] = '\0';
-	return (dest);
-}
-
-static char	*map_file_fast(char *filename, size_t *size)
-{
-	int			fd;
-	struct stat	st;
-	char		*ptr;
-
-	fd = open(filename, O_RDONLY);
-	if (fd < 0)
-		return (NULL);
-	if (fstat(fd, &st) < 0)
-	{
-		close(fd);
-		return (NULL);
-	}
-	*size = st.st_size;
-	ptr = mmap(NULL, *size, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0);
-	close(fd);
-	if (ptr == MAP_FAILED)
-		return (NULL);
-	return (ptr);
-}
-
-static double	parse_double_fast(char **s)
-{
-	double		res;
-	double		sign;
-	long long	fraction;
-	long long	divisor;
-	bool		has_fraction;
-
-	res = 0;
-	sign = 1;
-	fraction = 0;
-	divisor = 1;
-	has_fraction = false;
-	skip_spaces(s);
-	if (**s == '-')
-	{
-		sign = -1.0;
-		(*s)++;
-	}
-	while (**s >= '0' && **s <= '9')
-	{
-		res = res * 10.0 + (**s - '0');
-		(*s)++;
-	}
-	if (**s == '.')
-	{
-		(*s)++;
-		while (**s >= '0' && **s <= '9')
-		{
-			fraction = fraction * 10 + (**s - '0');
-			divisor *= 10;
-			(*s)++;
-			has_fraction = true;
-		}
-	}
-	if (has_fraction)
-		res += (double)fraction / (double)divisor;
-	return (res * sign);
-}
-
-static t_vec3	parse_vec_fast(char **s, int type)
-{
-	t_vec3	p;
-
-	p.x = parse_double_fast(s);
-	p.y = parse_double_fast(s);
-	if (type == 1)
-		p.z = parse_double_fast(s);
-	else
-		p.z = 0;
-	return (p);
-}
-
-static inline int	atoi_move(char **s)
+static int	atoi_move(char **s)
 {
 	int	res;
 	int	sign;
@@ -128,6 +32,28 @@ static inline int	atoi_move(char **s)
 	return (res * sign);
 }
 
+void	fill_face_v(char **s, int idx[3][3], int i)
+{
+	while (**s && !ft_isdigit(**s))
+		(*s)++;
+	idx[0][i] = atoi_move(s);
+	idx[1][i] = 0;
+	idx[2][i] = 0;
+	if (**s == '/')
+	{
+		(*s)++;
+		if (**s != '/')
+			idx[1][i] = atoi_move(s);
+		if (**s == '/')
+		{
+			(*s)++;
+			idx[2][i] = atoi_move(s);
+		}
+	}
+	while (**s && !is_space(**s) && **s != '\n')
+		(*s)++;
+}
+
 static t_triangle	parse_face_fast(char **s, t_vars_obj *v)
 {
 	t_triangle	tri;
@@ -136,26 +62,7 @@ static t_triangle	parse_face_fast(char **s, t_vars_obj *v)
 
 	i = -1;
 	while (++i < 3)
-	{
-		while (**s && !ft_isdigit(**s))
-			(*s)++;
-		idx[0][i] = atoi_move(s);
-		idx[1][i] = 0;
-		idx[2][i] = 0;
-		if (**s == '/')
-		{
-			(*s)++;
-			if (**s != '/')
-				idx[1][i] = atoi_move(s);
-			if (**s == '/')
-			{
-				(*s)++;
-				idx[2][i] = atoi_move(s);
-			}
-		}
-		while (**s && !is_space(**s) && **s != '\n')
-			(*s)++;
-	}
+		fill_face_v(s, idx, i);
 	tri.p1 = mat4_mult_vec3(&v->t.final, v->v[idx[0][0] - 1], 1.0);
 	tri.p2 = mat4_mult_vec3(&v->t.final, v->v[idx[0][1] - 1], 1.0);
 	tri.p3 = mat4_mult_vec3(&v->t.final, v->v[idx[0][2] - 1], 1.0);
@@ -188,211 +95,6 @@ char	*pars_file_n(char **line)
 	ft_strlcpy(result, *line, len + 1);
 	*line += len;
 	return (result);
-}
-
-void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data)
-{
-	char	*file;
-	int		i;
-	char		*cursor;
-	t_vars_obj	v;
-	char		*ptr;
-	t_mtl_info	*mtl_node;
-	t_vec3		vec;
-	char		*end_ptr;
-
-	i = 0;
-	while (filename[i])
-	{
-		if (filename[i] == '\n' || filename[i] == '\r')
-			break ;
-		i++;
-	}
-	file = calloc(sizeof(char), (i + 1));
-	file = strncpy(file, filename, i);
-	v.str = map_file_fast(file, &v.len);
-	if (!v.str)
-	{
-		free(file);
-		clean_exit(data, 1, "Error: Read Fail mtl\n", 0);
-	}
-	free(file);
-	end_ptr = v.str + v.len;
-	i = 0;
-	v.step = v.len / 60;
-	if (v.step == 0)
-		v.step = 1;
-	v.next = v.step;
-	cursor = v.str;
-	while (cursor < end_ptr && *cursor)
-	{
-		v.pos = cursor - v.str;
-		if (v.pos >= v.next)
-		{
-			printf("\rParsing MTL: [%3lu%%]", (v.pos * 100) / v.len);
-			fflush(stdout);
-			v.next += v.step;
-		}
-		ptr = cursor;
-		while (is_space(*ptr))
-			ptr++;
-		if (!ft_strncmp("newmtl ", ptr, 7))
-		{
-			if (i == 1)
-			{
-				mtl_node->next = *mtl_info;
-				*mtl_info = mtl_node;
-			}
-			i = 1;
-			mtl_node = NULL;
-			mtl_node = malloc(sizeof(t_mtl_info));
-			mtl_node->idx = ft_strdup(ptr + 7);
-			mtl_node->tex = NULL;
-			mtl_node->ka = (t_vec3){0.2, 0.2, 0.2};
-			mtl_node->ks = (t_vec3){1, 1, 1};
-			mtl_node->kd = (t_vec3){0.8, 0.8, 0.8};
-			mtl_node->ns = 32;
-			mtl_node->color = (mlx_color)(uint32_t){0xFFFFFFFF};
-			mtl_node->reflectivity = -1.0;
-			mtl_node->rought = -1.0;
-			mtl_node->opacity = -1.0;
-			mtl_node->has_col = false;
-			mtl_node->bumpc = NULL;
-			mtl_node->texc = NULL;
-			mtl_node->bump = NULL;
-			mtl_node->ni = 1;
-		}
-		else if (!ft_strncmp("Ka ", ptr, 3) && i == 1)
-		{
-			ptr = ptr + 3;
-			mtl_node->ka = parse_vec_fast(&ptr, 1);
-		}
-		else if (!ft_strncmp("Ks ", ptr, 3) && i == 1)
-		{
-			ptr = ptr + 3;
-			mtl_node->ks = parse_vec_fast(&ptr, 1);
-		}
-		else if (!ft_strncmp("Kd ", ptr, 3) && i == 1)
-		{
-			ptr = ptr + 3;
-			mtl_node->kd = parse_vec_fast(&ptr, 1);
-		}
-		else if (!ft_strncmp("Ns ", ptr, 3) && i == 1)
-		{
-			ptr = ptr + 3;
-			vec.x = parse_double_fast(&ptr);
-			mtl_node->ns = vec.x;
-		}
-		else if (!ft_strncmp("d ", ptr, 2) && i == 1)
-		{
-			ptr = ptr + 2;
-			mtl_node->opacity = parse_double_fast(&ptr);
-			if (mtl_node->opacity > 1.0)
-				mtl_node->opacity = 1.0;
-			if (mtl_node->opacity < 0.0)
-				mtl_node->opacity = 0.0;
-		}
-		else if (!ft_strncmp("map_Kd ", ptr, 7) && i == 1)
-		{
-			ptr += 7;
-			int s = 1;
-			if (!ft_strncmp(ptr, "-s", 2))
-				s = ft_atoi(ptr + 2);
-			if (!ft_strncmp(ptr, "-", 1))
-			{
-				while (*ptr)
-				{
-					if (*ptr == '/')
-						break ;
-					ptr++;
-				}
-			}
-			mtl_node->texc = get_texture_path(&ptr);
-		}
-		else if ((!ft_strncmp("map_bump ", ptr, 9) || !ft_strncmp("bump ", ptr, 5) || !ft_strncmp("map_Bump ", ptr, 9)) && i == 1)
-		{
-			char *bump_start = ptr;
-			if (!ft_strncmp(bump_start, "map_bump ", 9) || !ft_strncmp("map_Bump ", ptr, 9))
-				ptr += 9;
-			else
-				ptr += 5;
-			if (!ft_strncmp(ptr, "-", 1))
-			{
-				while (*ptr)
-				{
-					if (*ptr == '/')
-						break ;
-					ptr++;
-				}
-			}
-			mtl_node->bumpc = get_texture_path(&ptr);
-		}
-		else if (!ft_strncmp("RGB ", ptr, 4) && i == 1)
-		{
-			ptr = ptr + 4;
-			mtl_node->color.r = (uint8_t)parse_double_fast(&ptr);
-			mtl_node->color.g = (uint8_t)parse_double_fast(&ptr);
-			mtl_node->color.b = (uint8_t)parse_double_fast(&ptr);
-			mtl_node->color.a = 255;
-			mtl_node->has_col = true;
-		}
-		else if (!ft_strncmp("Re ", ptr, 3) && i == 1)
-		{
-			ptr = ptr + 3;
-			mtl_node->reflectivity = parse_double_fast(&ptr);
-			if (mtl_node->reflectivity > 1.0)
-				mtl_node->reflectivity = 1.0;
-			if (mtl_node->reflectivity < 0.0)
-				mtl_node->reflectivity = 0.0;
-		}
-		else if (!ft_strncmp("Ni ", ptr, 3) && i == 1)
-		{
-			ptr = ptr + 3;
-			mtl_node->ni = parse_double_fast(&ptr);
-			if (mtl_node->ni > 10.0)
-				mtl_node->ni = 10.0;
-			if (mtl_node->ni < 0.001)
-				mtl_node->ni = 0.001;
-		}
-		else if (!ft_strncmp("Ro ", ptr, 3) && i == 1)
-		{
-			ptr = ptr + 3;
-			mtl_node->rought = parse_double_fast(&ptr);
-			if (mtl_node->rought > 1.0)
-				mtl_node->rought = 1.0;
-			if (mtl_node->rought < 0.0)
-				mtl_node->rought = 0.0;
-		}
-		while (cursor < end_ptr && *cursor && *cursor != '\n')
-			cursor++;
-		if (cursor < end_ptr && *cursor)
-			cursor++;
-	}
-	if (i == 1)
-	{
-		mtl_node->next = *mtl_info;
-		*mtl_info = mtl_node;
-	}
-	munmap(v.str, v.len);
-	t_mtl_info	*tmp;
-	printf("\rParsing MTL: [100%%] - OK.\n");
-	tmp = *mtl_info;
-	while (tmp)
-	{
-		if (tmp->bumpc)
-		{
-			printf("%s\n", tmp->bumpc);
-			tmp->bump = load_texture(data, tmp->bumpc, NULL);
-			tmp->bumpc = NULL;
-		}
-		if (tmp->texc)
-		{
-			printf("%s\n", tmp->texc);
-			tmp->tex = load_texture(data, tmp->texc, NULL);
-			tmp->texc = NULL;
-		}
-		tmp = tmp->next;
-	}
 }
 
 t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
@@ -481,7 +183,7 @@ void	set_o(t_data *data, char *line, int i)
 	v.has_tex = false;
 	if (v.tex_p)
 	{
-		v.tex = load_texture(data, v.tex_p, v.file);
+		v.tex = load_texture(data, v.tex_p, v.file, 1);
 		if (v.tex)
 			v.has_tex = true;
 	}

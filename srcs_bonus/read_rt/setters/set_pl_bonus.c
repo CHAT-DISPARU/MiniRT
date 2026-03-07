@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:44 by titan             #+#    #+#             */
-/*   Updated: 2026/03/05 17:16:22 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/07 17:11:52 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,14 +59,14 @@ void	set_pl(t_data *data, char *line, int i)
 	if (path)
 	{
 		new_pl->has_texture = true;
-		new_pl->tex = load_texture(data, path, NULL);
+		new_pl->tex = load_texture(data, path, NULL, 1);
 	}
 	else
 		new_pl->has_texture = false;
 	if (path2)
 	{
 		new_pl->has_bump = true;
-		new_pl->bump = load_texture(data, path2, NULL);
+		new_pl->bump = load_texture(data, path2, NULL, 1);
 	}
 	else
 		new_pl->has_bump = false;
