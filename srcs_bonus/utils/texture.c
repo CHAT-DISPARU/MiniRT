@@ -6,13 +6,13 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/13 13:47:56 by titan             #+#    #+#             */
-/*   Updated: 2026/03/06 16:03:19 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/07 17:10:21 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-t_texture	*load_texture(t_data *data, char *filepath, char *file_o)
+t_texture	*load_texture(t_data *data, char *filepath, char *file_o, int s)
 {
 	t_texture	*tex;
 	t_list		*tmp;
@@ -69,7 +69,7 @@ t_texture	*load_texture(t_data *data, char *filepath, char *file_o)
 			free(file_o);
 		clean_exit(data, 1, "img load\n", 0);
 	}
-	tex->scale = 1;
+	tex->scale = s;
 	tex->pixels = malloc(sizeof(mlx_color) * tex->height * tex->width);
 	if (!tex->pixels)
 	{

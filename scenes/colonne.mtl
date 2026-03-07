@@ -1,0 +1,13 @@
+# Blender 5.0.1 MTL File: 'None'
+# www.blender.org
+
+newmtl Material_#27
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /home/gajanvie/Downloads/uploads_files_3405578_Tex/Tex/column_01_DefaultMaterial_Diffuse.jpg
+map_Ns /home/gajanvie/Downloads/uploads_files_3405578_Tex/Tex/column_01_DefaultMaterial_Glossiness.jpg
+map_Bump -bm 1.000000 /home/gajanvie/Downloads/uploads_files_3405578_Tex/Tex/column_01_DefaultMaterial_Normal.jpg

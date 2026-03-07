@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
+#    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/02/28 12:15:45 by titan            ###   ########.fr        #
+#    Updated: 2026/03/07 16:37:50 by gajanvie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -80,10 +80,11 @@ SRCSB := $(SRCB_DIR)main_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_l_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_c_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_o_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_mtl_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_o_utils_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_cy_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_sp_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_tr_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_ply_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_sq_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_pl_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_hy_bonus.c \

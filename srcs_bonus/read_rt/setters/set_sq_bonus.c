@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:23 by titan             #+#    #+#             */
-/*   Updated: 2026/03/05 17:16:15 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/07 17:11:38 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,14 +73,14 @@ void	set_sq(t_data *data, char *line, int i)
 	if (path)
 	{
 		new_sq->has_texture = true;
-		new_sq->tex  = load_texture(data, path, NULL);
+		new_sq->tex  = load_texture(data, path, NULL, 1);
 	}
 	else
 		new_sq->has_texture = false;
 	if (path2)
 	{
 		new_sq->has_bump = true;
-		new_sq->bump = load_texture(data, path2, NULL);
+		new_sq->bump = load_texture(data, path2, NULL, 1);
 	}
 	else
 		new_sq->has_bump = false;

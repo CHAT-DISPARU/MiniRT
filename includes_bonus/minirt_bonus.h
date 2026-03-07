@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/07 13:00:40 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/07 17:13:37 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@
 # include <time.h>
 # include <pthread.h>
 # include <unistd.h>
+# include <sys/stat.h>
+# include <string.h>
+# include <sys/mman.h>
 # include <float.h>
 
 # define CHUNK_SIZE (64 * 1024 * 1024)
@@ -250,6 +253,8 @@ typedef struct s_mtl_info
 	double				rought;
 	mlx_color			color;
 	bool				has_col;
+	int					st;
+	int					sb;
 	struct s_mtl_info	*next;
 }				t_mtl_info;
 
@@ -442,6 +447,7 @@ typedef struct s_vars_obj
 	size_t		pos;
 	size_t		step;
 	size_t		next;
+	char		*end_ptr;
 }				t_vars_obj;
 
 typedef enum e_ply_type
@@ -567,7 +573,7 @@ void		get_sq_uv(t_vec3 p, t_vec3 center, t_vec3 normal, double side_size, double
 void		get_cycohy_uv(t_vec3 p, t_vec3 center, t_vec3 axis, double height, double *u, double *v);
 mlx_color	get_texture_color(t_texture *tex, double u, double v);
 char		*get_texture_path(char **ptr);
-t_texture	*load_texture(t_data *data, char *filepath, char *file_o);
+t_texture	*load_texture(t_data *data, char *filepath, char *file_o, int s);
 void		apply_bump(t_hit_r *rec, t_texture *bump_tex, double strength);
 void		clean(t_data *data);
 void		re_init(t_data *data);
@@ -579,5 +585,11 @@ int			find_best_split_all_axes(t_data *data, int start, int count);
 void		set_ply(t_data *data, char *line, int i);
 char		*pars_file_n(char **line);
 void		set_tex(t_data *data, char **line, int i, t_obj *new);
+t_vec3		parse_vec_fast(char **s, int type);
+char		*ft_strncat(char *dest, char *src, unsigned int nb);
+char		*map_file_fast(char *filename, size_t *size);
+void		do_firstpart_double(char **s, double *res, double *sign);
+double		parse_double(char **s, double res);
+void		read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data);
 
 #endif
