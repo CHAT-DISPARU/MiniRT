@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 11:32:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/27 10:24:28 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 16:08:41 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,24 @@ void	ft_lstclear_stack(t_thread_p **lst)
 	*lst = NULL;
 }
 
+void	lunch_task(t_data *data)
+{
+	t_thread_info	info;
+	t_task			function;
+	t_thread_p		*tmp;
+
+	info = data->stack->info;
+	function = data->stack->task;
+	tmp = data->stack;
+	data->stack = data->stack->next;
+	ft_lstdelone_stack(tmp);
+	pthread_mutex_unlock(&data->mutex_stack);
+	function(&info);
+}
+
 void	*routine(void	*arg)
 {
 	t_data			*data;
-	t_thread_info	info;
-	t_thread_p		*tmp;
-	t_task			function;
 
 	data = (t_data *)arg;
 	while (1)
@@ -76,15 +88,7 @@ void	*routine(void	*arg)
 			break ;
 		}
 		if (data->stack)
-		{
-			info = data->stack->info;
-			function = data->stack->task;
-			tmp = data->stack;
-			data->stack = data->stack->next;
-			ft_lstdelone_stack(tmp);
-			pthread_mutex_unlock(&data->mutex_stack);
-			function(&info);
-		}
+			lunch_task(data);
 		else
 			pthread_mutex_unlock(&data->mutex_stack);
 		usleep(100);

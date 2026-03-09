@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:55 by titan             #+#    #+#             */
-/*   Updated: 2026/03/07 13:01:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 12:35:38 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	read_cy(t_data *data, char **line, int i, t_mat_t *t)
 	t->rought = parse_roughness(line);
 	t->opacity = 1.0;
 	t->ni = 1.0;
+	skip_spaces(line);
 	if (**line && !is_space(**line) && **line != '\n' && **line != '\0' && ft_isdigit(**line))
 		t->opacity = rt_atod(line);
 	skip_spaces(line);
@@ -72,7 +73,7 @@ void	set_cy(t_data *data, char *line, int i)
 	t.final = mat4_mult(&t.rot, &t.scale);
 	t.final = mat4_mult(&t.trans, &t.final);
 	ft_objadd_back(&data->objs, new_cy);
+	new_cy->next = NULL;
 	set_new_cy(t, new_cy);
 	set_tex(data, &line, i, new_cy);
-	new_cy->next = NULL;
 }

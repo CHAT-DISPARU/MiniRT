@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 17:06:16 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/07 13:04:35 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 12:35:31 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,6 @@ void	set_hy(t_data *data, char *line, int i)
 	t.final = mat4_mult(&t.trans, &t.final);
 	set_new_hy(new_hy, t);
 	ft_objadd_back(&data->objs, new_hy);
-	set_tex(data, &line, i, new_hy);
 	new_hy->next = NULL;
+	set_tex(data, &line, i, new_hy);
 }

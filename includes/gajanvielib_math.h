@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   gajanvielib_math.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 17:50:56 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/13 15:48:01 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/09 17:23:09 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,12 @@ typedef struct s_vec2
 	double	x;
 	double	y;
 }				t_vec2;
+
+typedef struct s_vec2int
+{
+	int	x;
+	int	y;
+}				t_vec2int;
 
 typedef struct s_mat4
 {

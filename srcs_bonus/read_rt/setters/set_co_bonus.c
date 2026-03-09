@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 12:25:02 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/07 13:01:26 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 12:35:46 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,14 +50,14 @@ void	set_tex(t_data *data, char **line, int i, t_obj *new)
 	if (path)
 	{
 		new->has_texture = true;
-		new->tex = load_texture(data, path, NULL);
+		new->tex = load_texture(data, path, NULL, 1);
 	}
 	else
 		new->has_texture = false;
 	if (path2)
 	{
 		new->has_bump = true;
-		new->bump = load_texture(data, path2, NULL);
+		new->bump = load_texture(data, path2, NULL, 1);
 	}
 	else
 		new->has_bump = false;
@@ -96,7 +96,7 @@ void	set_co(t_data *data, char *line, int i)
 	t.final = t.rot;
 	t.final = mat4_mult(&t.trans, &t.final);
 	ft_objadd_back(&data->objs, new_co);
+	new_co->next = NULL;
 	set_new_co(t, new_co);
 	set_tex(data, &line, i, new_co);
-	new_co->next = NULL;
 }

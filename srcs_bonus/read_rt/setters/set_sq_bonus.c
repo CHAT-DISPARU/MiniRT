@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:23 by titan             #+#    #+#             */
-/*   Updated: 2026/03/07 17:11:38 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 13:13:29 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,25 @@ void	read_sq(t_data *data, char **line, int i, t_mat_t *t)
 	t->col = parse_color(line, data, i);
 	t->reflectivity = parse_reflectivity(line);
 	t->rought = parse_roughness(line);
+	skip_spaces(line);
+	t->opacity = 1.0;
+	t->ni = 1.0;
+	if (**line && !is_space(**line) && **line != '\n' && **line != '\0' && ft_isdigit(**line))
+		t->opacity = rt_atod(line);
+	skip_spaces(line);
+	if (**line && !is_space(**line) && **line != '\n' && **line != '\0' && ft_isdigit(**line))
+		t->ni = rt_atod(line);
+}
+
+void	calc_final_mat_sq(t_mat_t *t)
+{
+	mat4_initial(&t->trans);
+	mat4_initial(&t->scale);
+	mat4_scal(&t->scale, (t_vec3){t->width / 2.0, 1.0, t->height / 2.0});
+	t->rot = mat4_align_vectors((t_vec3){0, 1, 0}, vec_normalize(t->rot_vec));
+	mat4_translation(&t->trans, t->center);
+	t->final = mat4_mult(&t->rot, &t->scale);
+	t->final = mat4_mult(&t->trans, &t->final);
 }
 
 void	set_sq(t_data *data, char *line, int i)
@@ -37,53 +56,20 @@ void	set_sq(t_data *data, char *line, int i)
 	t_mat_t		t;
 
 	read_sq(data, &line, i, &t);
-	skip_spaces(&line);
-	double	opacity = 1.0;
-	double	ni = 1.0;
-	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
-		opacity = rt_atod(&line);
-	skip_spaces(&line);
-	if (*line && !is_space(*line) && *line != '\n' && *line != '\0')
-		ni = rt_atod(&line);
 	new_sq = ft_calloc(1, sizeof(t_obj));
 	if (!new_sq)
 		clean_exit(data, 1, "malloc fail\n", 0);
 	new_sq->type = CALC_SQ;
 	new_sq->color = t.col;
-	mat4_initial(&t.trans);
-	mat4_initial(&t.scale);
-	mat4_scal(&t.scale, (t_vec3){t.width / 2.0, 1.0, t.height / 2.0});
-	t.rot = mat4_align_vectors((t_vec3){0, 1, 0}, vec_normalize(t.rot_vec));
-	mat4_translation(&t.trans, t.center);
-	t.final = mat4_mult(&t.rot, &t.scale);
-	t.final = mat4_mult(&t.trans, &t.final);
+	calc_final_mat_sq(&t);
 	new_sq->transform = t.final;
 	new_sq->inverse_transform = mat4_inverse(&t.final);
 	new_sq->reflectivity = t.reflectivity;
 	new_sq->rought = t.rought;
-	new_sq->ka = (t_vec3){0.2, 0.2, 0.2};
-	new_sq->ks = (t_vec3){1, 1, 1};
-	new_sq->kd = (t_vec3){0.8, 0.8, 0.8};
-	new_sq->ns = 32;
-	new_sq->opacity = opacity;
-	new_sq->ni = ni;
-	char	*path = get_texture_path(&line);
-	char	*path2 = get_texture_path(&line);
-	check_extra_info(data, line, i);
-	if (path)
-	{
-		new_sq->has_texture = true;
-		new_sq->tex  = load_texture(data, path, NULL, 1);
-	}
-	else
-		new_sq->has_texture = false;
-	if (path2)
-	{
-		new_sq->has_bump = true;
-		new_sq->bump = load_texture(data, path2, NULL, 1);
-	}
-	else
-		new_sq->has_bump = false;
-	new_sq->next = NULL;
+	set_obj_lum(&new_sq);
+	new_sq->opacity = t.opacity;
+	new_sq->ni = t.ni;
 	ft_objadd_back(&data->objs, new_sq);
+	new_sq->next = NULL;
+	set_tex(data, &line, i, new_sq);
 }
