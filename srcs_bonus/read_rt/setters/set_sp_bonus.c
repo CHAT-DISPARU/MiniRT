@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:39 by titan             #+#    #+#             */
-/*   Updated: 2026/03/09 12:37:20 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 18:06:49 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,8 @@ void	calc_final_mat(t_mat_t *t)
 	mat4_initial(&t->scale);
 	mat4_initial(&t->trans);
 	mat4_scal(&t->scale, (t_vec3){t->diameter, t->diameter, t->diameter});
-	t->rot = mat4_align_vectors((t_vec3){0, 1, 0}, vec_normalize(t->rot_vec));
 	mat4_translation(&t->trans, t->center);
-	t->final = mat4_mult(&t->rot, &t->scale);
-	t->final = mat4_mult(&t->trans, &t->final);
+	t->final = mat4_mult(&t->trans, &t->scale);
 }
 
 void	set_sp(t_data *data, char *line, int i)
