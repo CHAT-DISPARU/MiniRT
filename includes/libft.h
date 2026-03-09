@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 18:28:39 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/14 14:10:13 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 12:50:22 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ typedef struct s_list
 	struct s_list	*next;
 }				t_list;
 
+int				ft_isalphamaj(int c);
 int				is_space(char c);
 int				ft_strcmp(const char *s1, const char *s2);
 unsigned int	ft_atol_base(char *str, char *base);

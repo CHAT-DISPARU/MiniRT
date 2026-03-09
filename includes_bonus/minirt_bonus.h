@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/07 17:13:37 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 17:35:35 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -343,6 +343,33 @@ typedef struct s_hy_utils
 	double		k;
 }				t_hy_utils;
 
+typedef struct s_vars_obj
+{
+	t_mat_t		t;
+	t_obj		*new;
+	t_texture	*tex;
+	char		*file;
+	char		*tex_p;
+	char		*str;
+	t_vec3		*v;
+	t_vec3		*vn;
+	t_vec3		*vt;
+	int			cts[3];
+	long long	idx[3];
+	bool		has_tex;
+	size_t		len;
+	size_t		pos;
+	size_t		step;
+	size_t		next;
+	char		*end_ptr;
+	char		*ptr;
+	int			i;
+	size_t		file_size;
+	int			c_v;
+	int			c_vn;
+	int			c_vt;
+}				t_vars_obj;
+
 typedef struct s_data
 {
 	t_list					*textures;
@@ -399,6 +426,7 @@ typedef struct s_data
 	pthread_t				threads[THREADS_COUNT];
 	bool					lines;
 	int						scale;
+	t_vars_obj				*v_obj;
 	struct s_thread_p		*stack;
 }				t_data;
 
@@ -429,27 +457,6 @@ typedef struct s_file_info
 	char	*line_o;
 }				t_file_info;
 
-typedef struct s_vars_obj
-{
-	t_mat_t		t;
-	t_obj		*new;
-	t_texture	*tex;
-	char		*file;
-	char		*tex_p;
-	char		*str;
-	t_vec3		*v;
-	t_vec3		*vn;
-	t_vec3		*vt;
-	int			cts[3];
-	long long	idx[3];
-	bool		has_tex;
-	size_t		len;
-	size_t		pos;
-	size_t		step;
-	size_t		next;
-	char		*end_ptr;
-}				t_vars_obj;
-
 typedef enum e_ply_type
 {
 	PLY_FLOAT,
@@ -470,6 +477,19 @@ typedef struct s_ply_prop
 	int			size;
 }	t_ply_prop;
 
+typedef struct s_thread_c_int
+{
+	int	i;
+	int	cols;
+	int	rows;
+	int	grid_w;
+	int	finish;
+	int	grid_h;
+	int	current_col;
+	int	current_row;
+}				t_thread_c_int;
+
+
 typedef struct s_ply_header
 {
 	int			vertex_count;
@@ -488,6 +508,7 @@ typedef bool	(*t_calc_f)(t_obj *obj, t_ray ray, t_hit_r *rec);
 void		thread_calls(t_data *data);
 int			resize_win(t_data *data);
 void		render(void *arg);
+void		error_map_mtl(t_vars_obj v_obj, t_data *data, int i);
 mlx_color	parse_color(char **line, t_data *data, int i);
 t_vec3		parse_vec3(char **line, t_data *data, int i);
 double		rt_atod(char **line);
@@ -590,6 +611,8 @@ char		*ft_strncat(char *dest, char *src, unsigned int nb);
 char		*map_file_fast(char *filename, size_t *size);
 void		do_firstpart_double(char **s, double *res, double *sign);
 double		parse_double(char **s, double res);
-void		read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data);
+void		read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data, t_vars_obj v_obj);
+void		set_obj_lum(t_obj **new);
+void		calc_final_mat(t_mat_t *t);
 
 #endif

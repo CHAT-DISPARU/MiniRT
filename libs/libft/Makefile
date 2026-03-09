@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: titan <titan@student.42.fr>                +#+  +:+       +#+         #
+#    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/14 20:10:19 by gajanvie          #+#    #+#              #
-#    Updated: 2026/02/01 13:47:40 by titan            ###   ########.fr        #
+#    Updated: 2026/03/09 12:46:47 by gajanvie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,7 @@ SRCD = .
 OBJDIR = ../../build/
 
 SRCS = $(SRCD)/ft_isalnum.c \
+       $(SRCD)/ft_isalphamaj.c \
        $(SRCD)/ft_isprint.c \
        $(SRCD)/ft_memcmp.c \
        $(SRCD)/ft_putchar_fd.c \

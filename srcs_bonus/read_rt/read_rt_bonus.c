@@ -6,23 +6,29 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:04:41 by titan             #+#    #+#             */
-/*   Updated: 2026/03/07 16:34:43 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 13:05:39 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 #include <sys/stat.h>
 
+void	maj_setters(t_data *data, char **ptr, int i)
+{
+	if (**ptr == 'A' && is_space((*ptr)[1]))
+		set_a(data, *ptr, i);
+	else if (**ptr == 'O' && is_space((*ptr)[1]))
+		set_o(data, *ptr, i);
+	else if (**ptr == 'C' && is_space((*ptr)[1]))
+		set_c(data, *ptr, i);
+	else if (**ptr == 'L' && is_space((*ptr)[1]))
+		set_l(data, *ptr, i);
+}
+
 void	call_setters(t_data *data, char *ptr, int i)
 {
-	if (*ptr == 'A' && is_space(ptr[1]))
-		set_a(data, ptr, i);
-	else if (*ptr == 'O' && is_space(ptr[1]))
-		set_o(data, ptr, i);
-	else if (*ptr == 'C' && is_space(ptr[1]))
-		set_c(data, ptr, i);
-	else if (*ptr == 'L' && is_space(ptr[1]))
-		set_l(data, ptr, i);
+	if (ft_isalphamaj(*ptr))
+		maj_setters(data, &ptr, i);
 	else if (!ft_strncmp("sp", ptr, 2) && is_space(ptr[2]))
 		set_sp(data, ptr + 2, i);
 	else if (!ft_strncmp("pl", ptr, 2) && is_space(ptr[2]))
@@ -37,19 +43,25 @@ void	call_setters(t_data *data, char *ptr, int i)
 		set_tr(data, ptr + 2, i);
 	else if (!ft_strncmp("co", ptr, 2) && is_space(ptr[2]))
 		set_co(data, ptr + 2, i);
-	else if (*ptr == '#')
+	else if (*ptr == '#' || !ft_strncmp("//", ptr, 2))
 		return ;
 	else
 		clean_exit(data, EXIT_FAILURE, "Wrong identifier\n", i);
 }
 
-char	*jump_to_next_line(char *str)
+char	*jump_to_next_line(char **cursor)
 {
-	while (*str && *str != '\n')
-		str++;
-	if (*str == '\n')
-		str++;
-	return (str);
+	char		*line_start;
+
+	line_start = *cursor;
+	while (**cursor && **cursor != '\n')
+		*cursor += 1;
+	if (**cursor == '\n')
+	{
+		**cursor = '\0';
+		*cursor += 1;
+	}
+	return (line_start);
 }
 
 bool	verify_filename(char *filename)
@@ -64,43 +76,41 @@ bool	verify_filename(char *filename)
 	return (false);
 }
 
-void	read_rt(t_data *data)
+void	set_rt_file_read(t_data *data, struct stat *file_stat)
 {
-	struct stat	file_stat;
-	char		*cursor;
-	char		*line_start;
-	int			i;
-
 	if (verify_filename(data->filename) == false)
 		clean_exit(data, 1, "Error: File name\n", 0);
 	data->scene_fd = open(data->filename, O_RDONLY);
 	if (data->scene_fd < 0)
 		clean_exit(data, 1, "Error: Open failed\n", 0);
-	if (fstat(data->scene_fd, &file_stat) < 0)
+	if (fstat(data->scene_fd, file_stat) < 0)
 		clean_exit(data, 1, "Error: Fstat failed\n", 0);
-	if (S_ISDIR(file_stat.st_mode))
+	if (S_ISDIR(file_stat->st_mode))
 		clean_exit(data, 1, "Error: Is a directory\n", 0);
-	data->scene_line = malloc(sizeof(char) * (file_stat.st_size + 1));
+	data->scene_line = malloc(sizeof(char) * (file_stat->st_size + 1));
 	if (!data->scene_line)
 		clean_exit(data, 1, "Error: Malloc failed\n", 0);
-	if (read(data->scene_fd, data->scene_line, file_stat.st_size) == -1)
+	if (read(data->scene_fd, data->scene_line, file_stat->st_size) == -1)
 		clean_exit(data, 1, "Error: Read failed\n", 0);
-	data->scene_line[file_stat.st_size] = '\0';
+	data->scene_line[file_stat->st_size] = '\0';
 	close(data->scene_fd);
 	data->scene_fd = -1;
+}
+
+void	read_rt(t_data *data)
+{
+	struct stat	file_stat;
+	char		*cursor;
+	int			i;
+	char		*ptr;
+
+	set_rt_file_read(data, &file_stat);
 	i = 1;
+	ptr = NULL;
 	cursor = data->scene_line;
 	while (*cursor)
 	{
-		line_start = cursor;
-		while (*cursor && *cursor != '\n')
-			cursor++;
-		if (*cursor == '\n')
-		{
-			*cursor = '\0';
-			cursor++;
-		}
-		char *ptr = line_start;
+		ptr = jump_to_next_line(&cursor);
 		while (*ptr && is_space(*ptr))
 			ptr++;
 		if (*ptr)

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   update_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:11:09 by titan             #+#    #+#             */
-/*   Updated: 2026/03/01 20:21:51 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/09 16:27:42 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-void	update_samples(t_data *data, bool *movded)
+void	update_samples2(t_data *data, bool *movded)
 {
 	if (data->key_table[30] && !data->old_key_table[30])
 	{
@@ -29,6 +29,11 @@ void	update_samples(t_data *data, bool *movded)
 		*movded = true;
 		data->s_per_pixs = 10;
 	}
+}
+
+void	update_samples(t_data *data, bool *movded)
+{
+	update_samples2(data, movded);
 	if (data->key_table[33] && !data->old_key_table[33])
 	{
 		*movded = true;
@@ -102,6 +107,22 @@ void	change_speed(t_data *data, bool *movded)
 	}
 }
 
+void	update_fov2(bool *movded, t_data *data)
+{
+	if (data->key_table[45])
+	{
+		data->cam.fov += 2;
+		if (data->cam.fov > 179)
+			data->cam.fov = 179;
+		data->view_port.fov_radians = data->cam.fov * (PI / 180.0);
+		data->view_port.viewport_height = 2.0 * tan(data->view_port.fov_radians
+				/ 2.0) * data->view_port.focal_length;
+		data->view_port.viewport_width = data->view_port.aspect_ratio
+			* data->view_port.viewport_height;
+		*movded = true;
+	}
+}
+
 void	update_fov(bool *movded, t_data *data)
 {
 	if (data->key_table[42] && !data->old_key_table[42])
@@ -121,16 +142,42 @@ void	update_fov(bool *movded, t_data *data)
 			* data->view_port.viewport_height;
 		*movded = true;
 	}
-	if (data->key_table[45])
+	update_fov2(movded, data);
+}
+
+void	update2(bool *movded, t_data *data)
+{
+	if (data->key_table[5] && !data->old_key_table[5])
 	{
-		data->cam.fov += 2;
-		if (data->cam.fov > 179)
-			data->cam.fov = 179;
-		data->view_port.fov_radians = data->cam.fov * (PI / 180.0);
-		data->view_port.viewport_height = 2.0 * tan(data->view_port.fov_radians
-				/ 2.0) * data->view_port.focal_length;
-		data->view_port.viewport_width = data->view_port.aspect_ratio
-			* data->view_port.viewport_height;
+		data->debug = !data->debug;
+		*movded = true;
+	}
+	if (data->key_table[40] && !data->old_key_table[40])
+	{
+		data->use_bvh = !data->use_bvh;
+		*movded = true;
+	}
+	if (data->key_table[6] && !data->old_key_table[6])
+	{
+		data->has_checker = !data->has_checker;
+		*movded = true;
+	}
+	if (data->key_table[269] && !data->old_key_table[269])
+	{
+		mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
+		mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
+	}
+}
+
+void	relaunch(bool *movded, t_data *data)
+{
+	if (data->key_table[229] && !data->old_key_table[229])
+	{
+		clean(data);
+		re_init(data);
+		read_rt(data);
+		convert_list_to_arrays(data);
+		calcul_ambient(data);
 		*movded = true;
 	}
 }
@@ -151,35 +198,8 @@ void	update(void *param)
 	update_rot(data, right, &movded);
 	update_move(data, &movded, forward, right);
 	update_fov(&movded, data);
-	if (data->key_table[5] && !data->old_key_table[5])
-	{
-		data->debug = !data->debug;
-		movded = true;
-	}
-	if (data->key_table[40] && !data->old_key_table[40])
-	{
-		data->use_bvh = !data->use_bvh;
-		movded = true;
-	}
-	if (data->key_table[6] && !data->old_key_table[6])
-	{
-		data->has_checker = !data->has_checker;
-		movded = true;
-	}
-	if (data->key_table[269] && !data->old_key_table[269])
-	{
-		mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
-		mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
-	}
-	if (data->key_table[229] && !data->old_key_table[229])
-	{
-		clean(data);
-		re_init(data);
-		read_rt(data);
-		convert_list_to_arrays(data);
-		calcul_ambient(data);
-		movded = true;
-	}
+	update2(&movded, data);
+	relaunch(&movded, data);
 	if (data->key_table[15] && !data->old_key_table[15])
 	{
 		data->lines = !data->lines;

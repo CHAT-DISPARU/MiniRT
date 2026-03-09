@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:10:27 by titan             #+#    #+#             */
-/*   Updated: 2026/03/03 13:26:41 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 17:14:16 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,23 +37,11 @@ void	print_m_and_gnl(t_data *data, char *mess_eror, int exit_code, int i)
 	}
 }
 
-void	clean(t_data *data)
+void	free_texs(t_data *data)
 {
-	t_obj		*tmp;
-	t_obj		*current;
-	t_light		*tmp2;
 	t_texture	*tex;
 	t_list		*tmp_t;
-	t_mtl_info	*t;
 
-	printf("\n");
-	current = data->objs;
-	while (current)
-	{
-		tmp = current->next;
-		free(current);
-		current = tmp;
-	}
 	while (data->textures)
 	{
 		tex = (t_texture *)data->textures->content;
@@ -68,23 +56,13 @@ void	clean(t_data *data)
 		free(data->textures);
 		data->textures = tmp_t;
 	}
-	while (data->mtl_info)
-	{
-		if (data->mtl_info->idx)
-			free(data->mtl_info->idx);
-		t = data->mtl_info->next;
-		free(data->mtl_info);
-		data->mtl_info = t;
-	}
 	data->mtl_info = NULL;
 	data->textures = NULL;
 	data->objs = NULL;
-	while (data->light)
-	{
-		tmp2 = data->light->next;
-		free(data->light);
-		data->light = tmp2;
-	}
+}
+
+void	free_element(t_data *data)
+{
 	if (data->array_obj)
 		free(data->array_obj);
 	if (data->bvh_nodes)
@@ -95,6 +73,45 @@ void	clean(t_data *data)
 		free(data->plane_array);
 	if (data->obj_aabbs)
 		free(data->obj_aabbs);
+}
+
+void	free_mtl_light(t_data *data)
+{
+	t_mtl_info	*t;
+	t_light		*tmp2;
+
+	while (data->mtl_info)
+	{
+		if (data->mtl_info->idx)
+			free(data->mtl_info->idx);
+		t = data->mtl_info->next;
+		free(data->mtl_info);
+		data->mtl_info = t;
+	}
+	while (data->light)
+	{
+		tmp2 = data->light->next;
+		free(data->light);
+		data->light = tmp2;
+	}
+}
+
+void	clean(t_data *data)
+{
+	t_obj		*tmp;
+	t_obj		*current;
+
+	printf("\n");
+	current = data->objs;
+	while (current)
+	{
+		tmp = current->next;
+		free(current);
+		current = tmp;
+	}
+	free_texs(data);
+	free_mtl_light(data);
+	free_element(data);
 	if (data->scene_line)
 	{
 		free(data->scene_line);
@@ -107,66 +124,8 @@ void	clean(t_data *data)
 	}
 }
 
-void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
+void	free_data_struct(t_data *data, int exit_code)
 {
-	t_obj		*tmp;
-	t_obj		*current;
-	t_light		*tmp2;
-	t_texture	*tex;
-	t_list		*tmp_t;
-	t_mtl_info	*t;
-
-	printf("\n");
-	stop_threads(data);
-	print_m_and_gnl(data, mess_eror, exit_code, i);
-	current = data->objs;
-	while (current)
-	{
-		tmp = current->next;
-		free(current);
-		current = tmp;
-	}
-	while (data->mtl_info)
-	{
-		if (data->mtl_info->idx)
-			free(data->mtl_info->idx);
-		t = data->mtl_info->next;
-		free(data->mtl_info);
-		data->mtl_info = t;
-	}
-	while (data->textures)
-	{
-		tex = (t_texture *)data->textures->content;
-		if (tex->pixels)
-			free(tex->pixels);
-		if (tex->img)
-			mlx_destroy_image(data->mlx, tex->img);
-		if (tex->name)
-			free(tex->name);
-		free(tex);
-		tmp_t = data->textures->next;
-		free(data->textures);
-		data->textures = tmp_t;
-	}
-	data->mtl_info = NULL;
-	data->textures = NULL;
-	data->objs = NULL;
-	while (data->light)
-	{
-		tmp2 = data->light->next;
-		free(data->light);
-		data->light = tmp2;
-	}
-	if (data->array_obj)
-		free(data->array_obj);
-	if (data->bvh_nodes)
-		free(data->bvh_nodes);
-	if (data->sorted_objs)
-		free(data->sorted_objs);
-	if (data->plane_array)
-		free(data->plane_array);
-	if (data->obj_aabbs)
-		free(data->obj_aabbs);
 	if (!data)
 		exit(exit_code);
 	if (data->img)
@@ -179,4 +138,25 @@ void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 		free(data->pixels);
 	free(data);
 	exit(exit_code);
+}
+
+void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
+{
+	t_obj		*tmp;
+	t_obj		*current;
+
+	printf("\n");
+	stop_threads(data);
+	print_m_and_gnl(data, mess_eror, exit_code, i);
+	current = data->objs;
+	while (current)
+	{
+		tmp = current->next;
+		free(current);
+		current = tmp;
+	}
+	free_texs(data);
+	free_mtl_light(data);
+	free_element(data);
+	free_data_struct(data, exit_code);
 }

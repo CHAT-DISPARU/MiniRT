@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/03 13:34:40 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 17:19:30 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,8 @@ void	re_init(t_data *data)
 	srand(time(NULL));
 }
 
-void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
+void	set_data_base(t_data *data)
 {
-	data->camera_is_set = false;
-	if (ac >= 3)
-		data->step = ft_atoi(av[2]);
-	else if (ac < 3 || data->step <= 0)
-		data->step = 1;
-	if (ac >= 4)
-		data->deph = ft_atoi(av[3]);
-	else if (ac < 4 || data->deph <= 0)
-		data->deph = 1;
 	data->ambient_is_set = false;
 	data->width = WIDTH;
 	data->diff_ok = false;
@@ -48,13 +39,10 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 	data->is_full = false;
 	data->sorted_objs = NULL;
 	data->bvh_nodes = NULL;
+	data->v_obj = NULL;
 	data->debug_depth = 8;
 	data->scene_fd = -1;
 	data->scene_line = NULL;
-	if (ac == 5)
-		data->s_per_pixs = ft_atoi(av[4]);
-	else if (ac != 5 || data->s_per_pixs <= 0)
-		data->s_per_pixs = 1;
 	data->objs = NULL;
 	data->light = NULL;
 	srand(time(NULL));
@@ -63,6 +51,29 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 	data->speed = 0.5;
 	data->rot_speed = 0.05;
 	data->lines = false;
+}
+
+void	set_argument(char **av, int ac, t_data *data)
+{
+	if (ac >= 3)
+		data->step = ft_atoi(av[2]);
+	else if (ac < 3 || data->step <= 0)
+		data->step = 1;
+	if (ac >= 4)
+		data->deph = ft_atoi(av[3]);
+	else if (ac < 4 || data->deph <= 0)
+		data->deph = 1;
+	if (ac == 5)
+		data->s_per_pixs = ft_atoi(av[4]);
+	else if (ac != 5 || data->s_per_pixs <= 0)
+		data->s_per_pixs = 1;
+}
+
+void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
+{
+	data->camera_is_set = false;
+	set_argument(av, ac, data);
+	set_data_base(data);
 	data->mlx = mlx_init();
 	if (!data->mlx)
 		clean_exit(data, 1, "Error init MLX\n", 0);

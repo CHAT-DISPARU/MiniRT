@@ -6,11 +6,16 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/03/07 13:05:52 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 17:48:58 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
+
+/*
+	rebond
+	R=I−2(I⋅N)N
+*/
 
 t_ray	calc_ray(t_render_v rv, t_data *data)
 {
@@ -28,10 +33,6 @@ t_ray	calc_ray(t_render_v rv, t_data *data)
 	return (ray);
 }
 
-/*
-	rebond
-	R=I−2(I⋅N)N
-*/
 t_vec3	vec_random_in_unit_sphere(void)
 {
 	t_vec3	p;

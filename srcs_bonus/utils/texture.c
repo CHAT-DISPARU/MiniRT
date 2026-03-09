@@ -6,19 +6,14 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/13 13:47:56 by titan             #+#    #+#             */
-/*   Updated: 2026/03/07 17:10:21 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 17:04:54 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-t_texture	*load_texture(t_data *data, char *filepath, char *file_o, int s)
+void	check_access(t_data *data, char *filepath, char *file_o)
 {
-	t_texture	*tex;
-	t_list		*tmp;
-	t_list		*node;
-	t_texture	*tex_tmp;
-
 	if (access(filepath, F_OK | R_OK) == -1)
 	{
 		if (file_o)
@@ -26,8 +21,20 @@ t_texture	*load_texture(t_data *data, char *filepath, char *file_o, int s)
 		if (filepath)
 			printf("%s\n", filepath);
 		free(filepath);
+		munmap(data->v_obj->str, data->v_obj->file_size);
+		free(data->v_obj->v);
+		free(data->v_obj->vn);
+		free(data->v_obj->vt);
 		clean_exit(data, 1, "Error: Texture file missing or permission denied\n", 0);
 	}
+}
+
+t_texture	*check_existing_tex(t_data *data, char *filepath)
+{
+	t_list	*tmp;
+	t_texture	*tex_tmp;
+
+	tex_tmp = NULL;
 	tmp = data->textures;
 	while (tmp)
 	{
@@ -42,41 +49,47 @@ t_texture	*load_texture(t_data *data, char *filepath, char *file_o, int s)
 		}
 		tmp = tmp->next;
 	}
+	return (NULL);
+}
+
+void	exit_tex(t_data *data, char *filepath, char *file_o, char *mess_error)
+{
+	if (file_o)
+		free(file_o);
+	if (filepath)
+		free(filepath);
+	munmap(data->v_obj->str, data->v_obj->file_size);
+	free(data->v_obj->v);
+	free(data->v_obj->vn);
+	free(data->v_obj->vt);
+	clean_exit(data, 1, mess_error, 0);
+}
+
+t_texture	*load_texture(t_data *data, char *filepath, char *file_o, int s)
+{
+	t_texture	*tex;
+	t_list		*node;
+
+	check_access(data, filepath, file_o);
+	tex = check_existing_tex(data, filepath);
+	if (tex)
+		return (tex);
 	tex = ft_calloc(1, sizeof(t_texture));
 	if (!tex)
-	{
-		if (file_o)
-			free(file_o);
-		free(filepath);
-		clean_exit(data, 1, "img load\n", 0);
-	}
+		exit_tex(data, filepath, file_o, "img load\n");
 	node = ft_lstnew(tex);
 	if (!node)
-	{
-		if (file_o)
-			free(file_o);
-		free(tex);
-		free(filepath);
-		clean_exit(data, 1, "Error: Malloc\n", 0);
-	}
+		exit_tex(data, filepath, file_o, "Error: Malloc\n");
 	ft_lstadd_back(&data->textures, node);
 	tex->img = mlx_new_image_from_file(data->mlx, filepath, &tex->width, &tex->height);
 	tex->name = ft_strdup(filepath);
 	free(filepath);
 	if (!tex->img)
-	{
-		if (file_o)
-			free(file_o);
-		clean_exit(data, 1, "img load\n", 0);
-	}
+		exit_tex(data, NULL, file_o, "img load\n");
 	tex->scale = s;
 	tex->pixels = malloc(sizeof(mlx_color) * tex->height * tex->width);
 	if (!tex->pixels)
-	{
-		if (file_o)
-			free(file_o);
-		clean_exit(data, 1, "malloc\n", 0);
-	}
+		exit_tex(data, NULL, file_o, "img load\n");
 	mlx_get_image_region(data->mlx, tex->img, 0, 0, tex->width, tex->height, tex->pixels);
 	return (tex);
 }

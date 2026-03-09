@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 14:41:51 by titan             #+#    #+#             */
-/*   Updated: 2026/03/06 12:53:36 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 17:31:30 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,12 +64,24 @@ bool	hit_bvh_shadow(t_data *data, int node_idx, t_ray ray,
 	return (hit_bvh_shadow(data, node->right, ray, light_dist));
 }
 
+bool	hit_no_bvh(t_ray shadow_ray, double light_dist, t_data *data, t_vec2int *idx)
+{
+	idx->x = 0;
+	while (idx->x < data->obj_count)
+	{
+		if (call_func(&data->array_obj[idx->x], shadow_ray, light_dist)) 
+			return (true);
+		idx->x++;
+	}
+	return (false);
+}
 
 bool	is_in_shadow(t_data *data, t_hit_r *rec, t_light *light)
 {
-	t_ray	shadow_ray;
-	t_vec3	light_dir;
-	double	light_dist;
+	t_ray		shadow_ray;
+	t_vec3		light_dir;
+	double		light_dist;
+	t_vec2int	idx;
 
 	light_dir = vec_sub(light->origin, rec->p);
 	light_dist = sqrt(vec_dot_scal(light_dir, light_dir));
@@ -79,20 +91,15 @@ bool	is_in_shadow(t_data *data, t_hit_r *rec, t_light *light)
 		return (hit_bvh_shadow(data, 0, shadow_ray, light_dist));
 	else
 	{
-		int i = 0;
-		while (i < data->obj_count)
-		{
-			if (call_func(&data->array_obj[i], shadow_ray, light_dist)) 
-				return (true);
-			i++;
-		}
-	}
-	int j = 0;
-	while (j < data->plane_count)
-	{
-		if (call_func(&data->plane_array[j], shadow_ray, light_dist))
+		if (hit_no_bvh(shadow_ray, light_dist, data, &idx))
 			return (true);
-		j++;
+	}
+	idx.y = 0;
+	while (idx.y < data->plane_count)
+	{
+		if (call_func(&data->plane_array[idx.y], shadow_ray, light_dist))
+			return (true);
+		idx.y++;
 	}
 	return (false);
 }

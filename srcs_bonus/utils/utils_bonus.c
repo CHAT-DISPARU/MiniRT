@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:17:57 by titan             #+#    #+#             */
-/*   Updated: 2026/02/27 10:37:30 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 17:01:40 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,41 @@ t_aabb	get_aabb_by_type(t_obj *obj)
 		return (aabb_triangle(obj));
 }
 
+void	set_arrays2(t_data *data, t_obj *curr, int *i_obj)
+{
+	data->array_obj[*i_obj] = *curr;
+	data->array_obj[*i_obj].next = NULL;
+	data->obj_aabbs[*i_obj] = get_aabb_by_type(&data->array_obj[*i_obj]);
+	*i_obj += 1;
+}
+
+void	set_arrays(t_data *data)
+{
+	t_obj	*curr;
+	int		i_obj;
+	int		i_plane;
+	t_obj	*tmp;
+	
+	i_obj = 0;
+	i_plane = 0;
+	curr = data->objs;
+	while (curr)
+	{
+		if (curr->type == CALC_PL)
+		{
+			data->plane_array[i_plane] = *curr;
+			data->plane_array[i_plane].next = NULL;
+			i_plane++;
+		}
+		else
+			set_arrays2(data, curr, &i_obj);
+		tmp = curr;
+		curr = curr->next;
+		free(tmp);
+	}
+	data->objs = NULL;
+}
+
 void	convert_list_to_arrays(t_data *data)
 {
 	t_obj	*curr;
@@ -144,35 +179,13 @@ void	convert_list_to_arrays(t_data *data)
 	if (data->obj_count > 0)
 	{
 		data->array_obj = malloc(sizeof(t_obj) * data->obj_count);
-		data->obj_aabbs = malloc(sizeof(t_aabb) * data->obj_count); // <--- ICI
+		data->obj_aabbs = malloc(sizeof(t_aabb) * data->obj_count);
 		if (!data->array_obj || !data->obj_aabbs)
 			clean_exit(data, 1, "Malloc failed", 0);
 	}
 	if (data->plane_count > 0)
 		data->plane_array = malloc(sizeof(t_obj) * data->plane_count);
-	int i_obj = 0;
-	int i_plane = 0;
-	curr = data->objs;
-	while (curr)
-	{
-		if (curr->type == CALC_PL)
-		{
-			data->plane_array[i_plane] = *curr;
-			data->plane_array[i_plane].next = NULL;
-			i_plane++;
-		}
-		else
-		{
-			data->array_obj[i_obj] = *curr;
-			data->array_obj[i_obj].next = NULL;
-			data->obj_aabbs[i_obj] = get_aabb_by_type(&data->array_obj[i_obj]);
-			i_obj++;
-		}
-		t_obj *tmp = curr;
-		curr = curr->next;
-		free(tmp);
-	}
-	data->objs = NULL;
+	set_arrays(data);
 	if (data->obj_count > 0)
 		build_bvh(data);
 }
