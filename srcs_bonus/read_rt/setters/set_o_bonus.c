@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/09 12:28:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/09 18:19:41 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,10 +177,7 @@ void	set_vars_obj2(t_data *data, char **line, t_vars_obj *v)
 	v->str = map_file_fast(v->file, &v->file_size);
 	free(v->file);
 	if (!v->str)
-	{
-		free(v->file);
 		clean_exit(data, 1, "Error: Read Fail obj\n", 0);
-	}
 }
 
 void	set_vars_obj3(t_data *data, t_vars_obj *v)
