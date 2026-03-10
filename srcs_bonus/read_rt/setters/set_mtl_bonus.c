@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/07 16:34:13 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/09 12:08:04 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 15:13:38 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,10 +118,13 @@ void	mat_tex_bump(int i, t_mtl_info **mtl_node, char **ptr)
 		skip_mtl_option(ptr);
 		(*mtl_node)->texc = get_texture_path(ptr);
 	}
-	else if ((!ft_strncmp("map_bump ", *ptr, 9) || !ft_strncmp("bump ", *ptr, 5) || !ft_strncmp("map_Bump ", *ptr, 9)) && i == 1)
+	else if ((!ft_strncmp("map_bump ", *ptr, 9)
+			|| !ft_strncmp("bump ", *ptr, 5)
+			|| !ft_strncmp("map_Bump ", *ptr, 9)) && i == 1)
 	{
 		bump_start = *ptr;
-		if (!ft_strncmp(bump_start, "map_bump ", 9) || !ft_strncmp("map_Bump ", *ptr, 9))
+		if (!ft_strncmp(bump_start, "map_bump ", 9)
+			|| !ft_strncmp("map_Bump ", *ptr, 9))
 			*ptr += 9;
 		else
 			*ptr += 5;
@@ -156,7 +159,8 @@ void	mat_light(int i, t_mtl_info **mtl_node, char **ptr)
 	}
 }
 
-void	set_new_mat(int *i, t_mtl_info **mtl_info, t_mtl_info **mtl_node, char **ptr)
+void	set_new_mat(int *i,
+		t_mtl_info **mtl_info, t_mtl_info **mtl_node, char **ptr)
 {
 	if (*i == 1)
 	{
@@ -184,7 +188,8 @@ void	set_new_mat(int *i, t_mtl_info **mtl_info, t_mtl_info **mtl_node, char **pt
 	(*mtl_node)->st = 1;
 }
 
-void	call_setters_mat(int *i, t_mtl_info **mtl_node, char **ptr, t_mtl_info **mtl_info)
+void	call_setters_mat(int *i,
+		t_mtl_info **mtl_node, char **ptr, t_mtl_info **mtl_info)
 {
 	if (!ft_strncmp("newmtl ", *ptr, 7))
 		set_new_mat(i, mtl_info, mtl_node, ptr);
@@ -196,13 +201,15 @@ void	call_setters_mat(int *i, t_mtl_info **mtl_node, char **ptr, t_mtl_info **mt
 		if ((*mtl_node)->opacity > 1.0)
 			(*mtl_node)->opacity = 1.0;
 		if ((*mtl_node)->opacity < 0.0)
-			(*mtl_node)->opacity = 0.0;
+			(*mtl_node)->opacity = 0.00001;
 	}
 	mat_tex_bump(*i, mtl_node, ptr);
 	mat_rgb_re(*i, mtl_node, ptr);
 	mat_ni_ro(*i, mtl_node, ptr);
 }
-void	set_mtl_tex_bump(t_vars_obj *v, t_mtl_info **mtl_info, t_data *data, t_vars_obj v_obj)
+
+void	set_mtl_tex_bump(t_vars_obj *v,
+		t_mtl_info **mtl_info, t_data *data, t_vars_obj v_obj)
 {
 	t_mtl_info	*tmp;
 
@@ -240,7 +247,8 @@ void	percent_mtl(t_vars_obj *v, char *cursor)
 	}
 }
 
-void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data, t_vars_obj v_obj)
+void	read_mtl(char *filename, t_mtl_info **mtl_info,
+		t_data *data, t_vars_obj v_obj)
 {
 	char		*cursor;
 	t_vars_obj	v;
@@ -266,6 +274,5 @@ void	read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data, t_vars_obj v_
 		mtl_node->next = *mtl_info;
 	if (v.i == 1)
 		*mtl_info = mtl_node;
-	set_mtl_tex_bump(&v, mtl_info, data, v_obj)                                                                                                     ;
+	set_mtl_tex_bump(&v, mtl_info, data, v_obj);
 }
-                                                                                                                                                                                                                           

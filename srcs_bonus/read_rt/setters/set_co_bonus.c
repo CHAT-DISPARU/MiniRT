@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 12:25:02 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/09 12:35:46 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:11:27 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,12 @@ void	read_co(t_data *data, char **line, int i, t_mat_t *t)
 	skip_spaces(line);
 	t->opacity = 1.0;
 	t->ni = 1.0;
-	if (**line && !is_space(**line) && **line != '\n' && **line != '\0' && ft_isdigit(**line))
+	if (**line && !is_space(**line)
+		&& **line != '\n' && **line != '\0' && ft_isdigit(**line))
 		t->opacity = rt_atod(line);
 	skip_spaces(line);
-	if (**line && !is_space(**line) && **line != '\n' && **line != '\0' && ft_isdigit(**line))
+	if (**line && !is_space(**line)
+		&& **line != '\n' && **line != '\0' && ft_isdigit(**line))
 		t->ni = rt_atod(line);
 }
 

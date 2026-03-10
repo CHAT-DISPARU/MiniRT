@@ -6,12 +6,11 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 14:38:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/09 12:43:22 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:10:03 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
-
 
 void	read_tr(t_data *data, char **line, int i, t_mat_t *t)
 {
@@ -28,10 +27,12 @@ void	read_tr(t_data *data, char **line, int i, t_mat_t *t)
 	t->opacity = 1.0;
 	t->ni = 1.0;
 	skip_spaces(line);
-	if (**line && !is_space(**line) && **line != '\n' && **line != '\0' && ft_isdigit(**line))
+	if (**line && !is_space(**line) && **line != '\n'
+		&& **line != '\0' && ft_isdigit(**line))
 		t->opacity = rt_atod(line);
 	skip_spaces(line);
-	if (**line && !is_space(**line) && **line != '\n' && **line != '\0' && ft_isdigit(**line))
+	if (**line && !is_space(**line) && **line != '\n'
+		&& **line != '\0' && ft_isdigit(**line))
 		t->ni = rt_atod(line);
 }
 

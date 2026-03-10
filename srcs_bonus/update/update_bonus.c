@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:11:09 by titan             #+#    #+#             */
-/*   Updated: 2026/03/09 16:27:42 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:51:15 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,10 +201,9 @@ void	update(void *param)
 	update2(&movded, data);
 	relaunch(&movded, data);
 	if (data->key_table[15] && !data->old_key_table[15])
-	{
 		data->lines = !data->lines;
+	if (data->key_table[15] && !data->old_key_table[15])
 		movded = true;
-	}
 	if (movded)
 		thread_calls(data);
 	if (movded)

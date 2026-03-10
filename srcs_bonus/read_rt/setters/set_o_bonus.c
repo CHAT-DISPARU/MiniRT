@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/09 18:19:41 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 16:36:27 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,11 @@ static t_triangle	parse_face_fast(char **s, t_vars_obj *v)
 		tri.uv3 = (t_vec2){v->vt[idx[1][2] - 1].x, v->vt[idx[1][2] - 1].y};
 	}
 	if (idx[2][0] > 0 && v->vn)
-		tri.normal = vec_normalize(mat4_mult_vec3(&v->t.final, v->vn[idx[2][0] - 1], 0.0));
+		tri.normal = vec_normalize(mat4_mult_vec3(&v->t.final,
+					v->vn[idx[2][0] - 1], 0.0));
 	else
-		tri.normal = vec_normalize(vec_cross(vec_sub(tri.p2, tri.p1), vec_sub(tri.p3, tri.p1)));
+		tri.normal = vec_normalize(vec_cross(vec_sub(tri.p2, tri.p1),
+					vec_sub(tri.p3, tri.p1)));
 	return (tri);
 }
 
@@ -142,8 +144,9 @@ t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
 	{
 		if (tmp->idx)
 		{
-			while (s[len] && s[len] != '\r' && s[len] != '\n' && !is_space(s[len]))
-    			len++;
+			while (s[len] && s[len] != '\r'
+				&& s[len] != '\n' && !is_space(s[len]))
+				len++;
 			if (!ft_strncmp(tmp->idx, s, len))
 			{
 				set_new_mtlmat(&mat, tmp);
@@ -171,7 +174,8 @@ void	set_vars_obj2(t_data *data, char **line, t_vars_obj *v)
 	mat4_translation(&v->t.trans, v->t.center);
 	mat4_initial(&v->t.scale);
 	mat4_scal(&v->t.scale, (t_vec3){v->t.scaled, v->t.scaled, v->t.scaled});
-	v->t.rot = mat4_align_vectors((t_vec3){1, 0, 0}, vec_normalize(v->t.rot_vec));
+	v->t.rot = mat4_align_vectors((t_vec3){1, 0, 0},
+			vec_normalize(v->t.rot_vec));
 	v->t.final = mat4_mult(&v->t.rot, &v->t.scale);
 	v->t.final = mat4_mult(&v->t.trans, &v->t.final);
 	v->str = map_file_fast(v->file, &v->file_size);
@@ -221,10 +225,12 @@ void	set_vars_obj(t_data *data, int i, char **line, t_vars_obj *v)
 	skip_spaces(line);
 	v->t.opacity = 1.0;
 	v->t.ni = 1.0;
-	if (**line && !is_space(**line) && **line != '\n' && **line != '\0' && ft_isdigit(**line))
+	if (**line && !is_space(**line)
+		&& **line != '\n' && **line != '\0' && ft_isdigit(**line))
 		v->t.opacity = rt_atod(line);
 	skip_spaces(line);
-	if (**line && !is_space(**line) && **line != '\n' && **line != '\0' && ft_isdigit(**line))
+	if (**line && !is_space(**line)
+		&& **line != '\n' && **line != '\0' && ft_isdigit(**line))
 		v->t.ni = rt_atod(line);
 	skip_spaces(line);
 	set_vars_obj2(data, line, v);
@@ -282,7 +288,7 @@ void	set_obj_tr2(t_vars_obj *v, t_mtl_info mat, t_data *data)
 	if (mat.ni > 0.0)
 		v->new->ni = mat.ni;
 	if (mat.opacity >= 0.0)
-    	v->new->opacity = mat.opacity;
+		v->new->opacity = mat.opacity;
 	if (mat.has_col)
 		v->new->color = mat.color;
 	if (mat.tex)
@@ -335,7 +341,7 @@ void	percent_obj(t_vars_obj *v, char *c)
 	}
 }
 
-void	face_obj(t_vars_obj *v, char  **c, t_data *data, t_mtl_info mat)
+void	face_obj(t_vars_obj *v, char **c, t_data *data, t_mtl_info mat)
 {
 	*c += 2;
 	v->new = ft_calloc(1, sizeof(t_obj));

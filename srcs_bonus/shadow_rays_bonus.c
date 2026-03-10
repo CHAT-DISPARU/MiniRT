@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 14:41:51 by titan             #+#    #+#             */
-/*   Updated: 2026/03/09 17:31:30 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:54:39 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,12 +64,13 @@ bool	hit_bvh_shadow(t_data *data, int node_idx, t_ray ray,
 	return (hit_bvh_shadow(data, node->right, ray, light_dist));
 }
 
-bool	hit_no_bvh(t_ray shadow_ray, double light_dist, t_data *data, t_vec2int *idx)
+bool	hit_no_bvh(t_ray shadow_ray,
+	double light_dist, t_data *data, t_vec2int *idx)
 {
 	idx->x = 0;
 	while (idx->x < data->obj_count)
 	{
-		if (call_func(&data->array_obj[idx->x], shadow_ray, light_dist)) 
+		if (call_func(&data->array_obj[idx->x], shadow_ray, light_dist))
 			return (true);
 		idx->x++;
 	}

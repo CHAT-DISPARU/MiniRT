@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 17:06:16 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/09 12:35:31 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:15:20 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,10 @@ void	read_hy(t_data *data, char **line, int i, t_mat_t *t)
 	t->rought = parse_roughness(line);
 	skip_spaces(line);
 	t->ni = 1.0;
-	if (**line && !is_space(**line) && **line != '\n' && **line != '\0')
+	if (**line && !is_space(**line)
+		&& **line != '\n' && **line != '\0' && ft_isdigit(**line))
 		t->opacity = rt_atod(line);
 	skip_spaces(line);
-	if (**line && !is_space(**line) && **line != '\n' && **line != '\0')
-		t->ni = rt_atod(line);
 }
 
 void	set_new_hy(t_obj *new_hy, t_mat_t t)
@@ -64,7 +63,9 @@ void	set_hy(t_data *data, char *line, int i)
 	t_mat_t	t;
 
 	read_hy(data, &line, i, &t);
-
+	if (*line && !is_space(*line)
+		&& *line != '\n' && *line != '\0' && ft_isdigit(*line))
+		t.ni = rt_atod(&line);
 	new_hy = ft_calloc(1, sizeof(t_obj));
 	if (!new_hy)
 		clean_exit(data, 1, "malloc fail\n", 0);
