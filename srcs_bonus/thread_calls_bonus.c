@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/03/09 17:47:40 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:54:19 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	set_indexs(int *indexs)
 	i = THREADS_COUNT * NB_TASK_R - 1;
 	while (i > 0)
 	{
-		j = rand() % (i + 1); 
+		j = rand() % (i + 1);
 		tmp = indexs[i];
 		indexs[i] = indexs[j];
 		indexs[j] = tmp;
@@ -95,7 +95,7 @@ void	prepare_calls(t_data *data, t_thread_c_int *utils)
 }
 
 void	send_task(t_data *data,
-	t_thread_c_int *utils, int indexs[THREADS_COUNT * NB_TASK_R])
+	t_thread_c_int *utils, int indexs[THREADS_COUNT*NB_TASK_R])
 {
 	t_thread_info	infos;
 
@@ -125,7 +125,7 @@ void	thread_calls(t_data *data)
 	t_thread_c_int	utils;
 
 	prepare_calls(data, &utils);
- 	set_indexs(indexs);
+	set_indexs(indexs);
 	send_task(data, &utils, indexs);
 	while (1)
 	{
@@ -139,6 +139,7 @@ void	thread_calls(t_data *data)
 	}
 	pthread_mutex_destroy(&data->finish_count);
 	draw_lines(data, utils.grid_w, utils.grid_h);
-	mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
+	mlx_set_image_region(data->mlx, data->img, 0, 0,
+		data->width, data->height, data->pixels);
 	mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
 }

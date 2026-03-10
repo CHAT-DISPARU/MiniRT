@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:12:29 by titan             #+#    #+#             */
-/*   Updated: 2026/02/27 09:35:26 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 09:45:11 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 /*
 	protection gimbal lock
 */
-
 t_vec3	get_right_vector(t_vec3 dir)
 {
 	t_vec3	up_guide;
@@ -49,7 +48,6 @@ double	rand_double(void)
 	Rz Uz ​Fz Tz​​
 	0  0  0​  1​​
 */
-
 void	fill_look_m(t_mat4 *m, t_vec3 r, t_vec3 u, t_vec3 f)
 {
 	m->m[0][0] = r.x;

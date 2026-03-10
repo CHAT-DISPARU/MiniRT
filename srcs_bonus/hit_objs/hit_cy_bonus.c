@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:59:51 by titan             #+#    #+#             */
-/*   Updated: 2026/03/05 12:03:32 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:33:59 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,24 +62,25 @@ void	set_rec2(t_cy_utils utils, t_hit *hit, t_hit_r *rec, t_vec3 local_p)
 t_hit_r	set_rec(t_ray ray, t_cy_utils utils, t_obj *cy, t_hit hit)
 {
 	t_hit_r	rec;
-	t_vec3	local_p;
+	t_vec3	lp;
+	double	phi;
 
 	rec.obj_ptr = cy;
 	rec.color = cy->color;
 	rec.t = utils.closest_t;
 	rec.p = vec_add(ray.origin, vec_scale(ray.dir, utils.closest_t));
-	local_p = vec_add(hit.l_ray.origin, vec_scale(hit.l_ray.dir, utils.closest_t));
+	lp = vec_add(hit.l_ray.origin, vec_scale(hit.l_ray.dir, utils.closest_t));
 	if (utils.hit_zone == 1)
 	{
 		hit.local_normal = vec_add(hit.l_ray.origin,
 				vec_scale(hit.l_ray.dir, utils.closest_t));
 		hit.local_normal.x = 0;
-		double phi = atan2(local_p.z, local_p.y);
+		phi = atan2(lp.z, lp.y);
 		rec.u = (phi + PI) / (2.0 * PI);
-		rec.v = (local_p.x + 1.0) * 0.5;
+		rec.v = (lp.x + 1.0) * 0.5;
 	}
 	else if (utils.hit_zone == 2 || utils.hit_zone == 3)
-		set_rec2(utils, &hit, &rec, local_p);
+		set_rec2(utils, &hit, &rec, lp);
 	rec.normal = mat4_mult_vec3(&cy->transform, hit.local_normal, 0.0);
 	rec.normal = vec_normalize(rec.normal);
 	if (vec_dot_scal(ray.dir, rec.normal) > 0)

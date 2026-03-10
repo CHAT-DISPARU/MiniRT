@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/09 17:19:30 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 14:00:01 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,12 @@ void	set_info(mlx_window_create_info	*info)
 	info->is_resizable = true;
 }
 
+void	error_arg(void)
+{
+	ft_putstr_fd("invalid argument:\n./MiniRT <file.rt>\nOptional : ./M", 2);
+	ft_putstr_fd("iniRT <file.rt> <resolution> <deph> <sample per pixel>\n", 2);
+}
+
 int	main(int ac, char **av)
 {
 	t_data					*data;
@@ -110,7 +116,7 @@ int	main(int ac, char **av)
 
 	if (ac < 2 || ac > 5)
 	{
-		ft_putstr_fd("invalid argument:\n./MiniRT <file.rt>\n Optional : ./MiniRT <file.rt> <sample per pixel> <resolution>\n", 2);
+		error_arg();
 		return (1);
 	}
 	ft_memset(&info, 0, sizeof(mlx_window_create_info));

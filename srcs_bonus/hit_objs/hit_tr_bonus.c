@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 12:42:25 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/06 15:45:53 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:30:44 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,10 @@ void	set_rec_tr(t_hit_r *rec, t_ray ray, t_obj *tr, t_bi_tr tr_b)
 	if (vec_dot_scal(ray.dir, rec->normal) > 0)
 		rec->normal = vec_scale(rec->normal, -1.0);
 	w = 1.0 - tr_b.u - tr_b.v;
-	rec->u = (w * tr->tri.uv1.x) + (tr_b.u * tr->tri.uv2.x) + (tr_b.v * tr->tri.uv3.x);
-	rec->v = (w * tr->tri.uv1.y) + (tr_b.u * tr->tri.uv2.y) + (tr_b.v * tr->tri.uv3.y);
+	rec->u = (w * tr->tri.uv1.x) + (tr_b.u * tr->tri.uv2.x)
+		+ (tr_b.v * tr->tri.uv3.x);
+	rec->v = (w * tr->tri.uv1.y) + (tr_b.u * tr->tri.uv2.y)
+		+ (tr_b.v * tr->tri.uv3.y);
 	rec->color = tr->color;
 	rec->obj_ptr = tr;
 }

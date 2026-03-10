@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 11:32:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/09 16:08:41 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:51:40 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ void	ft_lstadd_front_stack(t_thread_p **lst, t_thread_p *new)
 	}
 }
 
-
 t_thread_p	*ft_lstnew_stack(t_thread_info content, t_task func)
 {
 	t_thread_p	*new_node;
@@ -34,7 +33,6 @@ t_thread_p	*ft_lstnew_stack(t_thread_info content, t_task func)
 	}
 	return (new_node);
 }
-
 
 void	ft_lstdelone_stack(t_thread_p *lst)
 {

@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 11:16:50 by titan             #+#    #+#             */
-/*   Updated: 2026/03/04 14:39:22 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:29:44 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ t_aabb	aabb_transform_matrix(t_aabb local_box, t_mat4 matrix)
 	while (i < 8)
 	{
 		p = mat4_mult_vec3(&matrix, corners[i], 1.0);
-		
 		world_box.min = vec_min(world_box.min, p);
 		world_box.max = vec_max(world_box.max, p);
 		i++;
@@ -58,8 +57,8 @@ t_aabb	aabb_transform_matrix(t_aabb local_box, t_mat4 matrix)
 
 static bool	is_on_edge(t_vec3 p, t_aabb box, double thick)
 {
-	int on_face;
-	
+	int	on_face;
+
 	on_face = 0;
 	if (fabs(p.x - box.min.x) < thick || fabs(p.x - box.max.x) < thick)
 		on_face++;
@@ -67,7 +66,7 @@ static bool	is_on_edge(t_vec3 p, t_aabb box, double thick)
 		on_face++;
 	if (fabs(p.z - box.min.z) < thick || fabs(p.z - box.max.z) < thick)
 		on_face++;
-	return (on_face >= 2); 
+	return (on_face >= 2);
 }
 
 void	set_tcoords(t_aabb_edge *utils, t_ray ray, t_aabb box, t_vec3 inv_dir)
@@ -104,7 +103,7 @@ double	hit_aabb_edge(t_ray ray, t_aabb box)
 	if (utils.t_enter < EPSILON)
 		return (DBL_MAX);
 	p = vec_add(ray.origin, vec_scale(ray.dir, utils.t_enter));
-	utils.thickness = 0.006 * utils.t_enter; 
+	utils.thickness = 0.006 * utils.t_enter;
 	if (is_on_edge(p, box, utils.thickness))
 		return (utils.t_enter);
 	return (DBL_MAX);
@@ -147,24 +146,26 @@ t_aabb	compute_bounds(t_obj **objs, int count)
 
 bool	intersect_aabb(t_ray ray, t_aabb box, double t_max)
 {
-	double	tmin, tmax, t1, t2;
+	double	tmin;
+	double	tmax;
+	t_vec2	t;
 	t_vec3	inv_dir;
 
 	inv_dir.x = 1.0 / ray.dir.x;
 	inv_dir.y = 1.0 / ray.dir.y;
 	inv_dir.z = 1.0 / ray.dir.z;
-	t1 = (box.min.x - ray.origin.x) * inv_dir.x;
-	t2 = (box.max.x - ray.origin.x) * inv_dir.x;
-	tmin = fmin(t1, t2);
-	tmax = fmax(t1, t2);
-	t1 = (box.min.y - ray.origin.y) * inv_dir.y;
-	t2 = (box.max.y - ray.origin.y) * inv_dir.y;
-	tmin = fmax(tmin, fmin(t1, t2));
-	tmax = fmin(tmax, fmax(t1, t2));
-	t1 = (box.min.z - ray.origin.z) * inv_dir.z;
-	t2 = (box.max.z - ray.origin.z) * inv_dir.z;
-	tmin = fmax(tmin, fmin(t1, t2));
-	tmax = fmin(tmax, fmax(t1, t2));
+	t.x = (box.min.x - ray.origin.x) * inv_dir.x;
+	t.y = (box.max.x - ray.origin.x) * inv_dir.x;
+	tmin = fmin(t.x, t.y);
+	tmax = fmax(t.x, t.y);
+	t.x = (box.min.y - ray.origin.y) * inv_dir.y;
+	t.y = (box.max.y - ray.origin.y) * inv_dir.y;
+	tmin = fmax(tmin, fmin(t.x, t.y));
+	tmax = fmin(tmax, fmax(t.x, t.y));
+	t.x = (box.min.z - ray.origin.z) * inv_dir.z;
+	t.y = (box.max.z - ray.origin.z) * inv_dir.z;
+	tmin = fmax(tmin, fmin(t.x, t.y));
+	tmax = fmin(tmax, fmax(t.x, t.y));
 	if (tmax < 0 || tmin > tmax || tmin > t_max)
 		return (false);
 	return (true);

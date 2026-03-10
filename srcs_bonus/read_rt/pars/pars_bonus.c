@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 12:17:03 by titan             #+#    #+#             */
-/*   Updated: 2026/03/03 13:07:59 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:15:49 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,8 @@ char	*get_texture_path(char **ptr)
 	if (!**ptr || **ptr == '\n' || **ptr == '\r')
 		return (NULL);
 	len = 0;
-	while ((*ptr)[len] && !is_space((*ptr)[len]) && ((*ptr)[len] != '\n' || (*ptr)[len] != '\r'))
+	while ((*ptr)[len] && !is_space((*ptr)[len])
+		&& ((*ptr)[len] != '\n' || (*ptr)[len] != '\r'))
 		len++;
 	path = malloc(sizeof(char) * (len + 1));
 	if (!path)

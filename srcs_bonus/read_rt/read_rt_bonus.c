@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:04:41 by titan             #+#    #+#             */
-/*   Updated: 2026/03/09 13:05:39 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:16:19 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ bool	verify_filename(char *filename)
 	len = ft_strlen(filename);
 	if (len < 3)
 		return (false);
-	if (!ft_strncmp(filename + len - 3, ".rt",3))
+	if (!ft_strncmp(filename + len - 3, ".rt", 3))
 		return (true);
 	return (false);
 }

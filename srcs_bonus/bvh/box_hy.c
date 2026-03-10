@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   box_hy.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 11:35:35 by titan             #+#    #+#             */
-/*   Updated: 2026/02/11 11:39:21 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/10 13:23:24 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
-
 
 t_aabb	aabb_hyperboloid(t_obj *hy)
 {

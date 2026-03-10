@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   box_cy.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 11:25:47 by titan             #+#    #+#             */
-/*   Updated: 2026/02/11 13:19:41 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/10 13:30:14 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
-
 
 t_aabb	aabb_cylinder(t_obj *cy)
 {

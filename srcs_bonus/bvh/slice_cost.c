@@ -6,13 +6,13 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 15:02:25 by titan             #+#    #+#             */
-/*   Updated: 2026/03/05 11:31:54 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:21:31 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-double	get_aabb_surface_area(t_aabb box)
+double	get_ab_s(t_aabb box)
 {
 	t_vec3	size;
 
@@ -37,7 +37,8 @@ void	sort_and_set(int count, int axis, t_sah *sah_utils, t_obj **objs)
 	sah_utils->i = 1;
 	while (sah_utils->i < count)
 	{
-		sah_utils->prefix[sah_utils->i] = aabb_union(sah_utils->prefix[sah_utils->i - 1],
+		sah_utils->prefix[sah_utils->i]
+			= aabb_union(sah_utils->prefix[sah_utils->i - 1],
 				get_aabb_by_type(objs[sah_utils->i]));
 		sah_utils->i++;
 	}
@@ -45,7 +46,8 @@ void	sort_and_set(int count, int axis, t_sah *sah_utils, t_obj **objs)
 	sah_utils->i = count - 2;
 	while (sah_utils->i >= 0)
 	{
-		sah_utils->suffix[sah_utils->i] = aabb_union(sah_utils->suffix[sah_utils->i + 1],
+		sah_utils->suffix[sah_utils->i]
+			= aabb_union(sah_utils->suffix[sah_utils->i + 1],
 				get_aabb_by_type(objs[sah_utils->i]));
 		sah_utils->i--;
 	}
@@ -67,30 +69,29 @@ bool	malloc_s_e(double *out_cost, int count, t_sah *sah_utils)
 
 static int	sah_axis(t_obj **objs, int count, int axis, double *out_cost)
 {
-	t_sah	sah_utils;
+	t_sah	s_u;
 	double	min_cost;
 	double	cost;
 	int		best_mid;
 
-	if (malloc_s_e(out_cost, count, &sah_utils) == false)
+	if (malloc_s_e(out_cost, count, &s_u) == false)
 		return (count / 2);
-	sort_and_set(count, axis, &sah_utils, objs);
+	sort_and_set(count, axis, &s_u, objs);
 	min_cost = DBL_MAX;
 	best_mid = count / 2;
-	sah_utils.i = 1;
-	while (sah_utils.i < count)
+	s_u.i = 1;
+	while (s_u.i < count)
 	{
-		cost = get_aabb_surface_area(sah_utils.prefix[sah_utils.i - 1]) * (double)sah_utils.i
-			 + get_aabb_surface_area(sah_utils.suffix[sah_utils.i])     * (double)(count - sah_utils.i);
+		cost = get_ab_s(s_u.prefix[s_u.i - 1]) * (double)s_u.i
+			+ get_ab_s(s_u.suffix[s_u.i]) * (double)(count - s_u.i);
 		if (cost < min_cost)
-		{
 			min_cost = cost;
-			best_mid = sah_utils.i;
-		}
-		sah_utils.i++;
+		if (cost < min_cost)
+			best_mid = s_u.i;
+		s_u.i++;
 	}
-	free(sah_utils.prefix);
-	free(sah_utils.suffix);
+	free(s_u.prefix);
+	free(s_u.suffix);
 	*out_cost = min_cost;
 	return (best_mid);
 }
@@ -130,7 +131,8 @@ int	find_best_split_all_axes(t_data *data, int start, int count)
 		i++;
 	}
 	setmidaxis(&best_axis, count, tmp, mid);
-	ft_memcpy(&data->sorted_objs[start], tmp[best_axis], sizeof(t_obj *) * count);
+	ft_memcpy(&data->sorted_objs[start],
+		tmp[best_axis], sizeof(t_obj *) * count);
 	free(tmp[0]);
 	free(tmp[1]);
 	free(tmp[2]);

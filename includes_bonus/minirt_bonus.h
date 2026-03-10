@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/09 17:35:35 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 14:03:41 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,17 @@
 # define MAX_BVH_DEPTH	24
 # define EPSILON		1e-4
 
+typedef struct s_bump_calc
+{
+	double	i_center;
+	double	i_u;
+	double	i_v;
+	double	d_u;
+	double	d_v;
+	t_vec3	tangent;
+	t_vec3	bitangent;
+}				t_bump_calc;
+
 typedef struct s_aabb
 {
 	t_vec3	min;
@@ -63,6 +74,13 @@ typedef struct s_bvh_node
 	t_vec3	debug_color;
 }				t_bvh_node;
 
+typedef struct s_idxs
+{
+	int	y;
+	int	x;
+	int	s;
+}				t_idxs;
+
 typedef struct s_render_v
 {
 	double		u;
@@ -71,6 +89,7 @@ typedef struct s_render_v
 	double		inv_height;
 	t_mat4		cam_m;
 	t_vec3		cam_origin;
+	t_idxs		idxs;
 }				t_render_v;
 
 typedef struct s_face_c
@@ -85,13 +104,6 @@ typedef struct s_ic
 	int	ig;
 	int	ib;
 }				t_ic;
-
-typedef struct s_idxs
-{
-	int	y;
-	int	x;
-	int	s;
-}				t_idxs;
 
 typedef struct s_color_c
 {
@@ -146,6 +158,7 @@ typedef struct s_hit
 	t_ray	l_ray;
 	t_vec3	local_normal;
 	double	t;
+	double	k;
 }				t_hit;
 
 typedef struct s_triangle
@@ -504,7 +517,60 @@ typedef struct s_ply_header
 	bool		is_binary;
 }	t_ply_header;
 
+typedef struct s_ro_re
+{
+	double	r;
+	t_vec3	perfect_reflect;
+	t_vec3	fuzz;
+	t_ray	spec_ray;
+	t_ray	diff_ray;
+	t_vec3	spec_color;
+	t_vec3	diff_color;
+	t_vec3	obj_col;
+	t_vec3	final_spec;
+	t_vec3	final_diff;
+}				t_ro_re;
+
+typedef struct s_op_ni
+{
+	t_vec3	out_normal;
+	t_ray	re_ray;
+	t_ray	rea_ray;
+	t_vec3	re_col;
+	t_vec3	rea_col;
+	t_vec3	r_dir_part1;
+	t_vec3	r_dir_part2;
+	double	eta_i;
+	double	eta_t;
+	double	eta_ratio;
+	double	cos_theta_i;
+	double	sin2_theta_t;
+	double	cos_theta_t;
+	double	r0;
+	double	fresnel;
+	bool	is_inside;
+}				t_op_ni;
+
+typedef struct s_light_hit
+{
+	t_light		*light;
+	t_color_c	lights;
+	t_vec3		light_dir;
+	t_vec3		view_dir;
+	double		diff_strength;
+	double		spec_factor;
+	t_vec3		l_col;
+	t_vec3		minus_l;
+	t_vec3		reflect_dir;
+	t_vec3		diffuse_total;
+	t_vec3		specular_total;
+	double		intensity;
+	t_vec3		scaled_light;
+	t_vec3		final_spec;
+}				t_light_hit;
+
 typedef bool	(*t_calc_f)(t_obj *obj, t_ray ray, t_hit_r *rec);
+t_vec3		check_hit(t_data *data, t_ray ray, int deph);
 void		thread_calls(t_data *data);
 int			resize_win(t_data *data);
 void		render(void *arg);
@@ -550,7 +616,7 @@ void		ft_objadd_back(t_obj **lst, t_obj *new);
 void		final_diffuse(t_color_c *lights, t_light *light, double diff_strength,
 				t_vec3 kd);
 void		calc_lights(t_color_c *lights, t_hit_r rec,
-				t_data *data, t_light *light);
+				t_data *data);
 void		update_rot(t_data *data, t_vec3 right, bool *movded);
 bool		hit_triangle(t_obj *tr, t_ray ray, t_hit_r *rec);
 void		set_tr(t_data *data, char *line, int i);
@@ -589,9 +655,6 @@ double		parse_roughness(char **line);
 void		print_progress(int current_line, int total_lines);
 t_vec3		get_checker_color(double u, double v, t_vec3 color_a, t_vec3 color_b);
 void		get_sphere_uv(t_vec3 normal, double *u, double *v);
-void		get_pl_uv(t_vec3 p, t_vec3 normal, double *u, double *v);
-void		get_sq_uv(t_vec3 p, t_vec3 center, t_vec3 normal, double side_size, double *u, double *v);
-void		get_cycohy_uv(t_vec3 p, t_vec3 center, t_vec3 axis, double height, double *u, double *v);
 mlx_color	get_texture_color(t_texture *tex, double u, double v);
 char		*get_texture_path(char **ptr);
 t_texture	*load_texture(t_data *data, char *filepath, char *file_o, int s);

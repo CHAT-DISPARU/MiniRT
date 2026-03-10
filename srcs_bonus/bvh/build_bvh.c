@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 13:46:56 by titan             #+#    #+#             */
-/*   Updated: 2026/03/04 14:33:07 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:22:31 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,7 @@ void	setleaf(t_data *data, int start, int count, t_bvh_node *node)
 		printf("\r%d/%d", data->proccessed_objs, data->obj_count);
 }
 
-
-int	recursive_build(t_data *data, int start, int count, int depth, t_vec3 branch_color)
+int	recursive_build(t_data *data, int start, int count, int depth)
 {
 	int			node_idx;
 	t_bvh_node	*node;
@@ -37,7 +36,7 @@ int	recursive_build(t_data *data, int start, int count, int depth, t_vec3 branch
 	node = &data->bvh_nodes[node_idx];
 	node->depth = depth;
 	node->box = compute_bounds(&data->sorted_objs[start], count);
-	node->debug_color = branch_color;
+	node->debug_color = (t_vec3){0.0, 1.0, 0.0};
 	if (count <= 1 || depth >= MAX_BVH_DEPTH)
 	{
 		setleaf(data, start, count, node);
@@ -47,8 +46,8 @@ int	recursive_build(t_data *data, int start, int count, int depth, t_vec3 branch
 	mid = find_best_split_all_axes(data, start, count);
 	if (mid <= 0 || mid >= count)
 		mid = count / 2;
-	node->left = recursive_build(data, start, mid, depth + 1, (t_vec3){0.0, 1.0, 0.0});
-	node->right = recursive_build(data, start + mid, count - mid, depth + 1, (t_vec3){1.0, 0.0, 0.0});
+	node->left = recursive_build(data, start, mid, depth + 1);
+	node->right = recursive_build(data, start + mid, count - mid, depth + 1);
 	return (node_idx);
 }
 
@@ -71,7 +70,8 @@ void	print_result(t_data *data)
 	printf("-Total Objects : %d\n", data->obj_count);
 	printf("-Total leafs : %d\n", leaf_count);
 	if (leaf_count > 0)
-		printf("- Moyenne Obj/leafs : %.2f\n", (double)data->obj_count / leaf_count);
+		printf("- Moyenne Obj/leafs : %.2f\n",
+			(double)data->obj_count / leaf_count);
 	else
 		printf("- Moyenne Obj/leafs : 0\n");
 }
@@ -81,7 +81,7 @@ void	build_bvh(t_data *data)
 	int	i;
 
 	if (data->obj_count == 0)
-		return;
+		return ;
 	i = 0;
 	data->proccessed_objs = 0;
 	data->sorted_objs = malloc(sizeof(t_obj *) * data->obj_count);
@@ -98,6 +98,6 @@ void	build_bvh(t_data *data)
 		clean_exit(data, 1, "Malloc", 0);
 	data->nodes_used = 0;
 	printf("Construction BVH (Max Depth: %d)...\n", MAX_BVH_DEPTH);
-	recursive_build(data, 0, data->obj_count, 0, (t_vec3){1.0, 1.0, 0.0});
+	recursive_build(data, 0, data->obj_count, 0);
 	print_result(data);
 }

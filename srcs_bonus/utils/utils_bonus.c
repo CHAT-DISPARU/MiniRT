@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:17:57 by titan             #+#    #+#             */
-/*   Updated: 2026/03/09 17:01:40 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/10 13:49:01 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ void	set_arrays(t_data *data)
 	int		i_obj;
 	int		i_plane;
 	t_obj	*tmp;
-	
+
 	i_obj = 0;
 	i_plane = 0;
 	curr = data->objs;
@@ -192,7 +192,7 @@ void	convert_list_to_arrays(t_data *data)
 
 double	get_time(void)
 {
-	struct timeval  tv;
+	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec + (tv.tv_usec / 1000000.0));
@@ -201,10 +201,11 @@ double	get_time(void)
 void	print_progress(int current_line, int total_lines)
 {
 	int	percent;
-	int	bar_width = 40;
+	int	bar_width;
 	int	pos;
 	int	i;
 
+	bar_width = 40;
 	percent = (current_line * 100) / total_lines;
 	if (percent > 100)
 		percent = 100;
@@ -222,5 +223,5 @@ void	print_progress(int current_line, int total_lines)
 		i++;
 	}
 	printf("] %d%%\033[0m", percent);
-	fflush(stdout); 
+	fflush(stdout);
 }
