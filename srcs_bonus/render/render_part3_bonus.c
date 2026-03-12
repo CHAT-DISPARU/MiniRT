@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:06:13 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 11:06:39 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/12 17:17:59 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,19 +58,21 @@ t_vec3	tint_color_acc(double fresnel,
 	t_vec3	tint;
 	t_vec3	tinted_refract;
 	t_vec3	glass_tint;
+	double	absorb;
 
 	tint.x = rec->obj_ptr->color.r / 255.0;
 	tint.y = rec->obj_ptr->color.g / 255.0;
 	tint.z = rec->obj_ptr->color.b / 255.0;
-	tinted_refract.x = refract_color.x * tint.x;
-	tinted_refract.y = refract_color.y * tint.y;
-	tinted_refract.z = refract_color.z * tint.z;
-	glass_tint.x = tinted_refract.x * (1.0 - fresnel)
-		+ reflect_color.x * fresnel;
-	glass_tint.y = tinted_refract.y * (1.0 - fresnel)
-		+ reflect_color.y * fresnel;
-	glass_tint.z = tinted_refract.z * (1.0 - fresnel)
-		+ reflect_color.z * fresnel;
+	absorb = rec->obj_ptr->opacity;
+	tinted_refract.x = refract_color.x * pow(tint.x + 1e-6, absorb);
+	tinted_refract.y = refract_color.y * pow(tint.y + 1e-6, absorb);
+	tinted_refract.z = refract_color.z * pow(tint.z + 1e-6, absorb);
+	glass_tint.x = tinted_refract.x
+		* (1.0 - fresnel) + reflect_color.x * fresnel;
+	glass_tint.y = tinted_refract.y
+		* (1.0 - fresnel) + reflect_color.y * fresnel;
+	glass_tint.z = tinted_refract.z
+		* (1.0 - fresnel) + reflect_color.z * fresnel;
 	return (glass_tint);
 }
 

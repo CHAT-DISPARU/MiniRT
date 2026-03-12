@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 10:31:35 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 10:32:17 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/12 17:04:51 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
 			while (s[len] && s[len] != '\r'
 				&& s[len] != '\n' && !is_space(s[len]))
 				len++;
-			if (!ft_strncmp(tmp->idx, s, len))
+			if (!ft_strncmp(tmp->idx, s, len)
+				&& (size_t)len == ft_strlen(tmp->idx))
 			{
 				set_new_mtlmat(&mat, tmp);
 				return (mat);

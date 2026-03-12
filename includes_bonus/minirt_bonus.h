@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 11:27:42 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/12 15:20:06 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,6 +279,7 @@ typedef struct s_hit_r
 	double		u;
 	double		v;
 	t_obj		*obj_ptr;
+	t_vec3		*color_acc;
 }				t_hit_r;
 
 typedef struct s_light
