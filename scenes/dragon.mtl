@@ -10,4 +10,4 @@ illum 3
 RGB 11 182 205
 Re 0.85
 Ro 0.02
-map_bump water1.jpg
+map_bump scenes/texture/water1.jpg

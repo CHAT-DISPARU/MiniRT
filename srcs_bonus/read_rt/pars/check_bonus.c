@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 16:33:53 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 12:23:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/11 10:40:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,4 @@ void	check_fov(t_data *data, double fov, int i)
 	if (fov < 0.0 || fov > 180.0)
 		clean_exit(data, 1,
 			"Error: fov must be between 0 and 180\n", i);
-}
-
-void	check_positive(t_data *data, double val, int i)
-{
-	if (val <= 0.0)
-		clean_exit(data, 1,
-			"Error: Dimensions must be positive\n", i);
 }

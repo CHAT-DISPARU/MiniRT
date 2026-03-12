@@ -6,24 +6,11 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/10 14:00:01 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/11 11:03:11 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
-
-void	re_init(t_data *data)
-{
-	data->camera_is_set = false;
-	data->ambient_is_set = false;
-	data->sorted_objs = NULL;
-	data->bvh_nodes = NULL;
-	data->scene_fd = -1;
-	data->scene_line = NULL;
-	data->objs = NULL;
-	data->light = NULL;
-	srand(time(NULL));
-}
 
 void	set_data_base(t_data *data)
 {
@@ -101,12 +88,6 @@ void	set_info(mlx_window_create_info	*info)
 	info->width = WIDTH;
 	info->height = HEIGHT;
 	info->is_resizable = true;
-}
-
-void	error_arg(void)
-{
-	ft_putstr_fd("invalid argument:\n./MiniRT <file.rt>\nOptional : ./M", 2);
-	ft_putstr_fd("iniRT <file.rt> <resolution> <deph> <sample per pixel>\n", 2);
 }
 
 int	main(int ac, char **av)

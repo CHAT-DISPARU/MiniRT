@@ -6,60 +6,11 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 12:17:23 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/10 13:38:37 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/11 10:47:13 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
-
-bool	hit_border_co(t_ray ray, double x_plane, double *t_out, double rad)
-{
-	double	t;
-	double	y;
-	double	z;
-
-	if (fabs(ray.dir.x) < EPSILON)
-		return (false);
-	t = (x_plane - ray.origin.x) / ray.dir.x;
-	if (t < EPSILON)
-		return (false);
-	y = ray.origin.y + t * ray.dir.y;
-	z = ray.origin.z + t * ray.dir.z;
-	if ((y * y + z * z) > rad)
-		return (false);
-	*t_out = t;
-	return (true);
-}
-
-void	see_cap(t_hit hit, t_cy_utils *utils, double height, double rad)
-{
-	if (hit_border_co(hit.l_ray, height, &hit.t, rad))
-	{
-		if (hit.t > EPSILON && hit.t < utils->closest_t)
-		{
-			utils->hit_zone = 2;
-			utils->closest_t = hit.t;
-		}
-	}
-}
-
-bool	set_closest(t_cy_utils *utils, t_poly_co *co_p)
-{
-	if (co_p->v1 && co_p->v2)
-	{
-		if (co_p->t1 < co_p->t2)
-			utils->closest_t = co_p->t1;
-		else
-			utils->closest_t = co_p->t2;
-	}
-	else if (co_p->v1)
-		utils->closest_t = co_p->t1;
-	else if (co_p->v2)
-		utils->closest_t = co_p->t2;
-	else
-		return (false);
-	return (true);
-}
 
 void	see_poly_co(t_hit hit, t_vec3 poly, double delta, t_cy_utils *utils)
 {
@@ -82,7 +33,7 @@ void	see_poly_co(t_hit hit, t_vec3 poly, double delta, t_cy_utils *utils)
 		if (hit_x >= 0.0 && hit_x <= utils->half_h)
 			co_p.v2 = true;
 	}
-	if (set_closest(utils, &co_p) == false)
+	if (set_closest_co(utils, &co_p) == false)
 		return ;
 	utils->hit_zone = 1;
 }
@@ -153,7 +104,7 @@ bool	hit_cone(t_obj *co, t_ray ray, t_hit_r *rec)
 	delta = (poly.y * poly.y) - (poly.x * poly.z);
 	if (delta >= 0)
 		see_poly_co(hit, poly, delta, &utils);
-	see_cap(hit, &utils, utils.half_h, pow(co->rad_1, 2));
+	see_cap_co(hit, &utils, utils.half_h, pow(co->rad_1, 2));
 	if (utils.hit_zone == 0)
 		return (false);
 	*rec = set_rec_co(ray, utils, co, hit);

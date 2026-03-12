@@ -3,14 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   check2_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 16:34:08 by titan             #+#    #+#             */
-/*   Updated: 2026/02/13 11:20:47 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/11 10:42:45 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
+
+void	check_positive(t_data *data, double val, int i)
+{
+	if (val <= 0.0)
+		clean_exit(data, 1,
+			"Error: Dimensions must be positive\n", i);
+}
 
 void	check_extra_info(t_data *data, char *line, int i)
 {

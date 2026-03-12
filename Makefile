@@ -6,7 +6,7 @@
 #    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/03/07 16:37:50 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/03/11 11:31:05 by gajanvie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,12 +34,18 @@ YELLOW=\033[0;33m
 
 SRC_DIR := srcs/
 UPDATED_DIR := update/
+RENDER_DIR := render/
+CLEAN_DIR := clean/
 SRCB_DIR := srcs_bonus/
 POOL_DIR := thread_pool/
 HIT_DIR := hit_objs/
 READ_DIR := read_rt/
 SETTER_DIR := setters/
+LIGHT_DIR := lights/
 PARS_DIR := pars/
+MTL_DIR := mtl_file/
+OBJ_DIR := obj_file/
+OBJECT_DIR := object/
 UTILS_DIR := utils/
 BUILD_DIR := build/
 BVH_DIR	  := bvh/
@@ -54,41 +60,53 @@ MLX = $(MLX_DIR)/libmlx.so
 
 SRCSB := $(SRCB_DIR)main_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)pars_bonus.c \
-		$(SRCB_DIR)clean_bonus.c \
-		$(SRCB_DIR)event_bonus.c \
-		$(SRCB_DIR)render_bonus.c \
-		$(SRCB_DIR)lights_bonus.c \
-		$(SRCB_DIR)$(POOL_DIR)init_threads_p.c \
-		$(SRCB_DIR)$(BVH_DIR)box_cy.c \
-		$(SRCB_DIR)$(BVH_DIR)box_hy.c \
-		$(SRCB_DIR)$(BVH_DIR)box_sp.c \
-		$(SRCB_DIR)$(BVH_DIR)slice_cost.c \
-		$(SRCB_DIR)$(BVH_DIR)comp_coord.c \
-		$(SRCB_DIR)$(BVH_DIR)build_bvh.c \
-		$(SRCB_DIR)$(BVH_DIR)box_tr.c \
-		$(SRCB_DIR)$(BVH_DIR)box_sq.c \
-		$(SRCB_DIR)$(BVH_DIR)box_co.c \
-		$(SRCB_DIR)$(BVH_DIR)bvh_utils.c \
+		$(SRCB_DIR)$(CLEAN_DIR)clean_bonus.c \
+		$(SRCB_DIR)$(CLEAN_DIR)clean_utils_bonus.c \
+		$(SRCB_DIR)$(UTILS_DIR)event_bonus.c \
+		$(SRCB_DIR)$(RENDER_DIR)render_bonus.c \
+		$(SRCB_DIR)$(RENDER_DIR)render_part2_bonus.c \
+		$(SRCB_DIR)$(RENDER_DIR)render_part3_bonus.c \
+		$(SRCB_DIR)$(RENDER_DIR)render_part4_bonus.c \
+		$(SRCB_DIR)$(LIGHT_DIR)lights_bonus.c \
+		$(SRCB_DIR)$(POOL_DIR)init_threads_p_bonus.c \
+		$(SRCB_DIR)$(POOL_DIR)stack_utils_bonus.c \
+		$(SRCB_DIR)$(BVH_DIR)box_cy_bonus.c \
+		$(SRCB_DIR)$(BVH_DIR)box_hy_bonus.c \
+		$(SRCB_DIR)$(BVH_DIR)box_sp_bonus.c \
+		$(SRCB_DIR)$(BVH_DIR)slice_cost_bonus.c \
+		$(SRCB_DIR)$(BVH_DIR)comp_coord_bonus.c \
+		$(SRCB_DIR)$(BVH_DIR)build_bvh_bonus.c \
+		$(SRCB_DIR)$(BVH_DIR)box_tr_bonus.c \
+		$(SRCB_DIR)$(BVH_DIR)box_sq_bonus.c \
+		$(SRCB_DIR)$(BVH_DIR)box_co_bonus.c \
+		$(SRCB_DIR)$(BVH_DIR)bvh_utils_bonus.c \
+		$(SRCB_DIR)$(BVH_DIR)bvh_utils_part2_bonus.c \
 		$(SRCB_DIR)$(UPDATED_DIR)update_bonus.c \
 		$(SRCB_DIR)$(UPDATED_DIR)update_rot_bonus.c \
-		$(SRCB_DIR)thread_calls_bonus.c \
+		$(SRCB_DIR)$(RENDER_DIR)thread_calls_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)parsing_utils_bonus.c \
-		$(SRCB_DIR)shadow_rays_bonus.c \
+		$(SRCB_DIR)$(LIGHT_DIR)shadow_rays_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)check_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)check2_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_a_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_l_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_c_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_o_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_mtl_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_o_utils_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_cy_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_sp_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_tr_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_sq_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_pl_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_hy_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)set_co_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_a_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_l_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_c_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_part2_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_part3_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_part4_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(MTL_DIR)set_mtl_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(MTL_DIR)set_mtl_utils_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_utils_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_cy_bonus.c \
+		$(SRCB_DIR)$(HIT_DIR)rec_cy_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_sp_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_tr_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_sq_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_pl_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_hy_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_co_bonus.c \
+		$(SRCB_DIR)$(HIT_DIR)utils_co_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_cy_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_tr_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_sp_bonus.c \
@@ -98,11 +116,14 @@ SRCSB := $(SRCB_DIR)main_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_pl_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_something_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)read_rt_bonus.c \
+		$(SRCB_DIR)$(READ_DIR)read_rt_utils_bonus.c \
 		$(SRCB_DIR)$(UTILS_DIR)utils_bonus.c \
-		$(SRCB_DIR)$(UTILS_DIR)texture.c \
-		$(SRCB_DIR)$(UTILS_DIR)checkboard.c \
-		$(SRCB_DIR)$(UTILS_DIR)fps.c \
-		$(SRCB_DIR)$(UTILS_DIR)bump.c \
+		$(SRCB_DIR)$(UTILS_DIR)utils_part2_bonus.c \
+		$(SRCB_DIR)$(UTILS_DIR)texture_bonus.c \
+		$(SRCB_DIR)$(UTILS_DIR)checkboard_bonus.c \
+		$(SRCB_DIR)$(UTILS_DIR)access_bonus.c \
+		$(SRCB_DIR)$(UTILS_DIR)print_info_bonus.c \
+		$(SRCB_DIR)$(LIGHT_DIR)bump_bonus.c \
 		$(SRCB_DIR)$(UTILS_DIR)math_utils_bonus.c
 
 SRCS := $(SRC_DIR)main.c \

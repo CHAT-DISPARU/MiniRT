@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 12:17:03 by titan             #+#    #+#             */
-/*   Updated: 2026/03/10 13:15:49 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/11 10:23:27 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,4 +100,17 @@ char	*get_texture_path(char **ptr)
 	}
 	path[j] = '\0';
 	return (path);
+}
+
+void	skip_mtl_option(char **ptr)
+{
+	if (!ft_strncmp(*ptr, "-", 1))
+	{
+		while (**ptr)
+		{
+			if (**ptr == '/')
+				break ;
+			*ptr += 1;
+		}
+	}
 }
