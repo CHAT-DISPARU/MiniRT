@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/07 16:34:13 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/12 12:07:36 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/12 16:48:30 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,13 @@ void	set_new_mat(int *i,
 		t_mtl_info **mtl_info, t_mtl_info **mtl_node, char **ptr)
 {
 	if (*i == 1)
-	{
 		(*mtl_node)->next = *mtl_info;
+	if (*i == 1)
 		*mtl_info = *mtl_node;
-	}
 	*i = 1;
 	*mtl_node = malloc(sizeof(t_mtl_info));
-	(*mtl_node)->idx = ft_strdup(*ptr + 7);
+	*ptr += 7;
+	(*mtl_node)->idx = get_texture_path(ptr);
 	(*mtl_node)->tex = NULL;
 	(*mtl_node)->ka = (t_vec3){0.2, 0.2, 0.2};
 	(*mtl_node)->ks = (t_vec3){1, 1, 1};

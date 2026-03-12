@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:08:05 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 11:08:23 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/12 17:18:26 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,22 @@ t_vec3	do_opacity_refract(t_data *data, t_hit_r *rec, int deph, t_ray ray)
 		op_ni.rea_ray.dir = vec_normalize(vec_add(op_ni.r_dir_part1,
 					op_ni.r_dir_part2));
 		op_ni.rea_ray.origin = vec_sub(rec->p, vec_scale(op_ni.ot_n, EPSILON));
-		op_ni.re_col = check_hit(data, op_ni.rea_ray, deph - 1);
+		op_ni.rea_col = check_hit(data, op_ni.rea_ray, deph - 1);
 	}
 	return (tint_color_acc(op_ni.fresnel, op_ni.rea_col, op_ni.re_col, rec));
+}
+
+void	set_opacity_obj(t_data *data, t_hit_r *rec, int deph, t_ray ray)
+{
+	t_vec3		refract_result;
+
+	refract_result = do_opacity_refract(data, rec, deph, ray);
+	rec->color_acc->x = refract_result.x * (1.0 - rec->obj_ptr->opacity)
+		+ rec->color_acc->x * rec->obj_ptr->opacity;
+	rec->color_acc->y = refract_result.y * (1.0 - rec->obj_ptr->opacity)
+		+ rec->color_acc->y * rec->obj_ptr->opacity;
+	rec->color_acc->z = refract_result.z * (1.0 - rec->obj_ptr->opacity)
+		+ rec->color_acc->z * rec->obj_ptr->opacity;
 }
 
 t_vec3	check_hit(t_data *data, t_ray ray, int deph)
@@ -83,9 +96,9 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 		light_hit(&rec, data, &color_acc, ray);
 		if (deph > 1)
 		{
+			rec.color_acc = &color_acc;
 			if (rec.obj_ptr->opacity < 1)
-				color_acc = vec_add(do_opacity_refract(data, &rec, deph, ray),
-						color_acc);
+				set_opacity_obj(data, &rec, deph, ray);
 			else
 				color_acc = vec_add(color_acc,
 						rought_reflect(data, &rec, ray, deph));
