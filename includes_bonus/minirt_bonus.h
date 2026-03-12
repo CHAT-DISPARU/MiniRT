@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/10 14:03:41 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/11 11:27:42 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@
 # include <sys/mman.h>
 # include <float.h>
 
-# define CHUNK_SIZE (64 * 1024 * 1024)
 # define WIDTH			1500
 # define HEIGHT			1000
 # define S_PER_PIXS		100
@@ -167,9 +166,9 @@ typedef struct s_triangle
 	t_vec3	p2;
 	t_vec3	p3;
 	t_vec3	normal;
-	t_vec2		uv1;
-	t_vec2		uv2;
-	t_vec2		uv3;
+	t_vec2	uv1;
+	t_vec2	uv2;
+	t_vec2	uv3;
 }				t_triangle;
 
 typedef struct s_mat_t
@@ -270,7 +269,6 @@ typedef struct s_mtl_info
 	int					sb;
 	struct s_mtl_info	*next;
 }				t_mtl_info;
-
 
 typedef struct s_hit_r
 {
@@ -454,7 +452,6 @@ typedef struct s_thread_info
 	int		total_lines;
 }				t_thread_info;
 
-
 typedef void	(*t_task)(void *arg);
 
 typedef struct s_thread_p
@@ -502,7 +499,6 @@ typedef struct s_thread_c_int
 	int	current_row;
 }				t_thread_c_int;
 
-
 typedef struct s_ply_header
 {
 	int			vertex_count;
@@ -533,7 +529,7 @@ typedef struct s_ro_re
 
 typedef struct s_op_ni
 {
-	t_vec3	out_normal;
+	t_vec3	ot_n;
 	t_ray	re_ray;
 	t_ray	rea_ray;
 	t_vec3	re_col;
@@ -613,8 +609,8 @@ t_vec3		get_right_vector(t_vec3 dir);
 void		calcul_ambient(t_data *data);
 double		rand_double(void);
 void		ft_objadd_back(t_obj **lst, t_obj *new);
-void		final_diffuse(t_color_c *lights, t_light *light, double diff_strength,
-				t_vec3 kd);
+void		final_diffuse(t_color_c *lights,
+				t_light *light, double diff_strength, t_vec3 kd);
 void		calc_lights(t_color_c *lights, t_hit_r rec,
 				t_data *data);
 void		update_rot(t_data *data, t_vec3 right, bool *movded);
@@ -653,7 +649,8 @@ double		get_time(void);
 double		parse_reflectivity(char **line);
 double		parse_roughness(char **line);
 void		print_progress(int current_line, int total_lines);
-t_vec3		get_checker_color(double u, double v, t_vec3 color_a, t_vec3 color_b);
+t_vec3		get_checker_color(double u,
+				double v, t_vec3 color_a, t_vec3 color_b);
 void		get_sphere_uv(t_vec3 normal, double *u, double *v);
 mlx_color	get_texture_color(t_texture *tex, double u, double v);
 char		*get_texture_path(char **ptr);
@@ -674,8 +671,71 @@ char		*ft_strncat(char *dest, char *src, unsigned int nb);
 char		*map_file_fast(char *filename, size_t *size);
 void		do_firstpart_double(char **s, double *res, double *sign);
 double		parse_double(char **s, double res);
-void		read_mtl(char *filename, t_mtl_info **mtl_info, t_data *data, t_vars_obj v_obj);
+void		read_mtl(char *filename,
+				t_mtl_info **mtl_info, t_data *data, t_vars_obj v_obj);
 void		set_obj_lum(t_obj **new);
 void		calc_final_mat(t_mat_t *t);
+void		error_map_mtl(t_vars_obj v_obj, t_data *data, int i);
+void		map_mtl(char *filename, t_data *data,
+				t_vars_obj *v, t_vars_obj v_obj);
+void		skip_mtl_option(char **ptr);
+void		mat_ni_ro(int i, t_mtl_info **mtl_node, char **ptr);
+void		mat_rgb_re(int i, t_mtl_info **mtl_node, char **ptr);
+void		mat_tex_bump(int i, t_mtl_info **mtl_node, char **ptr);
+int			atoi_move(char **s);
+void		fill_face_v(char **s, int idx[3][3], int i);
+char		*pars_file_n(char **line);
+void		set_base_mat(t_mtl_info *mat);
+void		set_new_mtlmat(t_mtl_info *mat, t_mtl_info *tmp);
+t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s);
+void		set_vars_obj2(t_data *data, char **line, t_vars_obj *v);
+void		set_vars_obj3(t_data *data, t_vars_obj *v);
+void		set_vars_obj(t_data *data, int i, char **line, t_vars_obj *v);
+void		set_obj_type2(char **c, t_vars_obj *v, t_data *data);
+void		set_obj_type(char **c, t_vars_obj *v, t_data *data);
+void		call_setters(t_data *data, char *ptr, int i);
+void		maj_setters(t_data *data, char **ptr, int i);
+t_aabb		empty_aabb(void);
+void		add_point_to_aabb(t_aabb *box, t_vec3 p);
+t_aabb		aabb_transform_matrix(t_aabb local_box, t_mat4 matrix);
+bool		is_on_edge(t_vec3 p, t_aabb box, double thick);
+void		set_tcoords(t_aabb_edge *utils,
+				t_ray ray, t_aabb box, t_vec3 inv_dir);
+double		get_ab_s(t_aabb box);
+void		set_rec_cy2(t_cy_utils utils, t_hit *hit,
+				t_hit_r *rec, t_vec3 local_p);
+t_hit_r		set_rec_cy(t_ray ray, t_cy_utils utils, t_obj *cy, t_hit hit);
+bool		set_closest_co(t_cy_utils *utils, t_poly_co *co_p);
+void		see_cap_co(t_hit hit, t_cy_utils *utils, double height, double rad);
+void		check_access(t_data *data, char *filepath, char *file_o);
+void		update_move(t_data *data, bool *movded,
+				t_vec3 forward, t_vec3 right);
+void		update_samples(t_data *data, bool *movded);
+void		relaunch(bool *movded, t_data *data);
+void		ft_lstadd_front_stack(t_thread_p **lst, t_thread_p *new);
+t_thread_p	*ft_lstnew_stack(t_thread_info content, t_task func);
+void		ft_lstdelone_stack(t_thread_p *lst);
+void		ft_lstclear_stack(t_thread_p **lst);
+void		set_indexs(int *indexs);
+void		print_m_and_gnl(t_data *data,
+				char *mess_eror, int exit_code, int i);
+void		free_texs(t_data *data);
+void		error_arg(void);
+void		re_init(t_data *data);
+t_vec3		vec_random_in_unit_sphere(void);
+t_ray		calc_ray(t_render_v rv, t_data *data);
+t_vec3		random_hemisphere_dir(t_vec3 normal);
+void		set_hit_col(t_hit_r *rec, t_data *data);
+void		debug_bvh(t_vec3 *color_acc, t_data *data, t_hit_r *rec, t_ray ray);
+void		light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray);
+void		light_hit_t(t_light_hit *l_h, t_hit_r *rec);
+t_vec3		tint_color_acc(double fresnel,
+				t_vec3 refract_color, t_vec3 reflect_color, t_hit_r *rec);
+t_vec3		rought_reflect(t_data *data, t_hit_r *rec, t_ray ray, int deph);
+t_vec3		reflect(int deph, t_data *data, t_hit_r *rec, t_ray ray);
+t_vec3		do_opacity_refract(t_data *data, t_hit_r *rec, int deph, t_ray ray);
+void		do_opacity_refract2(t_op_ni	*op_ni, t_hit_r *rec, t_ray ray);
+t_triangle	parse_face_fast(char **s, t_vars_obj *v);
+void		percent_mtl(t_vars_obj *v, char *cursor);
 
 #endif
