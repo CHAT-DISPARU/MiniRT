@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:01:07 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 11:02:48 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/13 09:08:24 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,5 +77,10 @@ void	re_init(t_data *data)
 	data->scene_line = NULL;
 	data->objs = NULL;
 	data->light = NULL;
+	data->array_obj = NULL;
+	data->bvh_nodes = NULL;
+	data->sorted_objs = NULL;
+	data->plane_array = NULL;
+	data->obj_aabbs = NULL;
 	srand(time(NULL));
 }
