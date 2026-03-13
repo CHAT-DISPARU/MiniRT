@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/03/11 11:09:25 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/13 09:43:55 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,9 +95,6 @@ void	add_finish(t_data *data)
 }
 
 /*
-	formule fov equation
-	Height = 2×tan(2/FOV​) × FocalLength
-
 	Couleur Amb ​= Couleur Obj ​× (Couleur Amb​ × Ratio Amb​)
 	Couleur Diff​ = Couleur Obj ​× (Couleur Light ​× Ratio Light​)
 		× (Normal ⋅ Light Dir)

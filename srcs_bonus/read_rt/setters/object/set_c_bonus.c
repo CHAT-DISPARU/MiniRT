@@ -6,11 +6,16 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:59 by titan             #+#    #+#             */
-/*   Updated: 2026/03/10 13:11:32 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/13 09:43:08 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
+
+/*
+	formule fov equation
+	Height = 2×tan(2/FOV​) × FocalLength
+*/
 
 void	set_viewport(t_data *data, t_vec3 origin, t_vec3 dir, double fov)
 {
