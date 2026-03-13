@@ -506,5 +506,5 @@ Ce projet est un projet qui m’a beaucoup tenu à cœur. J'ai passé de très b
 ---
 
 <div align="center">
-*Made by* **CHAT-DISPARU**
+Made by gajanvie alias CHAT-DISPARU
 </div>
