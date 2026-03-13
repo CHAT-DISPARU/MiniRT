@@ -239,6 +239,8 @@ On applique ces trois types de lumière à un objet pour avoir la couleur finale
 
 ## L'anti-aliasing
 
+![anti aliasing](img/abstract.png)
+
 L'anti-aliasing est aussi utilisé en path tracing. C'est une version plus optimisée du ray tracing : plus on augmente le nombre de rayons par pixel, plus le rendu devient réaliste.
 
 Au départ, on envoyait un **seul rayon par pixel** depuis le viewport, passant par le centre du pixel. Le problème : si un pixel touche la sphère et que celui d'à côté ne la touche pas, la transition est très brutale → effets d'escalier.
