@@ -1,5 +1,7 @@
 # MiniRT — My first Ray Tracer
 
+![render](img/dragon.png)
+
 > Un ray tracer complet écrit en C, avec support des matériaux, textures, BVH, multi-threading et chargement de modèles OBJ.
 
 ---
@@ -110,8 +112,6 @@ t = -O / D
 
 ### Le triangle — algorithme Möller–Trumbore
 
-Le cylindre, le cône et l'hyperboloïde sont plutôt similaires mais un peu plus complexes, donc on va passer…
-
 Pour le triangle, il existe plusieurs manières. La plus courante est de faire un plan à partir du triangle puis faire une équation de plan, mais il y a encore plus rapide : l'algorithme standard du ray tracing pour triangle — **Möller–Trumbore**.
 
 Pour cela on utilise les **coordonnées barycentriques** qui représentent le poids des sommets.
@@ -181,6 +181,8 @@ Coordonnées barycentriques récupérées :
     w = 1 - u - v
 ```
 
+Le cylindre, le cône et l'hyperboloïde sont plutôt similaires mais un peu plus complexes, donc on va passer…
+
 ---
 
 ## Les matrices
@@ -220,6 +222,8 @@ l_ray.dir    = mat4_mult_vec3(&sp->inverse_transform, ray.dir, 0.0);
 ---
 
 ## L'éclairage — modèle de Phong
+
+![phong materials](img/objs.png)
 
 Maintenant qu'on arrive à rendre des objets, il reste à appliquer des normales sur ces objets. Pour cela on utilise le **modèle de Phong**, qui fonctionne avec 3 composantes d'éclairage :
 
@@ -301,6 +305,8 @@ Important :
 
 ## Physique avancée — nouveaux types de rayons
 
+![refraction reflection](img/water_dragon.png)
+
 Pour pousser le réalisme plus loin, on peut ajouter des **rebonds** aux rayons sur les surfaces.
 
 ### Rayons spéculaires (miroirs)
@@ -309,9 +315,9 @@ Les rayons spéculaires permettent de créer des miroirs — ils font des rebond
 
 La méthode utilisée s'appelle le **sphere fuzz** : au bout du rebond parfait, on crée un cercle d'une taille dépendant du taux de roughness, et le rayon rebondit vers un point aléatoire dans ce cercle.
 
-### Rayons diffus
+### Rayons diffuse
 
-Les rayons diffus créent beaucoup de bruit si le nombre de rayons par pixel est bas, car ils consistent à envoyer un rayon vers une direction complètement aléatoire. Le point touché devient une source de lumière pour l'objet touché de base. Ce bruit est atténué par l'anti-aliasing.
+Les rayons diffuse créent beaucoup de bruit si le nombre de rayons par pixel est bas, car ils consistent à envoyer un rayon vers une direction complètement aléatoire. Le point touché devient une source de lumière pour l'objet touché de base. Ce bruit est atténué par l'anti-aliasing.
 
 ### Rayons réfractés (transparence)
 
@@ -321,6 +327,8 @@ Les rayons réfractés permettent de simuler les matériaux transparents. La ré
 
 ## Optimisations de performance
 
+![mirrors](img/car.png)
+
 Pour que le rendu reste rapide même avec des scènes très chargées (beaucoup d'objets ou des milliers de triangles comme dans `dragon.obj`), MiniRT utilise deux grosses optimisations.
 
 ### BVH — Bounding Volume Hierarchy
@@ -329,7 +337,7 @@ Au lieu de tester chaque rayon contre tous les objets de la scène un par un, le
 
 L'arbre est construit de façon intelligente grâce à l'heuristique **SAH** (Surface Area Heuristic). Cette méthode calcule pour chaque découpage possible le coût en surface et choisit le meilleur moyen de séparer les objets pour minimiser le nombre de tests inutiles.
 
-### ⚡ Thread Pool
+### Thread Pool
 
 Le calcul de l'image est fait en parallèle sur plusieurs cœurs du processeur. Au lieu de créer et détruire des threads à chaque fois, MiniRT utilise un **thread pool** qui garde un groupe de threads prêts à travailler.
 
@@ -496,7 +504,5 @@ Ce projet est un projet qui m’a beaucoup tenu à cœur. J'ai passé de très b
 ---
 
 <div align="center">
-
 *Made by* **CHAT-DISPARU**
-
 </div>
