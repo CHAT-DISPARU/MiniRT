@@ -4,69 +4,69 @@
 
 ![render](img/dragon.png)
 
-> Un ray tracer complet écrit en C, avec support des matériaux, textures, BVH, multi-threading et chargement de modèles OBJ.
+> A complete ray tracer written in C, with support for materials, textures, BVH, multi-threading and OBJ model loading.
 
 ---
 
-## Table des matières
+## Table of Contents
 
 - [Introduction](#introduction)
-- [La caméra, Viewport et FOV](#la-caméra-viewport-et-fov)
-- [Les formes géométriques](#les-formes-géométriques)
-- [Les matrices](#les-matrices)
-- [L'éclairage — modèle de Phong](#léclairage--modèle-de-phong)
-- [Anti-aliasing](#lanti-aliasing)
-- [Textures et effets visuels](#textures-et-effets-visuels)
-- [Physique avancée — nouveaux types de rayons](#physique-avancée--nouveaux-types-de-rayons)
-- [Optimisations de performance](#optimisations-de-performance)
-- [Format OBJ / MTL](#format-obj--mtl)
-- [Parsing optimisé](#parsing-optimisé)
-- [Utilisation du projet](#utilisation-du-projet)
-- [Contrôles](#contrôles-version-bonus)
-- [Utilisation de l'IA](#utilisation-de-lia)
+- [The Camera, Viewport and FOV](#the-camera-viewport-and-fov)
+- [Geometric Shapes](#geometric-shapes)
+- [Matrices](#matrices)
+- [Lighting — Phong Model](#lighting--phong-model)
+- [Anti-aliasing](#anti-aliasing)
+- [Textures and Visual Effects](#textures-and-visual-effects)
+- [Advanced Physics — New Ray Types](#advanced-physics--new-ray-types)
+- [Performance Optimizations](#performance-optimizations)
+- [OBJ / MTL Format](#obj--mtl-format)
+- [Optimized Parsing](#optimized-parsing)
+- [Project Usage](#project-usage)
+- [Controls](#controls-bonus-version)
+- [Use of AI](#use-of-ai)
 - [Resources](#resources)
-- [Fin](#fin)
+- [End](#end)
 
 ---
 
 ## Introduction / Description
 
-### Qu'est-ce que le Ray Tracing ?
+### What is Ray Tracing?
 
-Le ray tracing, aussi appelé **lancer de rayons**, est une technique de calcul d'optique par ordinateur, utilisée pour les jeux vidéo, les effets spéciaux CGI et les films d'animation. Elle consiste à faire le parcours inverse de la lumière : au lieu de lancer les rayons depuis les sources de lumière, on lance tout depuis la caméra, on regarde où ils touchent, et après on regarde comment ces endroits sont illuminés. Cette technique avancée permet de reproduire les phénomènes physiques de la vraie vie comme la réflexion et la réfraction.
+Ray tracing, also called **ray casting**, is a computer graphics optical calculation technique, used for video games, CGI special effects and animated films. It consists of tracing the path of light in reverse: instead of launching rays from the light sources, we launch everything from the camera, we look where they hit, and then we look how those places are illuminated. This advanced technique allows reproducing real-life physical phenomena such as reflection and refraction.
 
-Le ray tracing fut présenté pour la première fois par **Arthur Appel en 1968**.
+Ray tracing was presented for the first time by **Arthur Appel in 1968**.
 
-Il a ensuite beaucoup été utilisé pour la création de films d'animation connus ou la création d'effets spéciaux CGI — des films comme *Toy Story* ou *Le Monde de Nemo* ont utilisé le ray tracing, mais avec des temps de rendu de plusieurs heures pour une seule image.
+It was then widely used for the creation of famous animated films or the creation of CGI special effects — films like *Toy Story* or *Finding Nemo* used ray tracing, but with rendering times of several hours for a single image.
 
-Le ray tracing demande une quantité astronomique de calcul, ce qui a compliqué son utilisation dans les jeux vidéo. Mais l'arrivée de cartes graphiques dotées de cœurs dédiés au ray tracing (**NVIDIA RTX**, **AMD RDNA2**) à partir de 2018 a marqué un tournant : le ray tracing temps réel est devenu une réalité pour les gamers.
+Ray tracing requires an astronomical amount of calculation, which complicated its use in video games. But the arrival of graphics cards equipped with cores dedicated to ray tracing (**NVIDIA RTX**, **AMD RDNA2**) from 2018 marked a turning point: real-time ray tracing became a reality for gamers.
 
 ---
 
-## La caméra, Viewport et FOV
+## The Camera, Viewport and FOV
 
-Pour rendre une scène en ray tracing, il faut d'abord créer la scène en 3D avec les lumières, les objets et tous leurs attributs (taille, couleur, transparence, …), puis une fois la caméra placée, on positionne plus ou moins loin de la caméra le **viewport** — un écran en 2D faisant exactement la même taille que la fenêtre, donc exactement le même nombre de pixels. Par la suite on lance un rayon au milieu de chaque pixel du viewport et on regarde ce qu'il touche dans la scène. Une fois que l'on sait, on colorie le pixel de la même couleur que l'objet touché.
+To render a scene in ray tracing, you must first create the scene in 3D with the lights, the objects and all their attributes (size, color, transparency, …), then once the camera is placed, we position more or less far from the camera the **viewport** — a 2D screen making exactly the same size as the window, therefore exactly the same number of pixels. Afterwards we launch a ray in the middle of each pixel of the viewport and we look at what it touches in the scene. Once we know, we color the pixel with the same color as the touched object.
 
-La FOV dépend justement de la distance et de la dimension du viewport (principalement la dimension) entre le viewport et la caméra.
+The FOV depends precisely on the distance and the dimension of the viewport (mainly the dimension) between the viewport and the camera.
 
 ```c
 /*
-    formule fov equation
+    fov equation
     Height = 2 × tan(FOV/2) × FocalLength
 */
-void	set_viewport(t_data *data, t_vec3 origin, t_vec3 dir, double fov)
+void    set_viewport(t_data *data, t_vec3 origin, t_vec3 dir, double fov)
 {
-    // On définit la fov en radian au lieu de degree parce que tan sin cos prennent des radians
+    // We define the fov in radians instead of degrees because tan sin cos take radians
     data->view_port.fov_radians = data->cam.fov * (PI / 180.0);
-    // On définit la distance
+    // We define the distance
     data->view_port.focal_length = 1.0;
-    // La hauteur va varier selon la fov, on applique la formule
+    // The height will vary according to the fov, we apply the formula
     data->view_port.viewport_height = 2.0
         * tan(data->view_port.fov_radians / 2.0) * data->view_port.focal_length;
-    // On regarde sur la vraie fenêtre le ratio entre la hauteur et la largeur
+    // We look at the real window ratio between height and width
     data->view_port.aspect_ratio = (double)data->width
         / (double)data->height;
-    // On applique ce même ratio pour obtenir la largeur du viewport à l'aide de sa hauteur
+    // We apply the same ratio to obtain the viewport width using its height
     data->view_port.viewport_width = data->view_port.aspect_ratio
         * data->view_port.viewport_height;
 }
@@ -74,22 +74,22 @@ void	set_viewport(t_data *data, t_vec3 origin, t_vec3 dir, double fov)
 
 ---
 
-## Les formes géométriques
+## Geometric Shapes
 
-Maintenant que l'on lance des rayons à travers le viewport, comment savoir s'il touche ou non un objet ?
+Now that we are launching rays through the viewport, how do we know if it hits an object or not?
 
-### La sphère
+### The Sphere
 
 ```
-t l'inconnu, D direction rayon, O origine
+t unknown, D ray direction, O origin
 Ray(t) = O + t * D
 
-c centre de la sphère
-tous les points f d'une sphère :
+c sphere center
+all points f of a sphere:
 ||f - c|| = r
 (f - c) * (f - c) = r²
 
-On remplace f par le rayon :
+We replace f with the ray:
 ((O + t * D) - C) * ((O + t * D) - C) = r²
 (OC + TD) * (OC + TD) = r²
 
@@ -99,104 +99,100 @@ On remplace f par le rayon :
 (OC * OC) + 2t(OC * D) + t²(D * D) = r²
 (OC * OC) + 2t(OC * D) + t²(D * D) - r² = 0
 
-Si cette équation est vraie, le rayon touche la sphère.
+If this equation is true, the ray hits the sphere.
 ```
 
-### Le plan
+### The Plane
 
 ```
-rayon = t*D + O
-plan : y = 0
+ray = t*D + O
+plane : y = 0
 t*D + O = 0
 t*D = -O
 t = -O / D
 ```
 
-### Le triangle — algorithme Möller–Trumbore
+### The triangle — Möller–Trumbore algorithm
 
-Pour le triangle, il existe plusieurs manières. La plus courante est de faire un plan à partir du triangle puis faire une équation de plan, mais il y a encore plus rapide : l'algorithme standard du ray tracing pour triangle — **Möller–Trumbore**.
-
-Pour cela on utilise les **coordonnées barycentriques** qui représentent le poids des sommets.
+For the triangle, there exist several ways.
+The most common is to make a plane from the triangle then make a plane equation,
+but there is even faster: the standard algorithm of the ray tracing for triangle — **Möller–Trumbore**.
+For that one uses the **barycentric coordinates** which represent the weight of the vertices.
 
 ```
-Dans un triangle avec sommets P1, P2, P3 :
-n'importe quel point P dans le triangle peut s'écrire comme :
+In a triangle with vertices P1, P2, P3 :
 
+any point P in the triangle can be written as :
     P = w*P1 + u*P2 + v*P3
-
-avec la contrainte :
+with the constraint :
     w + u + v = 1
-et
-    0 ≤ u, v, w ≤ 1
+and
 
-On appelle (w, u, v) les coordonnées barycentriques.
+    0 ≤ u, v, w ≤ 1
+One calls (w, u, v) the barycentric coordinates.
 ```
 
-**Pourquoi c'est parfait pour un triangle ?**
-
-Un point est dans le triangle si :
+**Why is it perfect for a triangle ?**
+A point is in the triangle if :
 - `u >= 0`
 - `v >= 0`
-- `u + v <= 1` (car `w = 1 - u - v`)
+- `u + v <= 1` (because `w = 1 - u - v`)
+So a simple test suffices. Moreover the interpolations are easy, so the addition of UV, normals, tangents or even gradient is rather simple.
 
-Donc un simple test suffit. De plus les interpolations sont faciles, donc l'ajout d'UV, normales, tangentes ou même dégradé est plutôt simple.
-
-**Déroulement de l'algorithme :**
+**Unfolding of the algorithm :**
 
 ```
-On part du rayon :
+We start from the ray:
     R(t) = O + t * D
-    O : origine du rayon
-    D : direction
-    t : distance le long du rayon
+    O: origin of the ray
+    D: direction
+    t: distance along the ray
 
-On calcule les deux arêtes du triangle :
+We compute the two edges of the triangle:
     E1 = P2 - P1
     E2 = P3 - P1
 
-Puis on fait quelques produits vectoriels pour résoudre le système :
+Then we perform some cross products to solve the system:
     H = D x E2
     a = E1 . H
 
-Si a est proche de 0, le rayon est parallèle au triangle → pas d'intersection.
+If a is close to 0, the ray is parallel to the triangle → no intersection.
 
-Sinon on continue :
+Otherwise we continue:
     f = 1 / a
     S = O - P1
     u = f * (S . H)
-
-    si u < 0 ou u > 1 → pas d'intersection
-
+    if u < 0 or u > 1 → no intersection
     Q = S x E1
     v = f * (D . Q)
+    if v < 0 or u + v > 1 → no intersection
 
-    si v < 0 ou u + v > 1 → pas d'intersection
-
-On calcule enfin t, la distance sur le rayon :
+We finally compute t, the distance along the ray:
     t = f * (E2 . Q)
 
-Si t > 0, le rayon touche le triangle au point :
+If t > 0, the ray hits the triangle at the point:
     P = O + t * D
 
-Coordonnées barycentriques récupérées :
-    u, v déjà calculés
+Recovered barycentric coordinates:
+    u, v already computed
     w = 1 - u - v
+
 ```
 
-Le cylindre, le cône et l'hyperboloïde sont plutôt similaires mais un peu plus complexes, donc on va passer…
+The cylinder, the cone and the hyperboloid are rather similar but a bit more complex, so we’re going to skip…
 
 ---
 
-## Les matrices
+## Matrices
 
-Dans MiniRT on doit pouvoir appliquer des transformations aux objets :
-- translation (déplacer un objet)
+In MiniRT we must be able to apply transformations to objects:
+- translation (move an object)
 - rotation
-- mise à l'échelle (scale)
+- scaling (scale)
 
-Ces transformations peuvent s'appliquer à un objet, un point, un rayon ou une normale.
+These transformations can be applied to an object, a point, a ray or a normal.
 
-Pour simplifier tous ces calculs, on utilise des **matrices 4×4** :
+To simplify all these calculations, we use **4×4 matrices**:
 
 ```
 | a b c d |
@@ -205,267 +201,266 @@ Pour simplifier tous ces calculs, on utilise des **matrices 4×4** :
 | m n o p |
 ```
 
-Elle permet de transformer un vecteur ou un point avec une multiplication matricielle.
+It allows transforming a vector or a point with a matrix multiplication.
 
-Mathématiquement, une sphère étirée devient une forme plus compliquée (comme un ballon de rugby). Au lieu de recalculer une nouvelle équation compliquée, on fait une astuce :
+Mathematically, a stretched sphere becomes a more complex shape (like a rugby ball). Instead of recalculating a new complicated equation, we use a trick:
 
-1. On calcule l'**inverse** de la matrice de transformation
-2. On applique cette matrice **au rayon**
-3. On teste l'intersection avec une sphère simple de rayon 1
+1. We compute the **inverse** of the transformation matrix
+2. We apply this matrix **to the ray**
+3. We test the intersection with a simple sphere of radius 1
 
 ```c
-// Application de la matrice inverse d'une sphère au rayon
+// Apply the inverse matrix of a sphere to the ray
 l_ray.origin = mat4_mult_vec3(&sp->inverse_transform, ray.origin, 1.0);
 l_ray.dir    = mat4_mult_vec3(&sp->inverse_transform, ray.dir, 0.0);
 ```
 
-> Au lieu de transformer l'objet, on transforme le rayon dans l'espace de l'objet. Cela permet de garder des équations simples pour toutes les primitives.
+> Instead of transforming the object, we transform the ray into the object's space. This allows keeping simple equations for all primitives.
 
 ---
 
-## L'éclairage — modèle de Phong
+## Lighting — Phong model
 
 ![phong materials](img/objs.png)
 
-Maintenant qu'on arrive à rendre des objets, il reste à appliquer des normales sur ces objets. Pour cela on utilise le **modèle de Phong**, qui fonctionne avec 3 composantes d'éclairage :
+Now that we can render objects, we still need to apply normals to these objects. For this we use the **Phong model**, which works with 3 lighting components:
 
-| Composante | Description |
+| Component | Description |
 |---|---|
-| **Ambiante** | Touche n'importe quel endroit — imite les rebonds de lumière dans la vraie vie. La lumière ambiante est supposée égale en tout point de l'espace. |
-| **Diffuse** | Réfléchie dans toutes les directions. On prend en compte l'inclinaison de la surface pour attribuer la luminosité. |
-| **Spéculaire** | Représente la lumière renvoyée dans la direction de la réflexion géométrique. C'est elle qui crée par exemple la tache blanche sur une pomme fortement éclairée. |
+| **Ambient** | Affects any point — imitates light bouncing in real life. Ambient light is assumed to be equal everywhere in space. |
+| **Diffuse** | Reflected in all directions. We take into account the surface orientation to determine brightness. |
+| **Specular** | Represents light reflected in the direction of geometric reflection. This is what creates, for example, the white highlight on a strongly lit apple. |
 
-On applique ces trois types de lumière à un objet pour avoir la couleur finale renvoyée par le point touché.
+We apply these three types of light to an object to get the final color returned by the hit point.
 
 ---
 
-## L'anti-aliasing
+## Anti-aliasing
 
 ![anti aliasing](img/abstract.png)
 
-L'anti-aliasing est aussi utilisé en path tracing. C'est une version plus optimisée du ray tracing : plus on augmente le nombre de rayons par pixel, plus le rendu devient réaliste.
+Anti-aliasing is also used in path tracing. It's a more optimized version of ray tracing: the more rays per pixel, the more realistic the rendering becomes.
 
-Au départ, on envoyait un **seul rayon par pixel** depuis le viewport, passant par le centre du pixel. Le problème : si un pixel touche la sphère et que celui d'à côté ne la touche pas, la transition est très brutale → effets d'escalier.
+Initially, we sent **a single ray per pixel** from the viewport, passing through the center of the pixel. The problem: if one pixel hits the sphere and the neighboring one does not, the transition is very abrupt → staircase effects.
 
-L'anti-aliasing consiste à envoyer **plusieurs rayons dans un même pixel**, à des positions aléatoires à l'intérieur de celui-ci, puis à faire la **moyenne des couleurs** obtenues. Cela permet d'obtenir une image plus lisse, avec des ombres moins marquées et un rendu plus réaliste.
+Anti-aliasing consists of sending **multiple rays within the same pixel**, at random positions inside it, and then computing the **average of the resulting colors**. This produces a smoother image, with softer shadows and more realistic rendering.
 
-> Le point négatif est que cette méthode demande beaucoup plus de calculs : 100 rayons par pixel nécessitent environ 100× plus de temps de calcul.
+> The downside is that this method requires much more computation: 100 rays per pixel take roughly 100× more computing time.
 
 ---
 
-## Textures et effets visuels
+## Textures and Visual Effects
 
 ### Checkerboard Pattern
 
-Le checkerboard pattern (motif en damier) est une texture procédurale qui alterne deux couleurs pour créer un effet de cases comme un échiquier.
+The checkerboard pattern is a procedural texture that alternates two colors to create a square effect like a chessboard.
 
 ```
-Principe :
-1. On récupère les coordonnées UV du point sur l'objet.
-2. On multiplie ces coordonnées par une échelle pour contrôler la taille des cases.
-3. On applique floor() pour obtenir un indice de case.
-4. On additionne les indices u et v.
-   → Si le résultat est pair : color_a
-   → Sinon : color_b
+Principle:
+1. We get the UV coordinates of the point on the object.
+2. We multiply these coordinates by a scale to control the size of the squares.
+3. We apply floor() to get a square index.
+4. We add the u and v indices.
+   → If the result is even: color_a
+   → Otherwise: color_b
 ```
 
 ```c
 if ((floor(u * scale) + floor(v * scale)) % 2 == 0)
-    couleur = color_a;
+    color = color_a;
 else
-    couleur = color_b;
+    color = color_b;
 ```
 
-### UV Mapping sur une sphère
+### UV Mapping on a Sphere
 
-Pour appliquer une texture sur une sphère, on transforme la normale du point d'impact en coordonnées UV :
+To apply a texture on a sphere, we transform the normal of the hit point into UV coordinates:
 
 ```
-phi   = angle autour de la sphère (longitude)
-theta = angle vertical (latitude)
+phi = angle around the sphere (longitude)  
+theta = vertical angle (latitude)
 
-Ces angles sont normalisés entre 0 et 1 pour obtenir u et v.
-Cela permet de projeter correctement une texture 2D sur une sphère.
+These angles are normalized between 0 and 1 to obtain u and v.  
+This allows correctly projecting a 2D texture onto a sphere.
 ```
 
 ### Bump Map
 
-Une bump map sert à **simuler du relief** sans modifier la géométrie de l'objet.
+A bump map is used to **simulate surface relief** without modifying the object's geometry.
 
 ```
-Principe :
-- On utilise une texture (souvent en niveaux de gris).
-- La valeur de la texture modifie légèrement la normale de la surface.
-- L'éclairage réagit comme si la surface avait des bosses ou des creux.
+Principle:
+- We use a texture (often in grayscale).
+- The texture value slightly modifies the surface normal.
+- Lighting reacts as if the surface had bumps or indentations.
 
-Important :
-- La forme réelle de l'objet ne change pas.
-- Seul le calcul de la lumière est modifié.
+Important:
+- The actual shape of the object does not change.
+- Only the lighting calculation is affected.
 ```
 
-> Résultat : un effet de relief peu coûteux en calcul — on peut voir des effets de craquelure sur du bitume ou de vaguelettes sur l'eau.
+> Result: a low-computation relief effect — you can see crack patterns on asphalt or ripples on water.
 
 ---
 
-## Physique avancée — nouveaux types de rayons
+## Advanced Physics — New Ray Types
 
 ![refraction reflection](img/water_dragon.png)
 
-Pour pousser le réalisme plus loin, on peut ajouter des **rebonds** aux rayons sur les surfaces.
+To push realism further, we can add **bounces** to rays on surfaces.
 
-### Rayons spéculaires (miroirs)
+### Specular Rays (Mirrors)
 
-Les rayons spéculaires permettent de créer des miroirs — ils font des rebonds parfaits. Pour un effet métallique, j'ai ajouté la **roughness** qui perturbe légèrement les rebonds pour créer un flou métallique.
+Specular rays allow creating mirrors — they perform perfect bounces. For a metallic effect, I added **roughness** which slightly perturbs the bounces to create a metallic blur.
 
-La méthode utilisée s'appelle le **sphere fuzz** : au bout du rebond parfait, on crée un cercle d'une taille dépendant du taux de roughness, et le rayon rebondit vers un point aléatoire dans ce cercle.
+The method used is called **sphere fuzz**: at the end of the perfect bounce, we create a circle sized according to the roughness rate, and the ray bounces toward a random point within this circle.
 
-### Rayons diffuse
+### Diffuse Rays
 
-Les rayons diffuse créent beaucoup de bruit si le nombre de rayons par pixel est bas, car ils consistent à envoyer un rayon vers une direction complètement aléatoire. Le point touché devient une source de lumière pour l'objet touché de base. Ce bruit est atténué par l'anti-aliasing.
+Diffuse rays create a lot of noise if the number of rays per pixel is low, as they send a ray in a completely random direction. The hit point becomes a light source for the originally hit object. This noise is mitigated by anti-aliasing.
 
-### Rayons réfractés (transparence)
+### Refracted Rays (Transparency)
 
-Les rayons réfractés permettent de simuler les matériaux transparents. La réfraction correspond à la manière dont la lumière traverse les différentes matières (huile, diamant, etc.) de manière réaliste.
+Refracted rays allow simulating transparent materials. Refraction corresponds to how light passes through different substances (oil, diamond, etc.) in a realistic way.
 
 ---
 
-## Optimisations de performance
+## Performance Optimizations
 
 ![mirrors](img/car.png)
 
-Pour que le rendu reste rapide même avec des scènes très chargées (beaucoup d'objets ou des milliers de triangles comme dans `dragon.obj`), MiniRT utilise deux grosses optimisations.
+To keep rendering fast even with very complex scenes (many objects or thousands of triangles like in `dragon.obj`), MiniRT uses two major optimizations.
 
 ### BVH — Bounding Volume Hierarchy
 
-Au lieu de tester chaque rayon contre tous les objets de la scène un par un, le programme organise tous les objets dans un **arbre hiérarchique d'enveloppes englobantes** (des boîtes). Chaque nœud de l'arbre représente une boîte qui contient soit des objets, soit d'autres boîtes plus petites. Grâce à cela, le rayon peut sauter directement des zones entières de la scène qui ne l'intéressent pas.
+Instead of testing each ray against all objects in the scene one by one, the program organizes all objects into a **hierarchical tree of bounding volumes** (boxes). Each node in the tree represents a box containing either objects or smaller boxes. This allows the ray to skip entire regions of the scene that are not relevant.
 
-L'arbre est construit de façon intelligente grâce à l'heuristique **SAH** (Surface Area Heuristic). Cette méthode calcule pour chaque découpage possible le coût en surface et choisit le meilleur moyen de séparer les objets pour minimiser le nombre de tests inutiles.
+The tree is intelligently built using the **SAH** (Surface Area Heuristic). This method calculates, for each possible split, the surface cost and chooses the best way to separate objects to minimize unnecessary tests.
 
 ### Thread Pool
 
-Le calcul de l'image est fait en parallèle sur plusieurs cœurs du processeur. Au lieu de créer et détruire des threads à chaque fois, MiniRT utilise un **thread pool** qui garde un groupe de threads prêts à travailler.
+Image computation is done in parallel across multiple CPU cores. Instead of creating and destroying threads each time, MiniRT uses a **thread pool** that keeps a group of threads ready to work.
 
-Le programme divise l'image en petits blocs de pixels et les distribue automatiquement aux threads disponibles grâce aux fonctions du dossier `thread_pool/`. Chaque thread calcule sa partie de l'image en même temps. Chaque cœur doit traiter un nombre `n` de groupes de pixels.
+The program divides the image into small blocks of pixels and automatically distributes them to available threads using the functions in the `thread_pool/` folder. Each thread computes its portion of the image simultaneously. Each core processes a number `n` of pixel blocks.
 
 ---
 
-## Format OBJ / MTL
+## OBJ / MTL Format
 
 ![bar paris](img/bar.png)
 
-MiniRT peut charger des modèles 3D réalistes grâce au format `.obj` accompagné de son fichier de matériaux `.mtl`.
+MiniRT can load realistic 3D models thanks to the `.obj` format accompanied by its material file `.mtl`.
 
-Le format `.obj` (créé dans les années 1980 par la société Wavefront) est l'un des formats les plus utilisés en 3D. Il contient :
-- Les sommets (vertices)
-- Les normales
-- Les faces triangulaires
+The `.obj` format (created in the 1980s by Wavefront) is one of the most widely used 3D formats. It contains:
+- Vertices
+- Normals
+- Triangular faces
 
-Le fichier `.mtl` décrit les propriétés des matériaux associés : couleurs (`Kd` pour diffuse, `Ks` pour spéculaire), brillance (`Ns`), textures, opacité, indice de réfraction (`Ni`), etc.
+The `.mtl` file describes the associated material properties: colors (`Kd` for diffuse, `Ks` for specular), shininess (`Ns`), textures, opacity, refractive index (`Ni`), etc.
 
-C'est grâce à ce format que l'on peut charger des objets complexes comme le dragon, l'avion (`f16.obj`), Shrek ou le lapin (`bun_small.obj`). Même si ce format commence à être un peu ancien, il reste très pratique et largement supporté par tous les logiciels 3D (Blender, Maya…).
+Thanks to this format, we can load complex objects like the dragon, the airplane (`f16.obj`), Shrek, or the rabbit (`bun_small.obj`). Even though this format is a bit old, it remains very practical and widely supported by all 3D software (Blender, Maya…).
 
 ---
 
-## Parsing optimisé
+## Optimized Parsing
 
-Pour charger rapidement les gros fichiers `.obj` qui peuvent contenir des dizaines de milliers de triangles, j'ai utilisé la fonction système `mmap` et `realloc`.
+To quickly load large `.obj` files that can contain tens of thousands of triangles, I used the system functions `mmap` and `realloc`.
 
-Contrairement à la lecture classique ligne par ligne avec `getline` ou `fscanf`, `mmap` met le fichier entier directement en mémoire comme s'il faisait partie du programme. Cela rend l'accès aux données beaucoup plus rapide.
+Unlike the classic line-by-line reading with `getline` or `fscanf`, `mmap` maps the entire file directly into memory as if it were part of the program. This makes data access much faster.
 
-Le parsing analyse en même temps :
-- La géométrie (triangles, normales, vertices)
-- Les matériaux du fichier `.mtl` associé
+The parser simultaneously processes:
+- Geometry (triangles, normals, vertices)
+- Materials from the associated `.mtl` file
 
 ---
 
 ## Utilisation du projet / Instructions
 
 ```bash
-make          # version mandatoire
-make bonus    # version goatesque (conseillée)
+make # mandatory version
+make bonus # “goat” version (recommended)
 ```
 
 ```bash
 ./minirt_bonus <scenes.rt>
 ```
 
-> Beaucoup de scènes déjà sympas sont disponibles dans le dossier `scenes/`
+> Many already nice scenes are available in the folder `scenes/`
 
 ---
 
-## Contrôles (version bonus qwerty)
+## Controls (bonus QWERTY version)
 
-| Touche | Action |
+| Key | Action |
 |--------|--------|
-| `W` `A` `S` `D` | Déplacement |
-| `↑` `↓` `←` `→` | Mouvement caméra |
-| `Space` | Monter |
-| `Shift droit` | Descendre |
-| `[` `]` | Rotation de la scène sur l'axe Z |
-| `-` / `=` | Diminuer / augmenter la FOV |
-| `0` / `9` | Augmenter / diminuer le nombre de rebonds |
-| `1` | 1 sample par pixel |
-| `2` | 5 samples par pixel |
-| `3` | 10 samples par pixel |
-| `4` | 30 samples par pixel |
-| `5` | 100 samples par pixel |
-| `C` | Activer / désactiver la vue du checkerboard pattern |
-| `Del` | Activer / désactiver les rebonds diffus |
-| `Ctrl` | Activer / désactiver le speed mode |
-| `Enter` | Activer / désactiver le BVH |
-| `B` | Activer / désactiver la vue de debug BVH |
-| `L` | Activer / désactiver la vue de la répartition des tâches |
-| `Esc` | Quitter |
+| `W` `A` `S` `D` | Movement |
+| `↑` `↓` `←` `→` | Camera movement |
+| `Space` | Move up |
+| `Right Shift` | Move down |
+| `[` `]` | Rotate scene around Z-axis |
+| `-` / `=` | Decrease / increase FOV |
+| `0` / `9` | Increase / decrease number of bounces |
+| `1` | 1 sample per pixel |
+| `2` | 5 samples per pixel |
+| `3` | 10 samples per pixel |
+| `4` | 30 samples per pixel |
+| `5` | 100 samples per pixel |
+| `C` | Toggle checkerboard pattern view |
+| `Del` | Toggle diffuse bounces |
+| `Ctrl` | Toggle speed mode |
+| `Enter` | Toggle BVH |
+| `B` | Toggle BVH debug view |
+| `L` | Toggle task distribution view |
+| `Esc` | Quit |
 
 ---
 
-## Utilisation de l'IA
+## Use of AI
 
-Pour ce projet, je n'ai presque pas utilisé l'IA. Je m'en suis surtout servi pour comprendre certaines formules mathématiques, notamment celles de l'hyperboloïde. Au départ, je ne comprenais pas bien ces formules, j'ai donc demandé à l'IA de me les expliquer. Je préfère cela plutôt que d'écrire quelque chose que je ne comprends pas.
+For this project, I barely used AI. I mainly used it to understand certain mathematical formulas, especially those for the hyperboloid. At first, I didn’t fully understand these formulas, so I asked AI to explain them. I prefer this rather than writing something I don’t understand.
 
-Pour la plupart des autres formes, la documentation disponible est très claire et complète, mais certaines subtilités sont moins bien expliquées, ce qui m'a amené à demander quelques précisions.
+For most other shapes, the available documentation is very clear and complete, but some subtleties are less well explained, which led me to ask for a few clarifications.
 
-J'ai également utilisé l'IA pour reformuler ou améliorer certains fichiers `.rt` pour avoir des map style ou MTL afin d'obtenir des matériaux plus réalistes. Il ne s'agit donc pas de génération de code, mais plutôt d'une aide pour la rédaction et l'ajustement de paramètres visuels.
-J'ai également demandé de l'aide à l'IA pour le markdown et la traduction de se README ecrit initialement en francais, mais tout le contenu a été écrit à la main (merci à reverso pour la correction des fautes d'orthographe).
+I also used AI to rephrase or improve some `.rt` files to have style maps or MTLs to obtain more realistic materials. This was therefore not code generation, but rather assistance for writing and adjusting visual parameters. I also asked AI for help with the markdown and translation of this README, originally written in French, but all the content was written by hand (thanks to Reverso for correcting spelling mistakes).
 
 ## Resources
 
-> Beaucoups sources sont manquantes, voici celles que j'avais notées.
+> Many sources are missing; here are the ones I had noted.
 
 ---
 
-**Ray Tracing — bases**
+**Ray Tracing — Basics**
 
 - *<sub>https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html</sub>*
-- *<sub>https://raytracing.github.io/books/RayTracingInOneWeekend.html</sub>* — merci pour ce guide, c'est un très bon point de départ pour commencer de zéro…
+- *<sub>https://raytracing.github.io/books/RayTracingInOneWeekend.html</sub>* — thanks for this guide, it’s a very good starting point for learning from scratch…
 - *<sub>https://fr.wikipedia.org/wiki/Ray_tracing</sub>*
 - *<sub>https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-overview/light-transport-ray-tracing-whitted.html</sub>*
 
-**Vidéos**
+**Videos**
 
-- *<sub>https://www.youtube.com/watch?v=iOlehM5kNSk&t=1202s</sub>* — la meilleure vidéo ever sur le ray tracing
-- *<sub>https://www.youtube.com/watch?v=Qz0KTGYJtUk</sub>* — merci énormément, ça m'a donné plein d'idées et surtout plein de réponses…
+- *<sub>https://www.youtube.com/watch?v=iOlehM5kNSk&t=1202s</sub>* — the best video ever on ray tracing
+- *<sub>https://www.youtube.com/watch?v=Qz0KTGYJtUk</sub>* — thank you so much, it gave me tons of ideas and many answers…
 
-**Formes géométriques**
+**Geometric Shapes**
 
 - *<sub>http://heigeas.free.fr/laure/ray_tracing/sphere.html</sub>*
 - *<sub>http://heigeas.free.fr/laure/ray_tracing/cylindre.html</sub>*
 - *<sub>https://www.britannica.com/science/hyperboloid</sub>*
 
-**Format OBJ / MTL**
+**OBJ / MTL Format**
 
 - *<sub>https://en.wikipedia.org/wiki/Wavefront_.obj_file</sub>*
 - *<sub>https://www.fileformat.info/format/wavefrontobj/egff.htm</sub>*
 - *<sub>https://people.sc.fsu.edu/~jburkardt/data/mtl/mtl.html</sub>*
 
-**Éclairage & Phong**
+**Lighting & Phong**
 
 - *<sub>https://fr.wikipedia.org/wiki/Ombrage_de_Phong</sub>*
 - *<sub>https://rodolphe-vaillant.fr/entry/85/phong-illumination-model-cheat-sheet</sub>*
 - *<sub>https://www.povray.org/documentation/view/3.60/348/</sub>*
 - *<sub>https://computergraphics.stackexchange.com/questions/9065/diffuse-lighting-calculations-in-ray-tracer</sub>*
 
-**Réflexion, réfraction & Fresnel**
+**Reflection, Refraction & Fresnel**
 
 - *<sub>https://blog.demofox.org/2017/01/09/raytracing-reflection-refraction-fresnel-total-internal-reflection-and-beers-law/</sub>*
 - *<sub>https://fr.wikipedia.org/wiki/Coefficients_de_Fresnel</sub>*
@@ -475,13 +470,13 @@ J'ai également demandé de l'aide à l'IA pour le markdown et la traduction de 
 - *<sub>https://learn.arm.com/learning-paths/mobile-graphics-and-gaming/ray_tracing/rt08_refractions/</sub>*
 - *<sub>https://stackoverflow.com/questions/26087106/refraction-in-raytracing</sub>*
 
-**Roughness & anti-aliasing**
+**Roughness & Anti-Aliasing**
 
 - *<sub>https://computergraphics.stackexchange.com/questions/4486/mimicking-blenders-roughness-in-my-path-tracer</sub>*
 - *<sub>https://computergraphics.stackexchange.com/questions/4248/how-is-anti-aliasing-implemented-in-ray-tracing</sub>*
 - *<sub>https://www.cs.utexas.edu/~fussell/courses/cs384g-fall2010/lectures/lecture10-Aa_and_accel_raytracing.pdf</sub>*
 
-**BVH & matrices**
+**BVH & Matrices**
 
 - *<sub>https://www.lufei.ca/posts/BVH.html</sub>*
 - *<sub>https://fileadmin.cs.lth.se/cs/Education/EDAN35/projects/2022/Sanden-BVH.pdf</sub>*
@@ -490,22 +485,22 @@ J'ai également demandé de l'aide à l'IA pour le markdown et la traduction de 
 - *<sub>https://fr.wikipedia.org/wiki/Calcul_du_d%C3%A9terminant_d%27une_matrice</sub>*
 - *<sub>https://www.ck12.org/flexi/fr/precalcul/determinant-des-matrices/comment-calculer-le-determinant-d%27une-matrice-4x4/</sub>*
 
-**Textures & UV**
+**Textures & UV Mapping**
 
 - *<sub>https://fr.wikipedia.org/wiki/Cartographie_UV</sub>*
 - *<sub>https://fr.wikipedia.org/wiki/Placage_de_relief</sub>*
 - *<sub>https://perso.esiee.fr/~buzerl/sphinx_IMA/50%20bump/bump.html</sub>*
 - *<sub>https://en.wikipedia.org/wiki/Bump_mapping</sub>*
 
-**Coordonnées barycentriques**
+**Barycentric Coordinates**
 
 - *<sub>https://fr.wikipedia.org/wiki/Coordonn%C3%A9es_barycentriques</sub>*
 - *<sub>https://agreg-maths.univ-rennes1.fr/documentation/docs/agregbary.pdf</sub>*
 
 ## Fin
 
-Le Ray Tracing regroupe tout un tas de matières : la physique, l’optique, les mathématiques, l’algèbre linéaire, la trigonométrie, la géométrie, l’algorithmique, les structures de données, le calcul parallèle, les probabilités, les statistiques ainsi que la programmation et l’optimisation logicielle.
-Ce projet est un projet qui m’a beaucoup tenu à cœur. J'ai passé de très bons moments à serrer violemment mon crâne sur le code, mais j’ai hâte de revenir dessus pour l’améliorer...
+Ray Tracing combines many subjects: physics, optics, mathematics, linear algebra, trigonometry, geometry, algorithms, data structures, parallel computing, probability, statistics, as well as programming and software optimization.  
+This project is one that I cared about deeply. I had a lot of intense coding sessions, but I’m excited to revisit it to improve it...
 
 ---
 
