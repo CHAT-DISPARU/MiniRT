@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:56:43 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 11:34:08 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/17 12:45:57 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	key_down(int key, void *param)
 	if (key == 41)
 		mlx_loop_end(data->mlx);
 	if (key >= 0 && key < 512)
-		data->key_table[key] = 1;
+		data->key_table[key] = 0;
 }
 
 void	window_hook(int event, void *param)
