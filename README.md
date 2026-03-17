@@ -351,6 +351,8 @@ Le programme divise l'image en petits blocs de pixels et les distribue automatiq
 
 ## Format OBJ / MTL
 
+![bar paris](img/bar.png)
+
 MiniRT peut charger des modèles 3D réalistes grâce au format `.obj` accompagné de son fichier de matériaux `.mtl`.
 
 Le format `.obj` (créé dans les années 1980 par la société Wavefront) est l'un des formats les plus utilisés en 3D. Il contient :
@@ -507,6 +509,9 @@ Ce projet est un projet qui m’a beaucoup tenu à cœur. J'ai passé de très b
 
 ---
 
+![grass](img/grass.png)
+
 <div align="center">
-Made by CHAT-DISPARU
+Made by gajanvie alias CHAT-DISPARU
 </div>
+
