@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 11:03:11 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/17 10:56:08 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 	data->filename = av[1];
 	init_thread_p(data);
 	read_rt(data);
+	if (!data->camera_is_set || !data->ambient_is_set)
+		clean_exit(data, 1, "Cam or Ambient not set\n", 0);
 	convert_list_to_arrays(data);
 	if (data->obj_count > 25)
 		data->use_bvh = true;

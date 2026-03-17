@@ -1,3 +1,5 @@
+**This project has been created as part of the 42 curriculum by <gajanvie>[, <jodougla>].**
+
 # MiniRT — My first Ray Tracer
 
 ![render](img/dragon.png)
@@ -22,12 +24,12 @@
 - [Utilisation du projet](#utilisation-du-projet)
 - [Contrôles](#contrôles-version-bonus)
 - [Utilisation de l'IA](#utilisation-de-lia)
-- [Sources](#sources)
+- [Resources](#resources)
 - [Fin](#fin)
 
 ---
 
-## Introduction
+## Introduction / Description
 
 ### Qu'est-ce que le Ray Tracing ?
 
@@ -374,7 +376,7 @@ Le parsing analyse en même temps :
 
 ---
 
-## Utilisation du projet
+## Utilisation du projet / Instructions
 
 ```bash
 make          # version mandatoire
@@ -422,9 +424,9 @@ Pour ce projet, je n'ai presque pas utilisé l'IA. Je m'en suis surtout servi po
 Pour la plupart des autres formes, la documentation disponible est très claire et complète, mais certaines subtilités sont moins bien expliquées, ce qui m'a amené à demander quelques précisions.
 
 J'ai également utilisé l'IA pour reformuler ou améliorer certains fichiers `.rt` pour avoir des map style ou MTL afin d'obtenir des matériaux plus réalistes. Il ne s'agit donc pas de génération de code, mais plutôt d'une aide pour la rédaction et l'ajustement de paramètres visuels.
-J'ai également demandé de l'aide à l'IA pour le markdown, mais tout le contenu a été écrit à la main (merci à reverso pour la correction des fautes d'orthographe).
+J'ai également demandé de l'aide à l'IA pour le markdown et la traduction de se README ecrit initialement en francais, mais tout le contenu a été écrit à la main (merci à reverso pour la correction des fautes d'orthographe).
 
-## Sources
+## Resources
 
 > Beaucoups sources sont manquantes, voici celles que j'avais notées.
 
@@ -506,5 +508,5 @@ Ce projet est un projet qui m’a beaucoup tenu à cœur. J'ai passé de très b
 ---
 
 <div align="center">
-*Made by* **CHAT-DISPARU**
+Made by CHAT-DISPARU
 </div>
