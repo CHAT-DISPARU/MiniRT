@@ -33,7 +33,7 @@
 
 ### What is Ray Tracing?
 
-Ray tracing, also called **ray tracing**, is a computer graphics optical calculation technique, used for video games, CGI special effects and animated films. It consists of tracing the path of light in reverse: instead of launching rays from the light sources, we launch everything from the camera, we look where they hit, and then we look how those places are illuminated. This advanced technique allows reproducing real-life physical phenomena such as reflection and refraction.
+**Ray tracing**, is a computer graphics optical calculation technique, used for video games, CGI special effects and animated films. It consists of tracing the path of light in reverse: instead of launching rays from the light sources, we launch everything from the camera, we look where they hit, and then we look how those places are illuminated. This advanced technique allows reproducing real-life physical phenomena such as reflection and refraction.
 
 Ray tracing was presented for the first time by **Arthur Appel in 1968**.
 
