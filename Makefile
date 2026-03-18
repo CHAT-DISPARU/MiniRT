@@ -6,12 +6,12 @@
 #    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/03/11 11:31:05 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/03/18 13:01:24 by gajanvie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME := MiniRT
-NAME_BONUS := MiniRT_bonus
+NAME := miniRT
+NAME_BONUS := miniRT_bonus
 
 ESC := \033
 RESET := $(ESC)[0m
