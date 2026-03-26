@@ -6,7 +6,7 @@
 #    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/03/18 13:01:24 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/03/26 11:39:00 by gajanvie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -167,7 +167,7 @@ HEADERSB := includes/ -I includes_bonus/
 
 CC := clang
 
-FLAGS := -Wall -Werror -Wextra -g -I libs/MacroLibX/includes -O3 -mavx2 -mfma -march=native -mtune=native -funroll-loops -fvectorize -ffp-contract=fast  -freciprocal-math -ffast-math -fstrict-aliasing  -fomit-frame-pointer -flto=full -mprefer-vector-width=256 -MMD -MP
+FLAGS := -Wall -Werror -Wextra -g -I libs/MacroLibX/includes #-O3 -mavx2 -mfma -march=native -mtune=native -funroll-loops -fvectorize -ffp-contract=fast  -freciprocal-math -ffast-math -fstrict-aliasing  -fomit-frame-pointer -flto=full -mprefer-vector-width=256 -MMD -MP
 
 all: $(LIB) header ${NAME}
 

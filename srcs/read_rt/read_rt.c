@@ -3,14 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   read_rt.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:04:41 by titan             #+#    #+#             */
-/*   Updated: 2026/01/31 22:58:36 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/26 11:41:58 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt.h>
+
+bool	verify_filename(char *filename)
+{
+	size_t	len;
+
+	len = ft_strlen(filename);
+	if (len < 3)
+		return (false);
+	if (!ft_strncmp(filename + len - 3, ".rt", 3))
+		return (true);
+	return (false);
+}
 
 void	call_setters(t_data *data, char *ptr, int i)
 {
@@ -39,6 +51,8 @@ void	read_rt(t_data *data, char *filename)
 	char	*ptr;
 
 	i = 1;
+	if (verify_filename(filename) == false)
+		clean_exit(data, 1, "Error: File name\n", 0);
 	data->scene_fd = open(filename, O_RDONLY);
 	if (data->scene_fd < 0)
 		clean_exit(data, 1, "open fail\n", 0);
@@ -51,10 +65,9 @@ void	read_rt(t_data *data, char *filename)
 		while (*ptr && is_space(*ptr))
 			ptr++;
 		if (*ptr && *ptr != '\n')
-			call_setters(data, ptr, i);
+			call_setters(data, ptr, i++);
 		free(data->scene_line);
 		data->scene_line = get_next_line(data->scene_fd, 0);
-		i++;
 	}
 	close(data->scene_fd);
 	data->scene_fd = -1;
