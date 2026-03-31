@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/03/11 11:00:20 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/31 17:54:02 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,11 +71,16 @@ void	prepare_calls(t_data *data, t_thread_c_int *utils)
 	print_progress(utils->finish, THREADS_COUNT * NB_TASK_R);
 }
 
-void	send_task(t_data *data,
-	t_thread_c_int *utils, int indexs[THREADS_COUNT*NB_TASK_R])
+void	send_task(t_data *data, t_thread_c_int *utils,
+		int indexs[THREADS_COUNT*NB_TASK_R])
 {
 	t_thread_info	infos;
+	t_net_task		net_task;
+	t_net_header	header;
+	int				worker_target;
 
+	header.type = MSG_TASK;
+	header.size = sizeof(t_net_task);
 	while (utils->i < THREADS_COUNT * NB_TASK_R)
 	{
 		utils->current_col = indexs[utils->i] % utils->cols;
@@ -91,8 +96,25 @@ void	send_task(t_data *data,
 			infos.end_y = data->height;
 		else
 			infos.end_y = (utils->current_row + 1) * utils->grid_h;
-		add_task(data, render, infos);
+		worker_target = utils->i % (data->client_count + 1);
+		if (worker_target < data->client_count)
+		{
+			net_task.task_id = utils->i;
+			net_task.start_x = infos.start_x;
+			net_task.end_x   = infos.end_x;
+			net_task.start_y = infos.start_y;
+			net_task.end_y   = infos.end_y;
+			send_all(data->client_sockets[worker_target], &header, sizeof(t_net_header));
+			send_all(data->client_sockets[worker_target], &net_task, sizeof(t_net_task));
+		}
+		else
+			add_task(data, render, infos);
 		utils->i++;
+	}
+	for (int k = 0; k < data->client_count; k++)
+	{
+		header.type = MSG_END_TASKS;
+		send_all(data->client_sockets[k], &header, sizeof(t_net_header));
 	}
 }
 
@@ -100,9 +122,17 @@ void	thread_calls(t_data *data)
 {
 	int				indexs[THREADS_COUNT * NB_TASK_R];
 	t_thread_c_int	utils;
+	int				i;
 
 	prepare_calls(data, &utils);
 	set_indexs(indexs);
+	i = 0;
+	while (i < data->client_count) 
+	{
+		if (send_full_scene(data->client_sockets[i], data) == -1)
+			ft_putstr_fd("error scene envoie\n", 2);
+		i++;
+	}
 	send_task(data, &utils, indexs);
 	while (1)
 	{
@@ -112,7 +142,53 @@ void	thread_calls(t_data *data)
 		print_progress(utils.finish, THREADS_COUNT * NB_TASK_R);
 		if (utils.finish == THREADS_COUNT * NB_TASK_R)
 			break ;
-		usleep(200);
+		fd_set  readfds;
+        int     max_sd = 0;
+        int     sd;
+        
+        FD_ZERO(&readfds);
+        for (int k = 0; k < data->client_count; k++)
+        {
+            sd = data->client_sockets[k];
+            if (sd > 0)
+            {
+                FD_SET(sd, &readfds);
+                if (sd > max_sd)
+                    max_sd = sd;
+            }
+        }
+        struct timeval tv;
+        tv.tv_sec = 0;
+        tv.tv_usec = 200;
+        int activity = select(max_sd + 1, &readfds, NULL, NULL, &tv);
+        if (activity > 0)
+        {
+            for (int k = 0; k < data->client_count; k++)
+            {
+                sd = data->client_sockets[k];
+                if (sd > 0 && FD_ISSET(sd, &readfds))
+                {
+                    t_net_header header;
+                    
+                    if (recv_all(sd, &header, sizeof(t_net_header)) == 0)
+                    {
+                        if (header.type == MSG_PIXELS)
+                        {
+                            recv_task_result(sd, data, header.size);
+                            pthread_mutex_lock(&data->finish_count);
+                            data->finish++;
+                            pthread_mutex_unlock(&data->finish_count);
+                        }
+                    }
+                    else
+                    {
+                        ft_putstr_fd("\nUn client s'est deconnecte.\n", 2);
+                        close(sd);
+                        data->client_sockets[k] = 0;
+                    }
+                }
+            }
+        }
 	}
 	pthread_mutex_destroy(&data->finish_count);
 	draw_lines(data, utils.grid_w, utils.grid_h);

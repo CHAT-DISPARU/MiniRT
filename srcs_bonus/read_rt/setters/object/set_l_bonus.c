@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:47 by titan             #+#    #+#             */
-/*   Updated: 2026/02/02 16:20:01 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/31 14:24:26 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,4 +32,5 @@ void	set_l(t_data *data, char *line, int i)
 	*new_light = light;
 	new_light->next = NULL;
 	ft_lightadd_back(&data->light, new_light);
+	data->light_count ++;
 }

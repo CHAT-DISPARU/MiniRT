@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: titan <titan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/02/04 16:40:47 by titan            ###   ########.fr       */
+/*   Updated: 2026/03/27 12:13:45 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 
 void	init_data(t_data *data, mlx_window_create_info info, char *filename)
 {
-	data->camera_is_set = false;
-	data->ambient_is_set = false;
 	data->width = WIDTH;
 	data->height = HEIGHT;
 	data->is_full = false;
@@ -29,6 +27,8 @@ void	init_data(t_data *data, mlx_window_create_info info, char *filename)
 	data->speed = 0.5;
 	data->rot_speed = 0.05;
 	read_rt(data, filename);
+	if (!data->camera_is_set || !data->ambient_is_set)
+		clean_exit(data, 1, "Cam or Ambient not set\n", 0);
 	calcul_ambient(data);
 	data->mlx = mlx_init();
 	if (!data->mlx)
@@ -40,12 +40,14 @@ void	init_data(t_data *data, mlx_window_create_info info, char *filename)
 		clean_exit(data, 1, "Error Malloc MLX\n", 0);
 }
 
-void	set_info(mlx_window_create_info	*info)
+void	set_info(mlx_window_create_info	*info, t_data *data)
 {
 	info->title = "MiniRT";
 	info->width = WIDTH;
 	info->height = HEIGHT;
 	info->is_resizable = true;
+	data->camera_is_set = false;
+	data->ambient_is_set = false;
 }
 
 int	main(int ac, char **av)
@@ -65,7 +67,7 @@ int	main(int ac, char **av)
 		perror("Malloc fail");
 		return (1);
 	}
-	set_info(&info);
+	set_info(&info, data);
 	init_data(data, info, av[1]);
 	mlx_set_fps_goal(data->mlx, 60);
 	mlx_on_event(data->mlx, data->win, MLX_KEYDOWN, key_down, data);

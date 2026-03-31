@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:11:09 by titan             #+#    #+#             */
-/*   Updated: 2026/03/11 10:57:58 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/31 15:18:11 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ void	update(void *param)
 
 	data = (t_data *)param;
 	movded = false;
+	check_new_clients(data);
 	forward = data->cam.dir;
 	right = get_right_vector(forward);
 	update_samples(data, &movded);

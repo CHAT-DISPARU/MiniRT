@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/12 15:20:06 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/31 16:49:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,16 @@
 # include <string.h>
 # include <sys/mman.h>
 # include <float.h>
+# include <netinet/in.h>
+# include <sys/socket.h>
+# include <arpa/inet.h>
 
 # define WIDTH			1500
 # define HEIGHT			1000
 # define S_PER_PIXS		100
 # define NB_TASK_R		24
 # define PI				3.14159265358979323846
-# define THREADS_COUNT	16
+# define THREADS_COUNT	2
 # define MAX_BVH_DEPTH	24
 # define EPSILON		1e-4
 
@@ -384,6 +387,9 @@ typedef struct s_vars_obj
 
 typedef struct s_data
 {
+	int						server_socket;
+    int						client_sockets[10];
+    int						client_count;
 	t_list					*textures;
 	mlx_color				checker_color;
 	bool					has_checker;
@@ -421,6 +427,7 @@ typedef struct s_data
 	t_obj					*plane_array;
 	int						plane_count;
 	t_light					*light;
+	int						light_count;
 	int						nodes_capacity;
 	t_alight				alight;
 	double					speed;
@@ -738,5 +745,7 @@ t_vec3		do_opacity_refract(t_data *data, t_hit_r *rec, int deph, t_ray ray);
 void		do_opacity_refract2(t_op_ni	*op_ni, t_hit_r *rec, t_ray ray);
 t_triangle	parse_face_fast(char **s, t_vars_obj *v);
 void		percent_mtl(t_vars_obj *v, char *cursor);
+
+# include "network.h"
 
 #endif

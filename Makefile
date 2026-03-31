@@ -6,7 +6,7 @@
 #    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/03/26 11:39:00 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/03/31 17:33:14 by gajanvie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -106,6 +106,8 @@ SRCSB := $(SRCB_DIR)main_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_pl_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_hy_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_co_bonus.c \
+		$(SRCB_DIR)network/client.c \
+		$(SRCB_DIR)network/server.c \
 		$(SRCB_DIR)$(HIT_DIR)utils_co_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_cy_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_tr_bonus.c \
@@ -167,7 +169,7 @@ HEADERSB := includes/ -I includes_bonus/
 
 CC := clang
 
-FLAGS := -Wall -Werror -Wextra -g -I libs/MacroLibX/includes #-O3 -mavx2 -mfma -march=native -mtune=native -funroll-loops -fvectorize -ffp-contract=fast  -freciprocal-math -ffast-math -fstrict-aliasing  -fomit-frame-pointer -flto=full -mprefer-vector-width=256 -MMD -MP
+FLAGS := -Wall -Werror -Wextra -g -I libs/MacroLibX/includes -O3 -mavx2 -mfma -march=native -mtune=native -funroll-loops -fvectorize -ffp-contract=fast  -freciprocal-math -ffast-math -fstrict-aliasing  -fomit-frame-pointer -flto=full -mprefer-vector-width=256 -MMD -MP
 
 all: $(LIB) header ${NAME}
 

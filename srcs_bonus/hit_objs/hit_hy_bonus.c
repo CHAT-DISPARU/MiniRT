@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 16:43:40 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/10 13:32:00 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/31 17:54:02 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@
 
 	
 	f(x,y,z)=x2+y2−kz2−rmin2​=0
-	X : La dérivée de x2  2x.
-	Y : La dérivée de y2 2y.
-	Z : La dérivée de −kz2 −2kz
+	X : La derivee de x2  2x.
+	Y : La derivee de y2 2y.
+	Z : La derivee de −kz2 −2kz
 */
 void	set_vars(t_hy_utils *hy_u, t_obj *hy, t_ray ray)
 {

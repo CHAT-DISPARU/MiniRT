@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/17 10:56:08 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/31 15:24:36 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void	set_data_base(t_data *data)
 	data->v_obj = NULL;
 	data->debug_depth = 8;
 	data->scene_fd = -1;
+	data->light_count = 0;
 	data->scene_line = NULL;
 	data->objs = NULL;
 	data->light = NULL;
@@ -66,6 +67,7 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 		clean_exit(data, 1, "Error init MLX\n", 0);
 	data->filename = av[1];
 	init_thread_p(data);
+	init_server(data);
 	read_rt(data);
 	if (!data->camera_is_set || !data->ambient_is_set)
 		clean_exit(data, 1, "Cam or Ambient not set\n", 0);
@@ -92,31 +94,37 @@ void	set_info(mlx_window_create_info	*info)
 	info->is_resizable = true;
 }
 
-int	main(int ac, char **av)
+int main(int ac, char **av)
 {
-	t_data					*data;
-	mlx_window_create_info	info;
+    t_data                  *data;
+    mlx_window_create_info  info;
 
-	if (ac < 2 || ac > 5)
-	{
-		error_arg();
-		return (1);
-	}
-	ft_memset(&info, 0, sizeof(mlx_window_create_info));
-	data = ft_calloc(sizeof(t_data), 1);
-	if (!data)
-	{
-		perror("Malloc fail");
-		return (1);
-	}
-	set_info(&info);
-	init_data(data, info, av, ac);
-	mlx_set_fps_goal(data->mlx, 60);
-	mlx_on_event(data->mlx, data->win, MLX_KEYDOWN, key_down, data);
-	mlx_on_event(data->mlx, data->win, MLX_KEYUP, key_up, data);
-	mlx_on_event(data->mlx, data->win, MLX_WINDOW_EVENT, window_hook, data);
-	mlx_add_loop_hook(data->mlx, update, data);
-	mlx_loop(data->mlx);
-	clean_exit(data, 0, NULL, 0);
-	return (0);
+    if (ac >= 3 && ft_strncmp(av[1], "--client", 9) == 0)
+    {
+        data = ft_calloc(sizeof(t_data), 1);
+        if (!data)
+            return (perror("Malloc fail"), 1);
+        run_worker(data, av[2]); 
+        free(data);
+        return (0);
+    }
+    if (ac < 2 || ac > 5)
+    {
+        error_arg();
+        return (1);
+    }
+    ft_memset(&info, 0, sizeof(mlx_window_create_info));
+    data = ft_calloc(sizeof(t_data), 1);
+    if (!data)
+        return (perror("Malloc fail"), 1);
+    set_info(&info);
+    init_data(data, info, av, ac);
+    mlx_set_fps_goal(data->mlx, 60);
+    mlx_on_event(data->mlx, data->win, MLX_KEYDOWN, key_down, data);
+    mlx_on_event(data->mlx, data->win, MLX_KEYUP, key_up, data);
+    mlx_on_event(data->mlx, data->win, MLX_WINDOW_EVENT, window_hook, data);
+    mlx_add_loop_hook(data->mlx, update, data);
+    mlx_loop(data->mlx);
+    clean_exit(data, 0, NULL, 0);
+    return (0);
 }
