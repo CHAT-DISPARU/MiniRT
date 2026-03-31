@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:36 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/31 17:54:02 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/31 19:14:20 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,30 @@ int	recv_all(int socket, void *buffer, size_t size)
 			return (-1);
 		total_recv += n;
 	}
+	return (0);
+}
+
+int	send_texture(int socket, t_texture *tex)
+{
+	t_net_texture   net_tex;
+	uint32_t        pixels_size;
+
+	net_tex.width = tex->width;
+	net_tex.height = tex->height;
+	net_tex.scale = tex->scale;
+	net_tex.name_len = 0;
+	if (tex->name)
+		net_tex.name_len = ft_strlen(tex->name) + 1;
+	if (send_all(socket, &net_tex, sizeof(t_net_texture)) < 0)
+		return (-1);
+	if (net_tex.name_len > 0)
+	{
+		if (send_all(socket, tex->name, net_tex.name_len) < 0)
+			return (-1);
+	}
+	pixels_size = tex->width * tex->height * sizeof(mlx_color);
+	if (send_all(socket, tex->pixels, pixels_size) < 0)
+		return (-1);
 	return (0);
 }
 
@@ -88,6 +112,7 @@ int	send_full_scene(int client_sock, t_data *data)
 	base.bvh_node_count = data->nodes_used;
 	base.s_per_pixs = data->s_per_pixs;
 	base.deph = data->deph;
+	base.a_final = data->a_final;
 	base.use_bvh = data->use_bvh;
 	base.plane_count = data->plane_count;
 	base.light_count = data->light_count;
@@ -114,56 +139,82 @@ int	send_full_scene(int client_sock, t_data *data)
 	send_all(client_sock, net_objs, sizeof(t_net_obj) * base.obj_count);
 	send_all(client_sock, net_objs_sorted, sizeof(t_net_obj) * base.obj_count);
 	send_all(client_sock, net_objs_plane, sizeof(t_net_obj) * base.plane_count);
+	for (int i = 0; i < base.obj_count; i++)
+	{
+		if (data->array_obj[i].has_texture)
+			send_texture(client_sock, data->array_obj[i].tex);
+		 if (data->array_obj[i].has_bump)
+			send_texture(client_sock, data->array_obj[i].bump);
+	}
+	for (int i = 0; i < base.plane_count; i++)
+	{
+		if (data->plane_array[i].has_texture)
+			send_texture(client_sock, data->plane_array[i].tex);
+		if (data->plane_array[i].has_bump)
+			send_texture(client_sock, data->plane_array[i].bump);
+	}
 	free(net_objs);
 	free(net_objs_plane);
 	free(net_objs_sorted);
 	send_all(client_sock, data->bvh_nodes, sizeof(t_bvh_node) * base.bvh_node_count);
-	send_all(client_sock, data->light, sizeof(t_light) * base.light_count);
+	t_light *light_array = malloc(sizeof(t_light) * base.light_count);
+	if (!light_array)
+		return (-1);
+	t_light *current_light = data->light;
+	int j = 0;
+	while (current_light && j < base.light_count)
+	{
+		memcpy(&light_array[j], current_light, sizeof(t_light));
+		current_light = current_light->next;
+		j++;
+	}
+	send_all(client_sock, light_array, sizeof(t_light) * base.light_count);
+	free(light_array);
 	return (0);
 }
 
 void	init_server(t_data *data)
 {
-    struct sockaddr_in  server_addr;
-    int                 opt = 1;
+	struct sockaddr_in  server_addr;
+	int                 opt = 1;
 
-    data->server_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (data->server_socket < 0)
-        clean_exit(data, 1, "Erreur creation socket\n", 0);
-    setsockopt(data->server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-    fcntl(data->server_socket, F_SETFL, O_NONBLOCK);
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(8080);
-    if (bind(data->server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
-        clean_exit(data, 1, "Erreur bind socket\n", 0);
-    if (listen(data->server_socket, 10) < 0)
-        clean_exit(data, 1, "Erreur listen socket\n", 0);
-    data->client_count = 0;
+	data->server_socket = socket(AF_INET, SOCK_STREAM, 0);
+	if (data->server_socket < 0)
+		clean_exit(data, 1, "Erreur creation socket\n", 0);
+	setsockopt(data->server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+	fcntl(data->server_socket, F_SETFL, O_NONBLOCK);
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr.s_addr = INADDR_ANY;
+	server_addr.sin_port = htons(8080);
+	if (bind(data->server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
+		clean_exit(data, 1, "Erreur bind socket\n", 0);
+	if (listen(data->server_socket, 10) < 0)
+		clean_exit(data, 1, "Erreur listen socket\n", 0);
+	data->client_count = 0;
 }
 
 void	check_new_clients(t_data *data)
 {
-    int                 new_sock;
-    struct sockaddr_in  client_addr;
-    socklen_t           addr_len = sizeof(client_addr);
+	int                 new_sock;
+	struct sockaddr_in  client_addr;
+	socklen_t           addr_len = sizeof(client_addr);
 
-    while (1)
-    {
-        new_sock = accept(data->server_socket, (struct sockaddr *)&client_addr, &addr_len);
-        if (new_sock < 0)
-            break ;
+	while (1)
+	{
+		new_sock = accept(data->server_socket, (struct sockaddr *)&client_addr, &addr_len);
+		if (new_sock < 0)
+			break ;
 
-        if (data->client_count < 10)
-        {
-            data->client_sockets[data->client_count] = new_sock;
-            data->client_count++;
-            printf("\nnouveau plot ! Total : %d\n", data->client_count);
-        }
-        else
-        {
-            printf("\nTrop de plots.\n");
-            close(new_sock);
-        }
-    }
+		if (data->client_count < 10)
+		{
+			data->client_sockets[data->client_count] = new_sock;
+			data->client_count++;
+			printf("\nnouveau gros plot de chantier ! Total : %d\n", data->client_count);
+		}
+		else
+		{
+			printf("\nTrop de gros plot de chantiers.\n");
+			close(new_sock);
+		}
+	}
 }

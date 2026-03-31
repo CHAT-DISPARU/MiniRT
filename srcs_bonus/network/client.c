@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:46 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/31 17:54:02 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/31 19:14:20 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,34 @@ void	send_task_results(int sock, t_data *data, t_net_task *tasks, int task_count
 	}
 }
 
+int	recv_texture(int socket, t_texture *tex)
+{
+	t_net_texture	net_tex;
+	uint32_t		pixels_size;
+
+	if (recv_all(socket, &net_tex, sizeof(t_net_texture)) < 0)
+		return (-1);
+	tex->width = net_tex.width;
+	tex->height = net_tex.height;
+	tex->scale = net_tex.scale;
+	tex->img = NULL;
+	if (net_tex.name_len > 0)
+	{
+		tex->name = malloc(net_tex.name_len);
+		if (recv_all(socket, tex->name, net_tex.name_len) < 0)
+			return (-1);
+	}
+	else
+		tex->name = NULL;
+	pixels_size = tex->width * tex->height * sizeof(mlx_color);
+	tex->pixels = malloc(pixels_size);
+	if (!tex->pixels)
+		return (-1);
+	if (recv_all(socket, tex->pixels, pixels_size) < 0)
+		return (-1);
+	return (0);
+}
+
 int recv_full_scene(int server_sock, t_data *data)
 {
 	t_net_header header;
@@ -81,6 +109,7 @@ int recv_full_scene(int server_sock, t_data *data)
 	data->nodes_used = base.bvh_node_count;
 	data->s_per_pixs = base.s_per_pixs;
 	data->deph = base.deph;
+	data->a_final = base.a_final;
 	data->plane_count = base.plane_count;
 	data->use_bvh = base.use_bvh;
 	data->step = base.step;
@@ -101,8 +130,21 @@ int recv_full_scene(int server_sock, t_data *data)
 	for (int i = 0; i < base.obj_count; i++)
 	{
 		memcpy(&data->array_obj[i], &net_objs[i], sizeof(t_net_obj));
-		data->array_obj[i].has_texture = false;
-		data->array_obj[i].has_bump = false;
+		if (data->array_obj[i].has_texture == true)
+		{
+			data->array_obj[i].tex = malloc(sizeof(t_texture));
+			recv_texture(server_sock, data->array_obj[i].tex); 
+		}
+		else
+			data->array_obj[i].tex = NULL;
+		if (data->array_obj[i].has_bump == true)
+		{
+			data->array_obj[i].bump = malloc(sizeof(t_texture));
+			recv_texture(server_sock, data->array_obj[i].bump);
+		}
+		else
+			data->array_obj[i].bump = NULL;
+
 		if (i < base.obj_count - 1)
 			data->array_obj[i].next = &data->array_obj[i + 1];
 		else
@@ -120,8 +162,21 @@ int recv_full_scene(int server_sock, t_data *data)
 	for (int i = 0; i < base.plane_count; i++)
 	{
 		memcpy(&data->plane_array[i], &net_objs_plane[i], sizeof(t_net_obj));
-		data->plane_array[i].has_texture = false;
-		data->plane_array[i].has_bump = false;
+		if (data->plane_array[i].has_texture == true)
+		{
+			data->plane_array[i].tex = malloc(sizeof(t_texture));
+			recv_texture(server_sock, data->plane_array[i].tex); 
+		}
+		else
+			data->plane_array[i].tex = NULL;
+		if (data->plane_array[i].has_bump == true)
+		{
+			data->plane_array[i].bump = malloc(sizeof(t_texture));
+			recv_texture(server_sock, data->plane_array[i].bump);
+		}
+		else
+			data->plane_array[i].bump = NULL;
+
 		if (i < base.plane_count - 1)
 			data->plane_array[i].next = &data->plane_array[i + 1];
 		else
@@ -134,6 +189,13 @@ int recv_full_scene(int server_sock, t_data *data)
 	recv_all(server_sock, data->bvh_nodes, sizeof(t_bvh_node) * base.bvh_node_count);
 	data->light = malloc(sizeof(t_light) * base.light_count);
 	recv_all(server_sock, data->light, sizeof(t_light) * base.light_count);
+	for (int i = 0; i < base.light_count; i++)
+	{
+		if (i < base.light_count - 1)
+			data->light[i].next = &data->light[i + 1];
+		else
+			data->light[i].next = NULL;
+	}
 	return (0);
 }
 
@@ -203,41 +265,41 @@ void	worker_loop(t_data *data, int sock)
 
 void	run_worker(t_data *data, char *master_ip)
 {
-    int                 sock;
-    struct sockaddr_in  serv_addr;
-    bool                first_time = true;
+	int                 sock;
+	struct sockaddr_in  serv_addr;
+	bool                first_time = true;
 
-    printf("Demarrage du plot. Connexion à %s...\n", master_ip);
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock < 0)
-        clean_exit(data, 1, "Erreur socket client\n", 0);
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(8080);
-    serv_addr.sin_addr.s_addr = inet_addr(master_ip);
-    
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-        clean_exit(data, 1, "Connexion au Maitre wu ninjago maitre pas reussite\n", 0);
-    printf("Connecte !\n");
-    data->pixels = NULL;
-    while (1)
-    {
-        printf("En attente de la prochaine frame...\n");
-        if (recv_full_scene(sock, data) < 0)
-        {
-            printf("Le Maitre s'est deconnecte. Fin du plot.\n");
-            break ;
-        }
-        
-        if (!data->pixels)
-            data->pixels = malloc(sizeof(mlx_color) * data->width * data->height);
-        if (first_time)
-        {
-            printf("Scene reçue ! Lancement des threads locaux...\n");
-            data->thread_running = true;
-            init_thread_p(data);
-            first_time = false;
-        }
-        worker_loop(data, sock);
-    }
-    clean_exit(data, 0, NULL, 0);
+	printf("Demarrage du gros plot de chantier. Connexion à %s...\n", master_ip);
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock < 0)
+		clean_exit(data, 1, "Erreur socket client\n", 0);
+	serv_addr.sin_family = AF_INET;
+	serv_addr.sin_port = htons(8080);
+	serv_addr.sin_addr.s_addr = inet_addr(master_ip);
+	
+	if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+		clean_exit(data, 1, "Connexion au Maitre wu ninjago maitre pas reussite\n", 0);
+	printf("Connecte !\n");
+	data->pixels = NULL;
+	while (1)
+	{
+		printf("En attente de la prochaine frame...\n");
+		if (recv_full_scene(sock, data) < 0)
+		{
+			printf("Le Maitre ninjago sensei wu s'est deconnecte. Fin du gros plot de chantier.\n");
+			break ;
+		}
+		
+		if (!data->pixels)
+			data->pixels = malloc(sizeof(mlx_color) * data->width * data->height);
+		if (first_time)
+		{
+			printf("Scene reçue ! Lancement des threads locaux...\n");
+			data->thread_running = true;
+			init_thread_p(data);
+			first_time = false;
+		}
+		worker_loop(data, sock);
+	}
+	clean_exit(data, 0, NULL, 0);
 }

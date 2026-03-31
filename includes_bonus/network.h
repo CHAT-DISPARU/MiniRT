@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:15:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/31 17:28:49 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/31 19:11:01 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,14 @@
 # define MSG_TASK  2
 # define MSG_PIXELS 3
 # define MSG_END_TASKS 4
+
+typedef struct s_net_texture
+{
+    int	width;
+    int	height;
+    int	scale;
+    int	name_len;
+}				t_net_texture;
 
 typedef struct s_net_header
 {
@@ -53,6 +61,7 @@ typedef struct s_net_scene_base
 	t_camera	cam;
 	t_view_p	view_port;
 	t_alight	alight;
+	t_vec3		a_final;
 	int			width;
 	int			height;
 	int			obj_count;

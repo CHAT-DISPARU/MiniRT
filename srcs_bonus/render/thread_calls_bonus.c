@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/03/31 17:54:02 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/03/31 18:13:13 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,52 +143,52 @@ void	thread_calls(t_data *data)
 		if (utils.finish == THREADS_COUNT * NB_TASK_R)
 			break ;
 		fd_set  readfds;
-        int     max_sd = 0;
-        int     sd;
-        
-        FD_ZERO(&readfds);
-        for (int k = 0; k < data->client_count; k++)
-        {
-            sd = data->client_sockets[k];
-            if (sd > 0)
-            {
-                FD_SET(sd, &readfds);
-                if (sd > max_sd)
-                    max_sd = sd;
-            }
-        }
-        struct timeval tv;
-        tv.tv_sec = 0;
-        tv.tv_usec = 200;
-        int activity = select(max_sd + 1, &readfds, NULL, NULL, &tv);
-        if (activity > 0)
-        {
-            for (int k = 0; k < data->client_count; k++)
-            {
-                sd = data->client_sockets[k];
-                if (sd > 0 && FD_ISSET(sd, &readfds))
-                {
-                    t_net_header header;
-                    
-                    if (recv_all(sd, &header, sizeof(t_net_header)) == 0)
-                    {
-                        if (header.type == MSG_PIXELS)
-                        {
-                            recv_task_result(sd, data, header.size);
-                            pthread_mutex_lock(&data->finish_count);
-                            data->finish++;
-                            pthread_mutex_unlock(&data->finish_count);
-                        }
-                    }
-                    else
-                    {
-                        ft_putstr_fd("\nUn client s'est deconnecte.\n", 2);
-                        close(sd);
-                        data->client_sockets[k] = 0;
-                    }
-                }
-            }
-        }
+		int     max_sd = 0;
+		int     sd;
+		
+		FD_ZERO(&readfds);
+		for (int k = 0; k < data->client_count; k++)
+		{
+			sd = data->client_sockets[k];
+			if (sd > 0)
+			{
+				FD_SET(sd, &readfds);
+				if (sd > max_sd)
+					max_sd = sd;
+			}
+		}
+		struct timeval tv;
+		tv.tv_sec = 0;
+		tv.tv_usec = 200;
+		int activity = select(max_sd + 1, &readfds, NULL, NULL, &tv);
+		if (activity > 0)
+		{
+			for (int k = 0; k < data->client_count; k++)
+			{
+				sd = data->client_sockets[k];
+				if (sd > 0 && FD_ISSET(sd, &readfds))
+				{
+					t_net_header header;
+					
+					if (recv_all(sd, &header, sizeof(t_net_header)) == 0)
+					{
+						if (header.type == MSG_PIXELS)
+						{
+							recv_task_result(sd, data, header.size);
+							pthread_mutex_lock(&data->finish_count);
+							data->finish++;
+							pthread_mutex_unlock(&data->finish_count);
+						}
+					}
+					else
+					{
+						ft_putstr_fd("\nUn client s'est deconnecte.\n", 2);
+						close(sd);
+						data->client_sockets[k] = 0;
+					}
+				}
+			}
+		}
 	}
 	pthread_mutex_destroy(&data->finish_count);
 	draw_lines(data, utils.grid_w, utils.grid_h);
