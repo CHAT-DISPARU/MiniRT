@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 09:31:00 by CHAT-DISPAR       #+#    #+#             */
-/*   Updated: 2026/04/01 10:44:29 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 11:10:42 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,12 +95,28 @@ int	recv_full_scene(int server_sock, t_data *data)
 	int i = 0;
 	data->sorted_objs = malloc(sizeof(t_obj *) * data->obj_count);
 	t_obj *sor_o_test = malloc(sizeof(t_obj) * data->obj_count);
+	if (!sor_o_test)
+		clean_exit(data, 1, "Malloc", 0);
 	if (!data->sorted_objs)
 		clean_exit(data, 1, "Malloc", 0);
 	while (i < data->obj_count)
 	{
 		memcpy(&sor_o_test[i], &net_objs_sorted[i], sizeof(t_net_obj));
 		data->sorted_objs[i] = &sor_o_test[i];
+		if (data->sorted_objs[i]->has_texture == true)
+		{
+			data->sorted_objs[i]->tex = malloc(sizeof(t_texture));
+			recv_texture(server_sock, data->sorted_objs[i]->tex); 
+		}
+		else
+			data->sorted_objs[i]->tex = NULL;
+		if (data->sorted_objs[i]->has_bump == true)
+		{
+			data->sorted_objs[i]->bump = malloc(sizeof(t_texture));
+			recv_texture(server_sock, data->sorted_objs[i]->bump);
+		}
+		else
+			data->sorted_objs[i]->bump = NULL;
 		i++;
 	}
 	for (int i = 0; i < base.plane_count; i++)

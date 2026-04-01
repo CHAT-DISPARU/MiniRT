@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   send.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 09:24:44 by titan             #+#    #+#             */
-/*   Updated: 2026/04/01 09:49:18 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/01 11:06:36 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,8 +146,15 @@ int	send_full_scene(int client_sock, t_data *data)
 	{
 		if (data->array_obj[i].has_texture)
 			send_texture(client_sock, data->array_obj[i].tex);
-		 if (data->array_obj[i].has_bump)
+		if (data->array_obj[i].has_bump)
 			send_texture(client_sock, data->array_obj[i].bump);
+	}
+	for (int i = 0; i < base.obj_count; i++)
+	{
+		if (data->sorted_objs[i]->has_texture)
+			send_texture(client_sock, data->sorted_objs[i]->tex);
+		if (data->sorted_objs[i]->has_bump)
+			send_texture(client_sock, data->sorted_objs[i]->bump);
 	}
 	for (int i = 0; i < base.plane_count; i++)
 	{
