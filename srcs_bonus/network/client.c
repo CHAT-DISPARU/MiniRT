@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:46 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 13:43:55 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 14:01:10 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,9 @@ void	worker_loop(t_data *data, int sock, t_net_header *header)
 	task_count = 0;
 	while (task_count < 256)
 	{
-		printf("%d\n", header->type);
 		if (header->type == MSG_TASK)
 		{
-			printf("task n%d recue.\n", task_count);
+			//printf("task n%d recue.\n", task_count);
 			if (recv_all(sock, &tasks[task_count], sizeof(t_net_task)) < 0)
 			{
 				close(sock);
@@ -118,7 +117,8 @@ int	call_recv_right(t_data *data, int sock, bool *first_time)
 		init_thread_p(data);
 		*first_time = false;
 	}
-	worker_loop(data, sock, &header);
+	if (header.type == MSG_TASK)
+		worker_loop(data, sock, &header);
 	return (0);
 }
 
