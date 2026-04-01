@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:46 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 14:01:10 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 15:29:48 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,18 +87,28 @@ int	call_recv_right(t_data *data, int sock, bool *first_time)
 	}
 	if (!*first_time && header.type == MSG_RESTART)
 	{
+		data->isclient = true;
 		stop_threads(data);
 		clean(data);
 		re_init(data);
 		*first_time = true;
+		data->thread_running = false;
+		return (0);
 	}
 	else if (*first_time && header.type == MSG_SCENE)
 	{
+		printf("Scene recue !!!!!!\n");
 		if (recv_full_scene(sock, data) < 0)
 		{
 			printf("Le Maitre ninjago sensei wu s'est deconnecte. Fin du gros plot de chantier au first try.\n");
 			return (1);
 		}
+		if (!data->pixels)
+			data->pixels = malloc(sizeof(mlx_color) * data->width * data->height);
+		printf(" Lancement des threads locaux...\n");
+		data->thread_running = true;
+		init_thread_p(data);
+		*first_time = false;
 	}
 	else if (header.type == MSG_SCENE_LOW)
 	{
@@ -107,15 +117,6 @@ int	call_recv_right(t_data *data, int sock, bool *first_time)
 			printf("Le Maitre ninjago sensei wu s'est deconnecte. Fin du gros plot de chantier.\n");
 			return (1);
 		}
-	}
-	if (!data->pixels)
-		data->pixels = malloc(sizeof(mlx_color) * data->width * data->height);
-	if (*first_time)
-	{
-		printf("Scene recue !!!!!! Lancement des threads locaux...\n");
-		data->thread_running = true;
-		init_thread_p(data);
-		*first_time = false;
 	}
 	if (header.type == MSG_TASK)
 		worker_loop(data, sock, &header);
@@ -141,10 +142,11 @@ void	run_worker(t_data *data, char *master_ip)
 	data->pixels = NULL;
 	while (1)
 	{
-		printf("En attente de la prochaine frame...\n");
 		if (call_recv_right(data, sock, &first_time))
 			break ;
+		printf("\rEn attente de la prochaine frame...");
 		usleep(100);
 	}
+	printf("\n");
 	clean_exit(data, 0, NULL, 0);
 }

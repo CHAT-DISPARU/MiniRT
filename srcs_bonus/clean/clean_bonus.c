@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:10:27 by titan             #+#    #+#             */
-/*   Updated: 2026/03/11 11:03:11 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 15:31:00 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,18 @@ void	free_mtl_light(t_data *data)
 		free(data->mtl_info);
 		data->mtl_info = t;
 	}
-	while (data->light)
+	if (data->isclient == false)
 	{
-		tmp2 = data->light->next;
-		free(data->light);
-		data->light = tmp2;
+		while (data->light)
+		{
+			tmp2 = data->light->next;
+			free(data->light);
+			data->light = tmp2;
+		}
 	}
+	else
+		free(data->light);
+	data->light = NULL;
 }
 
 void	clean(t_data *data)
