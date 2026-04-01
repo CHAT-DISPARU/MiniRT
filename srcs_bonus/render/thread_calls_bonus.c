@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/01 15:50:32 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 16:00:28 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,13 @@ void	draw_lines(t_data *data, int grid_w, int grid_h)
 	}
 }
 
-void	prepare_calls(t_data *data, t_thread_c_int *utils)
+void	prepare_calls(t_data *data, t_thread_c_int *utils, int client_count)
 {
 	mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
-	utils->cols = sqrt(THREADS_COUNT * NB_TASK_R);
-	while (THREADS_COUNT * NB_TASK_R % utils->cols != 0)
+	utils->cols = sqrt(THREADS_COUNT * NB_TASK_R * client_count);
+	while (THREADS_COUNT * NB_TASK_R * client_count % utils->cols != 0)
 		utils->cols--;
-	utils->rows = THREADS_COUNT * NB_TASK_R / utils->cols;
+	utils->rows = THREADS_COUNT * NB_TASK_R * client_count / utils->cols;
 	utils->grid_w = data->width / utils->cols;
 	utils->grid_h = data->height / utils->rows;
 	utils->i = 0;
@@ -68,7 +68,7 @@ void	prepare_calls(t_data *data, t_thread_c_int *utils)
 	pthread_mutex_lock(&data->finish_count);
 	utils->finish = data->finish;
 	pthread_mutex_unlock(&data->finish_count);
-	print_progress(utils->finish, THREADS_COUNT * NB_TASK_R);
+	print_progress(utils->finish, THREADS_COUNT * NB_TASK_R * client_count);
 }
 
 void	send_task(t_data *data, t_thread_c_int *utils,
@@ -129,7 +129,7 @@ void	thread_calls(t_data *data)
 		client_count = data->client_count + 1;
 	else
 		client_count = 1;
-	prepare_calls(data, &utils);
+	prepare_calls(data, &utils, client_count);
 	indexs = malloc(sizeof(int) * THREADS_COUNT * NB_TASK_R * client_count);
 	set_indexs(indexs, THREADS_COUNT * NB_TASK_R * client_count);
 	printf("%d\n", THREADS_COUNT * NB_TASK_R * client_count);
