@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   network.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:15:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/31 19:11:01 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 09:49:04 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ typedef struct s_net_texture
     int	width;
     int	height;
     int	scale;
-    int	name_len;
 }				t_net_texture;
 
 typedef struct s_net_header
@@ -104,5 +103,7 @@ void	check_new_clients(t_data *data);
 void	run_worker(t_data *data, char *master_ip);
 int		send_full_scene(int client_sock, t_data *data);
 void	recv_task_result(int sock, t_data *data, uint32_t payload_size);
+void	send_task_results(int sock, t_data *data, t_net_task *tasks, int task_count);
+int		recv_full_scene(int server_sock, t_data *data);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   thread_calls_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/03/31 18:13:13 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 09:41:14 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ void	thread_calls(t_data *data)
 					}
 					else
 					{
-						ft_putstr_fd("\nUn client s'est deconnecte.\n", 2);
+						ft_putstr_fd("\nUn client s'est deco.\n", 2);
 						close(sd);
 						data->client_sockets[k] = 0;
 					}

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
+#    By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/03/31 17:33:14 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/04/01 09:34:03 by CHAT-DISPAR      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -108,6 +108,8 @@ SRCSB := $(SRCB_DIR)main_bonus.c \
 		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_co_bonus.c \
 		$(SRCB_DIR)network/client.c \
 		$(SRCB_DIR)network/server.c \
+		$(SRCB_DIR)network/recv.c \
+		$(SRCB_DIR)network/send.c \
 		$(SRCB_DIR)$(HIT_DIR)utils_co_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_cy_bonus.c \
 		$(SRCB_DIR)$(HIT_DIR)hit_tr_bonus.c \
