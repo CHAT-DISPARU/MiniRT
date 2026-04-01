@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   recv.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 09:31:00 by CHAT-DISPAR       #+#    #+#             */
-/*   Updated: 2026/04/01 09:49:21 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/01 10:44:29 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,11 +94,13 @@ int	recv_full_scene(int server_sock, t_data *data)
 	}
 	int i = 0;
 	data->sorted_objs = malloc(sizeof(t_obj *) * data->obj_count);
+	t_obj *sor_o_test = malloc(sizeof(t_obj) * data->obj_count);
 	if (!data->sorted_objs)
 		clean_exit(data, 1, "Malloc", 0);
 	while (i < data->obj_count)
 	{
-		data->sorted_objs[i] = &data->array_obj[i];
+		memcpy(&sor_o_test[i], &net_objs_sorted[i], sizeof(t_net_obj));
+		data->sorted_objs[i] = &sor_o_test[i];
 		i++;
 	}
 	for (int i = 0; i < base.plane_count; i++)
@@ -127,7 +129,7 @@ int	recv_full_scene(int server_sock, t_data *data)
 	free(net_objs);
 	free(net_objs_sorted);
 	free(net_objs_plane);
-	data->bvh_nodes = malloc(sizeof(t_bvh_node) * base.bvh_node_count);
+	data->bvh_nodes = ft_calloc(sizeof(t_bvh_node), base.bvh_node_count);
 	recv_all(server_sock, data->bvh_nodes, sizeof(t_bvh_node) * base.bvh_node_count);
 	data->light = malloc(sizeof(t_light) * base.light_count);
 	recv_all(server_sock, data->light, sizeof(t_light) * base.light_count);

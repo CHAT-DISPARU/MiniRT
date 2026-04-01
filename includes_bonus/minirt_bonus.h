@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/31 19:15:30 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 10:28:50 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 # define S_PER_PIXS		100
 # define NB_TASK_R		24
 # define PI				3.14159265358979323846
-# define THREADS_COUNT	16
+# define THREADS_COUNT	3
 # define MAX_BVH_DEPTH	24
 # define EPSILON		1e-4
 

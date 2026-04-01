@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:46 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 09:49:25 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/01 10:46:00 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,6 @@ void	run_worker(t_data *data, char *master_ip)
 			printf("Le Maitre ninjago sensei wu s'est deconnecte. Fin du gros plot de chantier.\n");
 			break ;
 		}
-		
 		if (!data->pixels)
 			data->pixels = malloc(sizeof(mlx_color) * data->width * data->height);
 		if (first_time)
@@ -112,6 +111,7 @@ void	run_worker(t_data *data, char *master_ip)
 			first_time = false;
 		}
 		worker_loop(data, sock);
+		usleep(100);
 	}
 	clean_exit(data, 0, NULL, 0);
 }
