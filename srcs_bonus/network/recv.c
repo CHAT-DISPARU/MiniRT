@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 09:31:00 by CHAT-DISPAR       #+#    #+#             */
-/*   Updated: 2026/04/01 11:10:42 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 12:16:08 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,8 @@ int	recv_texture(int socket, t_texture *tex)
 
 int	recv_full_scene(int server_sock, t_data *data)
 {
-	t_net_header		header;
 	t_net_scene_base	base;
 
-	recv_all(server_sock, &header, sizeof(t_net_header));
-	if (header.type != MSG_SCENE)
-		return (-1);
 	recv_all(server_sock, &base, sizeof(t_net_scene_base));
 	data->cam = base.cam;
 	data->view_port = base.view_port;
@@ -197,4 +193,27 @@ void	recv_task_result(int sock, t_data *data, uint32_t header_size)
 		}
 	}
 	free(incoming_pixels);
+}
+
+int	recv_scene_low(int server_sock, t_data *data)
+{
+	t_net_scene_base	base;
+
+	recv_all(server_sock, &base, sizeof(t_net_scene_base));
+	data->cam = base.cam;
+	data->view_port = base.view_port;
+	data->alight = base.alight;
+	data->width = base.width;
+	data->height = base.height;
+	data->s_per_pixs = base.s_per_pixs;
+	data->deph = base.deph;
+	data->a_final = base.a_final;
+	data->use_bvh = base.use_bvh;
+	data->step = base.step;
+	data->debug = base.debug;
+	data->debug_depth = base.debug_depth;
+	data->diff_ok = base.diff_ok;
+	data->has_checker = base.has_checker;
+	data->checker_color = base.checker_color;
+	return (0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   network.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:15:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 09:49:04 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/01 12:04:39 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 # define MSG_TASK  2
 # define MSG_PIXELS 3
 # define MSG_END_TASKS 4
+# define MSG_SCENE_LOW 5
+# define MSG_RESTART 6
 
 typedef struct s_net_texture
 {
@@ -105,5 +107,9 @@ int		send_full_scene(int client_sock, t_data *data);
 void	recv_task_result(int sock, t_data *data, uint32_t payload_size);
 void	send_task_results(int sock, t_data *data, t_net_task *tasks, int task_count);
 int		recv_full_scene(int server_sock, t_data *data);
+int		send_scene_low(int client_sock, t_data *data);
+int		recv_scene_low(int server_sock, t_data *data);
+int		recv_restart(int server_sock);
+int		send_restart(int client_sock);
 
 #endif

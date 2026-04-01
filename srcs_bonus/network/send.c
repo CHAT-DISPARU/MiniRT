@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 09:24:44 by titan             #+#    #+#             */
-/*   Updated: 2026/04/01 11:06:36 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 12:04:34 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,5 +180,42 @@ int	send_full_scene(int client_sock, t_data *data)
 	}
 	send_all(client_sock, light_array, sizeof(t_light) * base.light_count);
 	free(light_array);
+	return (0);
+}
+
+int	send_scene_low(int client_sock, t_data *data)
+{
+	t_net_header		header;
+	t_net_scene_base	base;
+
+	base.step = data->step;
+	base.debug = data->debug;
+	base.debug_depth = data->debug_depth;
+	base.diff_ok = data->diff_ok;
+	base.has_checker = data->has_checker;
+	base.checker_color = data->checker_color;
+	base.cam = data->cam;
+	base.view_port = data->view_port;
+	base.alight = data->alight;
+	base.width = data->width;
+	base.height = data->height;
+	base.s_per_pixs = data->s_per_pixs;
+	base.deph = data->deph;
+	base.a_final = data->a_final;
+	base.use_bvh = data->use_bvh;
+	header.type = MSG_SCENE_LOW;
+	header.size = sizeof(t_net_scene_base);
+	send_all(client_sock, &header, sizeof(t_net_header));
+	send_all(client_sock, &base, sizeof(t_net_scene_base));
+	return (0);
+}
+
+int	send_restart(int client_sock)
+{
+	t_net_header		header;
+
+	header.type = MSG_RESTART;
+	header.size = sizeof(t_net_header);
+	send_all(client_sock, &header, sizeof(t_net_header));
 	return (0);
 }

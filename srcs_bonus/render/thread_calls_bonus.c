@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   thread_calls_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/01 09:41:14 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/01 11:54:12 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ void	thread_calls(t_data *data)
 	i = 0;
 	while (i < data->client_count) 
 	{
-		if (send_full_scene(data->client_sockets[i], data) == -1)
+		if (send_scene_low(data->client_sockets[i], data) == -1)
 			ft_putstr_fd("error scene envoie\n", 2);
 		i++;
 	}
@@ -182,7 +182,7 @@ void	thread_calls(t_data *data)
 					}
 					else
 					{
-						ft_putstr_fd("\nUn client s'est deco.\n", 2);
+						ft_putstr_fd("\nUn client c'est deco.\n", 2);
 						close(sd);
 						data->client_sockets[k] = 0;
 					}

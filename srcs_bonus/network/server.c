@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:36 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 09:49:15 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/01 11:49:15 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ void	check_new_clients(t_data *data)
 			data->client_sockets[data->client_count] = new_sock;
 			data->client_count++;
 			printf("\nnouveau gros plot de chantier ! Total : %d\n", data->client_count);
+			if (send_full_scene(data->client_sockets[data->client_count - 1], data) == -1)
+				ft_putstr_fd("error scene envoie\n", 2);
 		}
 		else
 		{

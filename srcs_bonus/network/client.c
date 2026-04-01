@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:46 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 10:46:00 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 12:24:10 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ void	process_and_send_task(t_data *data, int sock, t_net_task task[256], int tas
 		pthread_mutex_lock(&data->finish_count);
 		int finished = data->finish;
 		pthread_mutex_unlock(&data->finish_count);
-		print_progress(finished, task_count);
+		if (task_count)
+			print_progress(finished, task_count);
 		if (finished == expected_tasks)
 			break ;
 		usleep(100);
@@ -45,21 +46,14 @@ void	process_and_send_task(t_data *data, int sock, t_net_task task[256], int tas
 	send_task_results(sock, data, task, task_count);
 }
 
-void	worker_loop(t_data *data, int sock)
+void	worker_loop(t_data *data, int sock, t_net_header header)
 {
-	t_net_header	header;
 	t_net_task		tasks[256];
 	int				task_count;
 
 	task_count = 0;
 	while (task_count < 256)
 	{
-		if (recv_all(sock, &header, sizeof(t_net_header)) < 0)
-		{
-			printf("Connexion perdue.\n");
-			close(sock);
-			return ;
-		}
 		if (header.type == MSG_TASK)
 		{
 			printf("task n%d recue.\n", task_count);
@@ -74,6 +68,52 @@ void	worker_loop(t_data *data, int sock)
 			break ;
 	}
 	process_and_send_task(data, sock, tasks, task_count);
+}
+
+int	call_recv_right(t_data *data, int sock, bool *first_time)
+{
+	t_net_header	header;
+
+	if (recv_all(sock, &header, sizeof(t_net_header)) < 0)
+	{
+		printf("Connexion perdue.\n");
+		close(sock);
+		return (1);
+	}
+	if (!*first_time && header.type == MSG_RESTART)
+	{
+		stop_threads(data);
+		clean(data);
+		re_init(data);
+		*first_time = true;
+	}
+	else if (*first_time && header.type == MSG_SCENE)
+	{
+		if (recv_full_scene(sock, data) < 0)
+		{
+			printf("Le Maitre ninjago sensei wu s'est deconnecte. Fin du gros plot de chantier au first try.\n");
+			return (1);
+		}
+	}
+	else if (header.type == MSG_SCENE_LOW)
+	{
+		if (recv_scene_low(sock, data) < 0)
+		{
+			printf("Le Maitre ninjago sensei wu s'est deconnecte. Fin du gros plot de chantier.\n");
+			return (1);
+		}
+	}
+	if (!data->pixels)
+		data->pixels = malloc(sizeof(mlx_color) * data->width * data->height);
+	if (*first_time)
+	{
+		printf("Scene recue !!!!!! Lancement des threads locaux...\n");
+		data->thread_running = true;
+		init_thread_p(data);
+		*first_time = false;
+	}
+	worker_loop(data, sock, header);
+	return (0);
 }
 
 void	run_worker(t_data *data, char *master_ip)
@@ -96,21 +136,8 @@ void	run_worker(t_data *data, char *master_ip)
 	while (1)
 	{
 		printf("En attente de la prochaine frame...\n");
-		if (recv_full_scene(sock, data) < 0)
-		{
-			printf("Le Maitre ninjago sensei wu s'est deconnecte. Fin du gros plot de chantier.\n");
+		if (call_recv_right(data, sock, &first_time))
 			break ;
-		}
-		if (!data->pixels)
-			data->pixels = malloc(sizeof(mlx_color) * data->width * data->height);
-		if (first_time)
-		{
-			printf("Scene recue !!!!!! Lancement des threads locaux...\n");
-			data->thread_running = true;
-			init_thread_p(data);
-			first_time = false;
-		}
-		worker_loop(data, sock);
 		usleep(100);
 	}
 	clean_exit(data, 0, NULL, 0);

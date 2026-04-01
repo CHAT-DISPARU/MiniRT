@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/31 15:24:36 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 11:50:03 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 		clean_exit(data, 1, "Error init MLX\n", 0);
 	data->filename = av[1];
 	init_thread_p(data);
-	init_server(data);
 	read_rt(data);
 	if (!data->camera_is_set || !data->ambient_is_set)
 		clean_exit(data, 1, "Cam or Ambient not set\n", 0);
@@ -78,6 +77,7 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 		data->use_bvh = false;
 	printf("pars finshed\n");
 	calcul_ambient(data);
+	init_server(data);
 	data->win = mlx_new_window(data->mlx, &info);
 	if (!data->win)
 		clean_exit(data, 1, "Error Malloc MLX\n", 0);
