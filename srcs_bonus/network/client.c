@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:46 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 15:29:48 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 15:51:46 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,11 @@ void	process_and_send_task(t_data *data, int sock, t_net_task task[256], int tas
 
 void	worker_loop(t_data *data, int sock, t_net_header *header)
 {
-	t_net_task		tasks[256];
+	t_net_task		tasks[THREADS_COUNT * NB_TASK_R];
 	int				task_count;
 
 	task_count = 0;
-	while (task_count < 256)
+	while (task_count < THREADS_COUNT * NB_TASK_R)
 	{
 		if (header->type == MSG_TASK)
 		{

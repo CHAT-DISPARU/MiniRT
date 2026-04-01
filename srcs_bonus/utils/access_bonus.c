@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 10:52:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 15:17:19 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 15:36:14 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,19 +82,19 @@ t_aabb	get_aabb_by_type(t_obj *obj)
 		return (aabb_triangle(obj));
 }
 
-void	set_indexs(int *indexs)
+void	set_indexs(int *indexs, int indexs_size)
 {
 	int	i;
 	int	tmp;
 	int	j;
 
 	i = 0;
-	while (i < THREADS_COUNT * NB_TASK_R)
+	while (i < indexs_size)
 	{
 		indexs[i] = i;
 		i++;
 	}
-	i = THREADS_COUNT * NB_TASK_R - 1;
+	i = indexs_size - 1;
 	while (i > 0)
 	{
 		j = rand() % (i + 1);

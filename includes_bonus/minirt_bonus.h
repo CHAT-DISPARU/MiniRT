@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 15:00:40 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 15:36:37 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 # define S_PER_PIXS		100
 # define NB_TASK_R		24
 # define PI				3.14159265358979323846
-# define THREADS_COUNT	3
+# define THREADS_COUNT	16
 # define MAX_BVH_DEPTH	24
 # define EPSILON		1e-4
 
@@ -725,7 +725,7 @@ void		ft_lstadd_front_stack(t_thread_p **lst, t_thread_p *new);
 t_thread_p	*ft_lstnew_stack(t_thread_info content, t_task func);
 void		ft_lstdelone_stack(t_thread_p *lst);
 void		ft_lstclear_stack(t_thread_p **lst);
-void		set_indexs(int *indexs);
+void		set_indexs(int *indexs, int indexs_size);
 void		print_m_and_gnl(t_data *data,
 				char *mess_eror, int exit_code, int i);
 void		free_texs(t_data *data);

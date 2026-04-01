@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/01 11:54:12 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 15:50:32 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void	prepare_calls(t_data *data, t_thread_c_int *utils)
 }
 
 void	send_task(t_data *data, t_thread_c_int *utils,
-		int indexs[THREADS_COUNT*NB_TASK_R])
+		int *indexs, int indexs_size)
 {
 	t_thread_info	infos;
 	t_net_task		net_task;
@@ -81,7 +81,7 @@ void	send_task(t_data *data, t_thread_c_int *utils,
 
 	header.type = MSG_TASK;
 	header.size = sizeof(t_net_task);
-	while (utils->i < THREADS_COUNT * NB_TASK_R)
+	while (utils->i < indexs_size)
 	{
 		utils->current_col = indexs[utils->i] % utils->cols;
 		utils->current_row = indexs[utils->i] / utils->cols;
@@ -120,12 +120,19 @@ void	send_task(t_data *data, t_thread_c_int *utils,
 
 void	thread_calls(t_data *data)
 {
-	int				indexs[THREADS_COUNT * NB_TASK_R];
+	int				*indexs;
 	t_thread_c_int	utils;
 	int				i;
+	int client_count;
 
+	if (data->client_count > 0)
+		client_count = data->client_count + 1;
+	else
+		client_count = 1;
 	prepare_calls(data, &utils);
-	set_indexs(indexs);
+	indexs = malloc(sizeof(int) * THREADS_COUNT * NB_TASK_R * client_count);
+	set_indexs(indexs, THREADS_COUNT * NB_TASK_R * client_count);
+	printf("%d\n", THREADS_COUNT * NB_TASK_R * client_count);
 	i = 0;
 	while (i < data->client_count) 
 	{
@@ -133,14 +140,15 @@ void	thread_calls(t_data *data)
 			ft_putstr_fd("error scene envoie\n", 2);
 		i++;
 	}
-	send_task(data, &utils, indexs);
+	send_task(data, &utils, indexs, THREADS_COUNT * NB_TASK_R * client_count);
+	free(indexs);
 	while (1)
 	{
 		pthread_mutex_lock(&data->finish_count);
 		utils.finish = data->finish;
 		pthread_mutex_unlock(&data->finish_count);
-		print_progress(utils.finish, THREADS_COUNT * NB_TASK_R);
-		if (utils.finish == THREADS_COUNT * NB_TASK_R)
+		print_progress(utils.finish, THREADS_COUNT * NB_TASK_R * client_count);
+		if (utils.finish == THREADS_COUNT * NB_TASK_R * client_count)
 			break ;
 		fd_set  readfds;
 		int     max_sd = 0;
