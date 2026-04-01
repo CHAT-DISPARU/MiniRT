@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/01 16:00:28 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 16:03:37 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,6 @@ void	thread_calls(t_data *data)
 	prepare_calls(data, &utils, client_count);
 	indexs = malloc(sizeof(int) * THREADS_COUNT * NB_TASK_R * client_count);
 	set_indexs(indexs, THREADS_COUNT * NB_TASK_R * client_count);
-	printf("%d\n", THREADS_COUNT * NB_TASK_R * client_count);
 	i = 0;
 	while (i < data->client_count) 
 	{
