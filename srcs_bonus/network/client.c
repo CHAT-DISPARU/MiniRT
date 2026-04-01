@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:46 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 12:24:10 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/01 13:43:55 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	process_and_send_task(t_data *data, int sock, t_net_task task[256], int tas
 	send_task_results(sock, data, task, task_count);
 }
 
-void	worker_loop(t_data *data, int sock, t_net_header header)
+void	worker_loop(t_data *data, int sock, t_net_header *header)
 {
 	t_net_task		tasks[256];
 	int				task_count;
@@ -54,7 +54,8 @@ void	worker_loop(t_data *data, int sock, t_net_header header)
 	task_count = 0;
 	while (task_count < 256)
 	{
-		if (header.type == MSG_TASK)
+		printf("%d\n", header->type);
+		if (header->type == MSG_TASK)
 		{
 			printf("task n%d recue.\n", task_count);
 			if (recv_all(sock, &tasks[task_count], sizeof(t_net_task)) < 0)
@@ -64,8 +65,13 @@ void	worker_loop(t_data *data, int sock, t_net_header header)
 			}
 			task_count++;
 		}
-		else if (header.type == MSG_END_TASKS)
+		else if (header->type == MSG_END_TASKS)
 			break ;
+		if (recv_all(sock, header, sizeof(t_net_header)) < 0)
+		{
+			close(sock);
+			return ;
+		}
 	}
 	process_and_send_task(data, sock, tasks, task_count);
 }
@@ -112,7 +118,7 @@ int	call_recv_right(t_data *data, int sock, bool *first_time)
 		init_thread_p(data);
 		*first_time = false;
 	}
-	worker_loop(data, sock, header);
+	worker_loop(data, sock, &header);
 	return (0);
 }
 
