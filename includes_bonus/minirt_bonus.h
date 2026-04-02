@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 22:11:08 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 22:19:00 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -397,7 +397,7 @@ typedef struct s_data
 	int						*emissive_ids;
     int						emissive_count;
 	int						server_socket;
-	int						client_sockets[10];
+	int						client_sockets[CLIENT_MAX];
 	int						client_count;
 	t_list					*textures;
 	mlx_color				checker_color;
