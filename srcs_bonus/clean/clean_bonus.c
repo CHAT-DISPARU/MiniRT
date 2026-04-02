@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   clean_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:10:27 by titan             #+#    #+#             */
-/*   Updated: 2026/04/01 15:31:00 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:50:35 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ void	free_element(t_data *data)
 		free(data->plane_array);
 	if (data->obj_aabbs)
 		free(data->obj_aabbs);
+	if (data->emissive_ids)
+		free(data->emissive_ids);
 }
 
 void	free_mtl_light(t_data *data)
@@ -99,21 +101,9 @@ void	free_data_struct(t_data *data, int exit_code)
 
 void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 {
-	t_obj		*tmp;
-	t_obj		*current;
-
 	printf("\n");
 	stop_threads(data);
 	print_m_and_gnl(data, mess_eror, exit_code, i);
-	current = data->objs;
-	while (current)
-	{
-		tmp = current->next;
-		free(current);
-		current = tmp;
-	}
-	free_texs(data);
-	free_mtl_light(data);
-	free_element(data);
+	clean(data);
 	free_data_struct(data, exit_code);
 }

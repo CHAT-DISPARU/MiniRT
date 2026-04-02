@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_co_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 12:25:02 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/10 13:11:27 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:52:52 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,5 +100,13 @@ void	set_co(t_data *data, char *line, int i)
 	ft_objadd_back(&data->objs, new_co);
 	new_co->next = NULL;
 	set_new_co(t, new_co);
+	new_co->emission_ratio = 0.0;
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0' && (*line == '.' || ft_isdigit(*line)))
+	{
+		new_co->emission_ratio = rt_atod(&line);
+		if (new_co->emission_ratio < 0.0)
+			new_co->emission_ratio = 0.0;
+	}
 	set_tex(data, &line, i, new_co);
 }

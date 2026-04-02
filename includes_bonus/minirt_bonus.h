@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 17:01:18 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:51:13 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 # define S_PER_PIXS		100
 # define NB_TASK_R		24
 # define PI				3.14159265358979323846
-# define THREADS_COUNT	16
+# define THREADS_COUNT	8
 # define MAX_BVH_DEPTH	24
 # define EPSILON		1e-4
 # define CLIENT_MAX		25
@@ -177,6 +177,7 @@ typedef struct s_triangle
 
 typedef struct s_mat_t
 {
+	double		emission_ratio;
 	t_mat4		trans;
 	t_mat4		scale;
 	t_mat4		rot;
@@ -229,6 +230,8 @@ typedef struct s_texture
 
 typedef struct s_obj
 {
+	int				id;
+	double			emission_ratio;
 	int				tex_index;
 	int				bump_index;
 	double			rad_1;
@@ -391,9 +394,11 @@ typedef struct s_vars_obj
 
 typedef struct s_data
 {
+	int						*emissive_ids;
+    int						emissive_count;
 	int						server_socket;
-    int						client_sockets[10];
-    int						client_count;
+	int						client_sockets[10];
+	int						client_count;
 	t_list					*textures;
 	mlx_color				checker_color;
 	bool					has_checker;
@@ -580,6 +585,7 @@ typedef struct s_light_hit
 }				t_light_hit;
 
 typedef bool	(*t_calc_f)(t_obj *obj, t_ray ray, t_hit_r *rec);
+void		init_emissive_lights(t_data *data);
 t_vec3		check_hit(t_data *data, t_ray ray, int deph);
 void		thread_calls(t_data *data);
 int			resize_win(t_data *data);

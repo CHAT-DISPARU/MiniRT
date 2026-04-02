@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   recv.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 09:31:00 by CHAT-DISPAR       #+#    #+#             */
-/*   Updated: 2026/04/02 15:03:02 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:41:34 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,12 +102,11 @@ int	recv_full_scene(int server_sock, t_data *data)
 	}
 	t_net_obj *net_objs = malloc(sizeof(t_net_obj) * base.obj_count);
 	t_net_obj *net_objs_plane = malloc(sizeof(t_net_obj) * base.plane_count);
-	t_net_obj *sor_o_test = malloc(sizeof(t_net_obj) * base.obj_count);
 	recv_all(server_sock, net_objs, sizeof(t_net_obj) * base.obj_count);
-	recv_all(server_sock, sor_o_test, sizeof(t_net_obj) * base.obj_count);
 	recv_all(server_sock, net_objs_plane, sizeof(t_net_obj) * base.plane_count);
 	data->array_obj = malloc(sizeof(t_obj) * base.obj_count);
 	data->plane_array = malloc(sizeof(t_obj) * base.plane_count);
+	data->sorted_objs = malloc(sizeof(t_obj *) * data->obj_count);
 	for (int i = 0; i < base.obj_count; i++)
 	{
 		memcpy(&data->array_obj[i], &net_objs[i], sizeof(t_net_obj));
@@ -120,27 +119,7 @@ int	recv_full_scene(int server_sock, t_data *data)
 			data->array_obj[i].bump = client_tex_bank[net_objs[i].bump_index];
 		else
 			data->array_obj[i].bump = NULL;
-	}
-	int i = 0;
-	data->sorted_objs = malloc(sizeof(t_obj *) * data->obj_count);
-	if (!sor_o_test)
-		clean_exit(data, 1, "Malloc", 0);
-	if (!data->sorted_objs)
-		clean_exit(data, 1, "Malloc", 0);
-	while (i < data->obj_count)
-	{
-		data->sorted_objs[i] = malloc(sizeof(t_obj));
-		memcpy(data->sorted_objs[i], &sor_o_test[i], sizeof(t_net_obj));
-		if (sor_o_test[i].has_texture && sor_o_test[i].tex_index >= 0 && sor_o_test[i].tex_index < tex_count)
-			data->sorted_objs[i]->tex = client_tex_bank[sor_o_test[i].tex_index];
-		else
-			data->sorted_objs[i]->tex = NULL;
-
-		if (sor_o_test[i].has_bump && sor_o_test[i].bump_index >= 0 && sor_o_test[i].bump_index < tex_count)
-			data->sorted_objs[i]->bump = client_tex_bank[sor_o_test[i].bump_index];
-		else
-			data->sorted_objs[i]->bump = NULL;
-		i++;
+		data->sorted_objs[i] = &data->array_obj[i];
 	}
 	for (int i = 0; i < base.plane_count; i++)
 	{
@@ -158,7 +137,6 @@ int	recv_full_scene(int server_sock, t_data *data)
 	if (client_tex_bank)
 		free(client_tex_bank);
 	free(net_objs);
-	free(sor_o_test);
 	free(net_objs_plane);
 	data->bvh_nodes = ft_calloc(sizeof(t_bvh_node), base.bvh_node_count);
 	recv_all(server_sock, data->bvh_nodes, sizeof(t_bvh_node) * base.bvh_node_count);
@@ -171,6 +149,8 @@ int	recv_full_scene(int server_sock, t_data *data)
 		else
 			data->light[i].next = NULL;
 	}
+	data->obj_aabbs = malloc(sizeof(t_aabb) * base.obj_count);
+	init_emissive_lights(data);
 	return (0);
 }
 

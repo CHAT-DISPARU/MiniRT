@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   network.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:15:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 15:16:40 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:50:22 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,26 +38,28 @@ typedef struct s_net_header
 
 typedef struct s_net_obj
 {
-	int			tex_index;
-	int			bump_index;
-	double		rad_1;
-	double		rad_2;
-	double		height;
-	t_vec3		ka;
-	double		ns;
-	double		ni;
-	double		opacity;
-	t_vec3		kd;
-	t_vec3		ks;
-	int			type;
-	t_triangle	tri;
-	t_mat4		transform;
-	t_mat4		inverse_transform;
-	mlx_color	color;
-	double		reflectivity;
-	double		rought;
-	bool		has_texture;
-	bool		has_bump;
+	int				id;
+	double			emission_ratio;
+	int				tex_index;
+	int				bump_index;
+	double			rad_1;
+	double			rad_2;
+	double			height;
+	t_vec3			ka;
+	double			ns;
+	double			ni;
+	double			opacity;
+	t_vec3			kd;
+	t_vec3			ks;
+	int				type;
+	t_triangle		tri;
+	t_mat4			transform;
+	t_mat4			inverse_transform;
+	mlx_color		color;
+	double			reflectivity;
+	double			rought;
+	bool			has_texture;
+	bool			has_bump;
 } t_net_obj;
 
 typedef struct s_net_scene_base

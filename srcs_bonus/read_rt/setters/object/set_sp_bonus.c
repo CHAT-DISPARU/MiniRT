@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_sp_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:39 by titan             #+#    #+#             */
-/*   Updated: 2026/03/10 13:10:30 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:53:21 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,5 +65,13 @@ void	set_sp(t_data *data, char *line, int i)
 	new_sp->ni = t.ni;
 	ft_objadd_back(&data->objs, new_sp);
 	new_sp->next = NULL;
+	new_sp->emission_ratio = 0.0;
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0' && (*line == '.' || ft_isdigit(*line)))
+	{
+		new_sp->emission_ratio = rt_atod(&line);
+		if (new_sp->emission_ratio < 0.0)
+			new_sp->emission_ratio = 0.0;
+	}
 	set_tex(data, &line, i, new_sp);
 }

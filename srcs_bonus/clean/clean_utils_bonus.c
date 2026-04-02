@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   clean_utils_bonus.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:01:07 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 10:35:41 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:46:26 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,8 @@ void	re_init(t_data *data)
 	data->sorted_objs = NULL;
 	data->bvh_nodes = NULL;
 	data->scene_fd = -1;
+	data->emissive_count = 0;
+	data->emissive_ids = NULL;
 	data->scene_line = NULL;
 	data->objs = NULL;
 	data->light = NULL;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_part4_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:08:05 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/12 17:18:26 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:15:08 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,15 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 	if (hit_someting(data, ray, &rec))
 	{
 		set_hit_col(&rec, data);
+		if (rec.obj_ptr->emission_ratio > 0.0)
+		{
+			double	intensity = rec.obj_ptr->emission_ratio * 15.0;
+			color_acc.x = (rec.color.r / 255.0) * intensity;
+			color_acc.y = (rec.color.g / 255.0) * intensity;
+			color_acc.z = (rec.color.b / 255.0) * intensity;
+			debug_bvh(&color_acc, data, &rec, ray);
+			return (color_acc);
+		}
 		light_hit(&rec, data, &color_acc, ray);
 		if (deph > 1)
 		{

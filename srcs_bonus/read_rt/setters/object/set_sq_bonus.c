@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_sq_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:23 by titan             #+#    #+#             */
-/*   Updated: 2026/03/10 13:10:22 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:53:27 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,5 +73,13 @@ void	set_sq(t_data *data, char *line, int i)
 	new_sq->ni = t.ni;
 	ft_objadd_back(&data->objs, new_sq);
 	new_sq->next = NULL;
+	new_sq->emission_ratio = 0.0;
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0' && (*line == '.' || ft_isdigit(*line)))
+	{
+		new_sq->emission_ratio = rt_atod(&line);
+		if (new_sq->emission_ratio < 0.0)
+			new_sq->emission_ratio = 0.0;
+	}
 	set_tex(data, &line, i, new_sq);
 }

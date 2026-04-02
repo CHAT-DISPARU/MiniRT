@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_part3_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:06:13 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 17:02:20 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:33:32 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,9 +101,11 @@ void	light_hit_t(t_light_hit *l_h, t_hit_r *rec)
 	}
 }
 
-void	light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray)
+void    light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray)
 {
 	t_light_hit	l_h;
+	t_obj		*obj_ptr;
+	t_light		fake_light;
 
 	l_h.light = data->light;
 	l_h.diffuse_total = (t_vec3){0, 0, 0};
@@ -111,7 +113,6 @@ void	light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray)
 	calc_lights(&l_h.lights, *rec, data);
 	*color_acc = l_h.lights.ambient;
 	l_h.view_dir = vec_normalize(vec_scale(ray.dir, -1.0));
-	l_h.light = data->light;
 	while (l_h.light)
 	{
 		l_h.l_col.x = l_h.light->color.r / 255.0;
@@ -129,6 +130,35 @@ void	light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray)
 			light_hit_t(&l_h, rec);
 		
 		l_h.light = l_h.light->next;
+	}
+	int i = 0;
+	int id;
+	t_aabb box;
+	while (i < data->emissive_count)
+	{
+		id = data->emissive_ids[i];
+		obj_ptr = data->sorted_objs[id];
+		
+		if (obj_ptr != rec->obj_ptr)
+		{
+			fake_light.color = obj_ptr->color;
+			fake_light.ratio = obj_ptr->emission_ratio * 15.0;
+			fake_light.radius = 0.0;
+			fake_light.next = NULL;
+
+			l_h.light = &fake_light;
+			l_h.l_col.x = fake_light.color.r / 255.0;
+			l_h.l_col.y = fake_light.color.g / 255.0;
+			l_h.l_col.z = fake_light.color.b / 255.0;
+			l_h.lights.diffuse = l_h.l_col;
+			box = data->obj_aabbs[id];
+			l_h.target_pos.x = box.min.x + rand_double() * (box.max.x - box.min.x);
+			l_h.target_pos.y = box.min.y + rand_double() * (box.max.y - box.min.y);
+			l_h.target_pos.z = box.min.z + rand_double() * (box.max.z - box.min.z);
+			if (is_in_shadow(data, rec, l_h.target_pos) == false) 
+				light_hit_t(&l_h, rec);
+		}
+		i++;
 	}
 	*color_acc = vec_add(*color_acc,
 			vec_add(l_h.diffuse_total, l_h.specular_total));

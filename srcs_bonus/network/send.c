@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   send.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 09:24:44 by titan             #+#    #+#             */
-/*   Updated: 2026/04/02 14:39:37 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:38:45 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,6 @@ int	send_full_scene(int client_sock, t_data *data)
 	int tex_count = ft_lstsize(data->textures);
 	uint32_t payload_size = sizeof(t_net_scene_base)
 		+ (base.obj_count * sizeof(t_net_obj))
-		+ (base.obj_count * sizeof(t_net_obj))
 		+ (base.bvh_node_count * sizeof(t_bvh_node))
 		+ (base.light_count * sizeof(t_light))
 		+ (base.plane_count * sizeof(t_net_obj));
@@ -162,16 +161,12 @@ int	send_full_scene(int client_sock, t_data *data)
 	}
 	t_net_obj *net_objs = malloc(sizeof(t_net_obj) * base.obj_count);
 	t_net_obj *net_objs_plane = malloc(sizeof(t_net_obj) * base.plane_count);
-	t_net_obj *net_objs_sorted = malloc(sizeof(t_net_obj) * base.obj_count);
 	for (int i = 0; i < base.obj_count; i++)
-	{
-		memcpy(&net_objs[i], &data->array_obj[i], sizeof(t_net_obj));
-		memcpy(&net_objs_sorted[i], data->sorted_objs[i], sizeof(t_net_obj));
-		net_objs[i].tex_index = get_tex_index(data->textures, data->array_obj[i].tex);
-		net_objs[i].bump_index = get_tex_index(data->textures, data->array_obj[i].bump);
-		net_objs_sorted[i].tex_index = get_tex_index(data->textures, data->sorted_objs[i]->tex);
-		net_objs_sorted[i].bump_index = get_tex_index(data->textures, data->sorted_objs[i]->bump);
-	}
+    {
+        memcpy(&net_objs[i], data->sorted_objs[i], sizeof(t_net_obj));
+        net_objs[i].tex_index = get_tex_index(data->textures, data->sorted_objs[i]->tex);
+        net_objs[i].bump_index = get_tex_index(data->textures, data->sorted_objs[i]->bump);
+    }
 	for (int i = 0; i < base.plane_count; i++)
 	{
 		memcpy(&net_objs_plane[i], &data->plane_array[i], sizeof(t_net_obj));
@@ -179,11 +174,9 @@ int	send_full_scene(int client_sock, t_data *data)
 		net_objs_plane[i].bump_index = get_tex_index(data->textures, data->plane_array[i].bump);
 	}
 	send_all(client_sock, net_objs, sizeof(t_net_obj) * base.obj_count);
-	send_all(client_sock, net_objs_sorted, sizeof(t_net_obj) * base.obj_count);
 	send_all(client_sock, net_objs_plane, sizeof(t_net_obj) * base.plane_count);
 	free(net_objs);
-	free(net_objs_plane);
-	free(net_objs_sorted);
+    free(net_objs_plane);
 	send_all(client_sock, data->bvh_nodes, sizeof(t_bvh_node) * base.bvh_node_count);
 	t_light *light_array = malloc(sizeof(t_light) * base.light_count);
 	if (!light_array)

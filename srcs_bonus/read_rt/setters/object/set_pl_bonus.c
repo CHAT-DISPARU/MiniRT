@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_pl_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:44 by titan             #+#    #+#             */
-/*   Updated: 2026/03/19 09:53:15 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:53:15 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,5 +67,13 @@ void	set_pl(t_data *data, char *line, int i)
 	ft_objadd_back(&data->objs, new_pl);
 	new_pl->next = NULL;
 	new_pl->ni = t.ni;
+	new_pl->emission_ratio = 0.0;
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0' && (*line == '.' || ft_isdigit(*line)))
+	{
+		new_pl->emission_ratio = rt_atod(&line);
+		if (new_pl->emission_ratio < 0.0)
+			new_pl->emission_ratio = 0.0;
+	}
 	set_tex(data, &line, i, new_pl);
 }

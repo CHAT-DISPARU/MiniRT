@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_cy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:55 by titan             #+#    #+#             */
-/*   Updated: 2026/03/10 13:11:20 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:53:00 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,5 +77,13 @@ void	set_cy(t_data *data, char *line, int i)
 	ft_objadd_back(&data->objs, new_cy);
 	new_cy->next = NULL;
 	set_new_cy(t, new_cy);
+	new_cy->emission_ratio = 0.0;
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0' && (*line == '.' || ft_isdigit(*line)))
+	{
+		new_cy->emission_ratio = rt_atod(&line);
+		if (new_cy->emission_ratio < 0.0)
+			new_cy->emission_ratio = 0.0;
+	}
 	set_tex(data, &line, i, new_cy);
 }

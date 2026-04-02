@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_hy_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 17:06:16 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/10 13:15:20 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:53:08 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,5 +83,13 @@ void	set_hy(t_data *data, char *line, int i)
 	set_new_hy(new_hy, t);
 	ft_objadd_back(&data->objs, new_hy);
 	new_hy->next = NULL;
+	new_hy->emission_ratio = 0.0;
+	skip_spaces(&line);
+	if (*line && !is_space(*line) && *line != '\n' && *line != '\0' && (*line == '.' || ft_isdigit(*line)))
+	{
+		new_hy->emission_ratio = rt_atod(&line);
+		if (new_hy->emission_ratio < 0.0)
+			new_hy->emission_ratio = 0.0;
+	}
 	set_tex(data, &line, i, new_hy);
 }

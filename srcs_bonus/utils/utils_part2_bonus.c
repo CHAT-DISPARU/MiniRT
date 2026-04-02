@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_part2_bonus.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 10:55:32 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 10:56:02 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:32:12 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,10 @@ void	convert_list_to_arrays(t_data *data)
 		data->plane_array = malloc(sizeof(t_obj) * data->plane_count);
 	set_arrays(data);
 	if (data->obj_count > 0)
+	{
 		build_bvh(data);
+		init_emissive_lights(data);
+	}
 }
 
 void	print_progress(int current_line, int total_lines)
@@ -123,4 +126,40 @@ void	print_progress(int current_line, int total_lines)
 	}
 	printf("] %d%%\033[0m", percent);
 	fflush(stdout);
+}
+
+void	init_emissive_lights(t_data *data)
+{
+	int	i;
+	int	j;
+
+	data->emissive_count = 0;
+	i = 0;
+	while (i < data->obj_count)
+	{
+		if (data->sorted_objs[i]->emission_ratio > 0.0)
+			data->emissive_count++;
+		i++;
+	}
+	if (data->emissive_count > 0)
+	{
+		data->emissive_ids = malloc(sizeof(int) * data->emissive_count);
+		if (!data->emissive_ids)
+			clean_exit(data, 1, "Malloc failed emissive_ids", 0);
+	}
+	else
+		data->emissive_ids = NULL;
+	i = 0;
+	j = 0;
+	while (i < data->obj_count)
+	{
+		data->sorted_objs[i]->id = i;
+		data->obj_aabbs[i] = get_aabb_by_type(data->sorted_objs[i]); 
+		if (data->sorted_objs[i]->emission_ratio > 0.0)
+		{
+			data->emissive_ids[j] = i;
+			j++;
+		}
+		i++;
+	}
 }
