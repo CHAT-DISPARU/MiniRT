@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 09:31:00 by CHAT-DISPAR       #+#    #+#             */
-/*   Updated: 2026/04/02 14:58:55 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 15:03:02 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ int	recv_full_scene(int server_sock, t_data *data)
 	while (i < data->obj_count)
 	{
 		data->sorted_objs[i] = malloc(sizeof(t_obj));
-		memcpy(&data->sorted_objs[i], &sor_o_test[i], sizeof(t_net_obj));
+		memcpy(data->sorted_objs[i], &sor_o_test[i], sizeof(t_net_obj));
 		if (sor_o_test[i].has_texture && sor_o_test[i].tex_index >= 0 && sor_o_test[i].tex_index < tex_count)
 			data->sorted_objs[i]->tex = client_tex_bank[sor_o_test[i].tex_index];
 		else
