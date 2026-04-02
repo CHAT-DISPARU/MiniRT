@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 09:31:00 by CHAT-DISPAR       #+#    #+#             */
-/*   Updated: 2026/04/02 14:39:42 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 14:47:13 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,8 +121,6 @@ int	recv_full_scene(int server_sock, t_data *data)
 		else
 			data->array_obj[i].bump = NULL;
 	}
-	if (client_tex_bank)
-		free(client_tex_bank);
 	int i = 0;
 	data->sorted_objs = malloc(sizeof(t_obj *) * data->obj_count);
 	if (!sor_o_test)
@@ -131,6 +129,7 @@ int	recv_full_scene(int server_sock, t_data *data)
 		clean_exit(data, 1, "Malloc", 0);
 	while (i < data->obj_count)
 	{
+		data->sorted_objs[i] = malloc(sizeof(t_obj));
 		memcpy(&data->sorted_objs[i], &sor_o_test[i], sizeof(t_net_obj));
 		if (sor_o_test[i].has_texture && sor_o_test[i].tex_index >= 0 && sor_o_test[i].tex_index < tex_count)
 			data->sorted_objs[i]->tex = client_tex_bank[sor_o_test[i].tex_index];
@@ -156,6 +155,8 @@ int	recv_full_scene(int server_sock, t_data *data)
 		else
 			data->plane_array[i].bump = NULL;
 	}
+	if (client_tex_bank)
+		free(client_tex_bank);
 	free(net_objs);
 	free(sor_o_test);
 	free(net_objs_plane);
