@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 09:31:00 by CHAT-DISPAR       #+#    #+#             */
-/*   Updated: 2026/04/01 12:16:08 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 14:39:42 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,36 @@ int	recv_texture(int socket, t_texture *tex)
 	return (0);
 }
 
+t_texture*	recv_single_texture(int socket)
+{
+	t_net_texture	net_tex;
+	t_texture		*tex;
+	uint32_t		pixels_size;
+
+	if (recv_all(socket, &net_tex, sizeof(t_net_texture)) < 0)
+		return (NULL);
+	
+	tex = ft_calloc(1, sizeof(t_texture));
+	if (!tex)
+		return (NULL);
+		
+	tex->width = net_tex.width;
+	tex->height = net_tex.height;
+	tex->scale = net_tex.scale;
+	tex->img = NULL;
+	if (net_tex.name_len > 0)
+	{
+		tex->name = malloc(net_tex.name_len + 1);
+		recv_all(socket, tex->name, net_tex.name_len);
+		tex->name[net_tex.name_len] = '\0';
+	}
+	pixels_size = tex->width * tex->height * sizeof(mlx_color);
+	tex->pixels = malloc(pixels_size);
+	recv_all(socket, tex->pixels, pixels_size);
+
+	return (tex);
+}
+
 int	recv_full_scene(int server_sock, t_data *data)
 {
 	t_net_scene_base	base;
@@ -57,60 +87,58 @@ int	recv_full_scene(int server_sock, t_data *data)
 	data->has_checker = base.has_checker;
 	data->checker_color = base.checker_color;
 	data->light_count = base.light_count;
+	int tex_count = 0;
+	recv_all(server_sock, &tex_count, sizeof(int));
+	t_texture **client_tex_bank = NULL;
+	if (tex_count > 0)
+	{
+		client_tex_bank = malloc(sizeof(t_texture *) * tex_count);
+		for (int i = 0; i < tex_count; i++)
+		{
+			t_texture *new_tex = recv_single_texture(server_sock);
+			client_tex_bank[i] = new_tex;
+			ft_lstadd_back(&data->textures, ft_lstnew(new_tex));
+		}
+	}
 	t_net_obj *net_objs = malloc(sizeof(t_net_obj) * base.obj_count);
 	t_net_obj *net_objs_plane = malloc(sizeof(t_net_obj) * base.plane_count);
-	t_net_obj *net_objs_sorted = malloc(sizeof(t_net_obj) * base.obj_count);
+	t_net_obj *sor_o_test = malloc(sizeof(t_net_obj) * base.obj_count);
 	recv_all(server_sock, net_objs, sizeof(t_net_obj) * base.obj_count);
-	recv_all(server_sock, net_objs_sorted, sizeof(t_net_obj) * base.obj_count);
+	recv_all(server_sock, sor_o_test, sizeof(t_net_obj) * base.obj_count);
 	recv_all(server_sock, net_objs_plane, sizeof(t_net_obj) * base.plane_count);
 	data->array_obj = malloc(sizeof(t_obj) * base.obj_count);
 	data->plane_array = malloc(sizeof(t_obj) * base.plane_count);
 	for (int i = 0; i < base.obj_count; i++)
 	{
 		memcpy(&data->array_obj[i], &net_objs[i], sizeof(t_net_obj));
-		if (data->array_obj[i].has_texture == true)
-		{
-			data->array_obj[i].tex = malloc(sizeof(t_texture));
-			recv_texture(server_sock, data->array_obj[i].tex); 
-		}
+		if (net_objs[i].has_texture && net_objs[i].tex_index >= 0 && net_objs[i].tex_index < tex_count)
+			data->array_obj[i].tex = client_tex_bank[net_objs[i].tex_index];
 		else
 			data->array_obj[i].tex = NULL;
-		if (data->array_obj[i].has_bump == true)
-		{
-			data->array_obj[i].bump = malloc(sizeof(t_texture));
-			recv_texture(server_sock, data->array_obj[i].bump);
-		}
+
+		if (net_objs[i].has_bump && net_objs[i].bump_index >= 0 && net_objs[i].bump_index < tex_count)
+			data->array_obj[i].bump = client_tex_bank[net_objs[i].bump_index];
 		else
 			data->array_obj[i].bump = NULL;
-
-		if (i < base.obj_count - 1)
-			data->array_obj[i].next = &data->array_obj[i + 1];
-		else
-			data->array_obj[i].next = NULL;
 	}
+	if (client_tex_bank)
+		free(client_tex_bank);
 	int i = 0;
 	data->sorted_objs = malloc(sizeof(t_obj *) * data->obj_count);
-	t_obj *sor_o_test = malloc(sizeof(t_obj) * data->obj_count);
 	if (!sor_o_test)
 		clean_exit(data, 1, "Malloc", 0);
 	if (!data->sorted_objs)
 		clean_exit(data, 1, "Malloc", 0);
 	while (i < data->obj_count)
 	{
-		memcpy(&sor_o_test[i], &net_objs_sorted[i], sizeof(t_net_obj));
-		data->sorted_objs[i] = &sor_o_test[i];
-		if (data->sorted_objs[i]->has_texture == true)
-		{
-			data->sorted_objs[i]->tex = malloc(sizeof(t_texture));
-			recv_texture(server_sock, data->sorted_objs[i]->tex); 
-		}
+		memcpy(&data->sorted_objs[i], &sor_o_test[i], sizeof(t_net_obj));
+		if (sor_o_test[i].has_texture && sor_o_test[i].tex_index >= 0 && sor_o_test[i].tex_index < tex_count)
+			data->sorted_objs[i]->tex = client_tex_bank[sor_o_test[i].tex_index];
 		else
 			data->sorted_objs[i]->tex = NULL;
-		if (data->sorted_objs[i]->has_bump == true)
-		{
-			data->sorted_objs[i]->bump = malloc(sizeof(t_texture));
-			recv_texture(server_sock, data->sorted_objs[i]->bump);
-		}
+
+		if (sor_o_test[i].has_bump && sor_o_test[i].bump_index >= 0 && sor_o_test[i].bump_index < tex_count)
+			data->sorted_objs[i]->bump = client_tex_bank[sor_o_test[i].bump_index];
 		else
 			data->sorted_objs[i]->bump = NULL;
 		i++;
@@ -118,28 +146,18 @@ int	recv_full_scene(int server_sock, t_data *data)
 	for (int i = 0; i < base.plane_count; i++)
 	{
 		memcpy(&data->plane_array[i], &net_objs_plane[i], sizeof(t_net_obj));
-		if (data->plane_array[i].has_texture == true)
-		{
-			data->plane_array[i].tex = malloc(sizeof(t_texture));
-			recv_texture(server_sock, data->plane_array[i].tex); 
-		}
+		if (net_objs_plane[i].has_texture && net_objs_plane[i].tex_index >= 0 && net_objs_plane[i].tex_index < tex_count)
+			data->plane_array[i].tex = client_tex_bank[net_objs_plane[i].tex_index];
 		else
 			data->plane_array[i].tex = NULL;
-		if (data->plane_array[i].has_bump == true)
-		{
-			data->plane_array[i].bump = malloc(sizeof(t_texture));
-			recv_texture(server_sock, data->plane_array[i].bump);
-		}
+
+		if (net_objs_plane[i].has_bump && net_objs_plane[i].bump_index >= 0 && net_objs_plane[i].bump_index < tex_count)
+			data->plane_array[i].bump = client_tex_bank[net_objs_plane[i].bump_index];
 		else
 			data->plane_array[i].bump = NULL;
-
-		if (i < base.plane_count - 1)
-			data->plane_array[i].next = &data->plane_array[i + 1];
-		else
-			data->plane_array[i].next = NULL;
 	}
 	free(net_objs);
-	free(net_objs_sorted);
+	free(sor_o_test);
 	free(net_objs_plane);
 	data->bvh_nodes = ft_calloc(sizeof(t_bvh_node), base.bvh_node_count);
 	recv_all(server_sock, data->bvh_nodes, sizeof(t_bvh_node) * base.bvh_node_count);

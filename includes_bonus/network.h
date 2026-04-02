@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:15:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 12:04:39 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 14:25:09 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct s_net_texture
     int	width;
     int	height;
     int	scale;
+	int	name_len;
 }				t_net_texture;
 
 typedef struct s_net_header
@@ -40,6 +41,8 @@ typedef struct s_net_obj
 	double		rad_1;
 	double		rad_2;
 	double		height;
+	int			tex_index;
+	int			bump_index;
 	t_vec3		ka;
 	double		ns;
 	double		ni;
