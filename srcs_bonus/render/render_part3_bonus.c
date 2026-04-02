@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_part3_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:06:13 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 18:33:32 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/02 22:05:19 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,7 @@ void    light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray)
 		if (obj_ptr != rec->obj_ptr)
 		{
 			fake_light.color = obj_ptr->color;
-			fake_light.ratio = obj_ptr->emission_ratio * 15.0;
+			fake_light.ratio = obj_ptr->emission_ratio;
 			fake_light.radius = 0.0;
 			fake_light.next = NULL;
 
