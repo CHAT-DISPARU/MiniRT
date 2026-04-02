@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 15:04:30 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 15:16:54 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,6 +229,8 @@ typedef struct s_texture
 
 typedef struct s_obj
 {
+	int				tex_index;
+	int				bump_index;
 	double			rad_1;
 	double			rad_2;
 	double			height;
@@ -249,8 +251,6 @@ typedef struct s_obj
 	bool			has_bump;
 	t_texture		*tex;
 	t_texture		*bump;
-	int				tex_index;
-	int				bump_index;
 	struct s_obj	*next;
 }				t_obj;
 

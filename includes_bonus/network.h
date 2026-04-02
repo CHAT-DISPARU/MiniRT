@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:15:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 14:25:09 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 15:16:40 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,11 @@ typedef struct s_net_header
 
 typedef struct s_net_obj
 {
+	int			tex_index;
+	int			bump_index;
 	double		rad_1;
 	double		rad_2;
 	double		height;
-	int			tex_index;
-	int			bump_index;
 	t_vec3		ka;
 	double		ns;
 	double		ni;
