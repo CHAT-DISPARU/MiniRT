@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:01:07 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/13 09:08:24 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 10:35:41 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,9 @@ void	error_arg(void)
 
 void	re_init(t_data *data)
 {
+	data->plane_count = 0;
+	data->light_count = 0;
+	data->obj_count = 0;
 	data->camera_is_set = false;
 	data->ambient_is_set = false;
 	data->sorted_objs = NULL;

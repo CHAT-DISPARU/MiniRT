@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:36 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 11:49:15 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 09:50:58 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	check_new_clients(t_data *data)
 		if (new_sock < 0)
 			break ;
 
-		if (data->client_count < 10)
+		if (data->client_count < CLIENT_MAX)
 		{
 			data->client_sockets[data->client_count] = new_sock;
 			data->client_count++;

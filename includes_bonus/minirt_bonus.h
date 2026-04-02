@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 16:07:57 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 09:51:12 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@
 # define THREADS_COUNT	16
 # define MAX_BVH_DEPTH	24
 # define EPSILON		1e-4
+# define CLIENT_MAX		25
 
 typedef struct s_bump_calc
 {
