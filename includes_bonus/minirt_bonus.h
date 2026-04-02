@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 15:16:54 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 17:01:18 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,6 +293,7 @@ typedef struct s_light
 	t_vec3			origin;
 	double			ratio;
 	mlx_color		color;
+	double			radius;
 	struct s_light	*next;
 }				t_light;
 
@@ -561,6 +562,7 @@ typedef struct s_op_ni
 
 typedef struct s_light_hit
 {
+	t_vec3		target_pos;
 	t_light		*light;
 	t_color_c	lights;
 	t_vec3		light_dir;
@@ -589,7 +591,7 @@ double		rt_atod(char **line);
 void		skip_coma(char **line, t_data *data, int i);
 void		skip_spaces(char **line);
 t_mat4		mat4_align_vectors(t_vec3 start, t_vec3 dest);
-bool		is_in_shadow(t_data *data, t_hit_r *rec, t_light *light);
+bool		is_in_shadow(t_data *data, t_hit_r *rec, t_vec3 target_pos);
 void		init_t_calc_f(t_calc_f *functions);
 void		check_color_val(t_data *data, double c, int i);
 void		check_extra_info(t_data *data, char *line, int i);

@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 14:41:51 by titan             #+#    #+#             */
-/*   Updated: 2026/03/10 13:54:39 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 17:01:23 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,14 +77,14 @@ bool	hit_no_bvh(t_ray shadow_ray,
 	return (false);
 }
 
-bool	is_in_shadow(t_data *data, t_hit_r *rec, t_light *light)
+bool	is_in_shadow(t_data *data, t_hit_r *rec, t_vec3 target_pos)
 {
 	t_ray		shadow_ray;
 	t_vec3		light_dir;
 	double		light_dist;
 	t_vec2int	idx;
 
-	light_dir = vec_sub(light->origin, rec->p);
+	light_dir = vec_sub(target_pos, rec->p);
 	light_dist = sqrt(vec_dot_scal(light_dir, light_dir));
 	shadow_ray.dir = vec_normalize(light_dir);
 	shadow_ray.origin = vec_add(rec->p, vec_scale(rec->normal, EPSILON));

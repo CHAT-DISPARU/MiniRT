@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:06:47 by titan             #+#    #+#             */
-/*   Updated: 2026/03/31 14:24:26 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 16:58:17 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,11 @@ void	set_l(t_data *data, char *line, int i)
 	check_ratio(data, light.ratio, i);
 	check_missing_info(data, line, i);
 	light.color = parse_color(&line, data, i);
+	skip_spaces(&line);
+	light.radius = 0;
+	if (*line && !is_space(*line)
+		&& *line != '\n' && *line != '\0' && ft_isdigit(*line))
+		light.radius = rt_atod(&line);
 	check_extra_info(data, line, i);
 	new_light = malloc(sizeof(t_light));
 	if (!new_light)

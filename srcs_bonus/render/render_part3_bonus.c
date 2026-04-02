@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:06:13 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/12 17:17:59 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 17:02:20 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ t_vec3	tint_color_acc(double fresnel,
 
 void	light_hit_t(t_light_hit *l_h, t_hit_r *rec)
 {
-	l_h->light_dir = vec_normalize(vec_sub(l_h->light->origin, rec->p));
+	l_h->light_dir = vec_normalize(vec_sub(l_h->target_pos, rec->p));
 	l_h->diff_strength = vec_dot_scal(rec->normal, l_h->light_dir);
 	if (l_h->diff_strength > 0)
 	{
@@ -118,8 +118,16 @@ void	light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray)
 		l_h.l_col.y = l_h.light->color.g / 255.0;
 		l_h.l_col.z = l_h.light->color.b / 255.0;
 		l_h.lights.diffuse = l_h.l_col;
-		if (is_in_shadow(data, rec, l_h.light) == false)
+		l_h.target_pos = l_h.light->origin;
+		if (l_h.light->radius > 0.0)
+		{
+			t_vec3 random_dir = vec_normalize(vec_random_in_unit_sphere());
+			l_h.target_pos = vec_add(l_h.light->origin, 
+								vec_scale(random_dir, l_h.light->radius));
+		}
+		if (is_in_shadow(data, rec, l_h.target_pos) == false) 
 			light_hit_t(&l_h, rec);
+		
 		l_h.light = l_h.light->next;
 	}
 	*color_acc = vec_add(*color_acc,
