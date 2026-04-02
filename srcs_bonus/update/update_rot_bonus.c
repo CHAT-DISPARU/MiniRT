@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 11:47:14 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 10:56:35 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/02 22:43:53 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,12 @@ void	update_samples2(t_data *data, bool *movded)
 	if (data->key_table[31] && !data->old_key_table[31])
 	{
 		*movded = true;
-		data->s_per_pixs = 5;
+		data->s_per_pixs = 10;
 	}
 	if (data->key_table[32] && !data->old_key_table[32])
 	{
 		*movded = true;
-		data->s_per_pixs = 10;
+		data->s_per_pixs = 50;
 	}
 }
 
@@ -37,7 +37,7 @@ void	update_samples(t_data *data, bool *movded)
 	if (data->key_table[33] && !data->old_key_table[33])
 	{
 		*movded = true;
-		data->s_per_pixs = 30;
+		data->s_per_pixs = 100;
 	}
 	if (data->key_table[34] && !data->old_key_table[34])
 	{
