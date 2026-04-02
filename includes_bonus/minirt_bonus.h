@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 18:51:13 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/02 22:11:08 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 # define S_PER_PIXS		100
 # define NB_TASK_R		24
 # define PI				3.14159265358979323846
-# define THREADS_COUNT	8
+# define THREADS_COUNT	16
 # define MAX_BVH_DEPTH	24
 # define EPSILON		1e-4
 # define CLIENT_MAX		25
