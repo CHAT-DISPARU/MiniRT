@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   thread_calls_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/01 16:03:37 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/04 01:02:51 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,20 +71,21 @@ void	prepare_calls(t_data *data, t_thread_c_int *utils, int client_count)
 	print_progress(utils->finish, THREADS_COUNT * NB_TASK_R * client_count);
 }
 
-void	send_task(t_data *data, t_thread_c_int *utils,
-		int *indexs, int indexs_size)
+int send_task(t_data *data, int target_sock, t_thread_c_int *utils, int *indexs, int total_tasks, int *next_task, int batch_size)
 {
-	t_thread_info	infos;
-	t_net_task		net_task;
 	t_net_header	header;
-	int				worker_target;
+	t_net_task		net_task;
+	t_thread_info	infos;
+	int				sent = 0;
 
 	header.type = MSG_TASK;
 	header.size = sizeof(t_net_task);
-	while (utils->i < indexs_size)
+	while (sent < batch_size && *next_task < total_tasks)
 	{
-		utils->current_col = indexs[utils->i] % utils->cols;
-		utils->current_row = indexs[utils->i] / utils->cols;
+		int idx = indexs[*next_task];
+		utils->current_col = idx % utils->cols;
+		utils->current_row = idx / utils->cols;
+
 		infos.data = data;
 		infos.start_x = utils->current_col * utils->grid_w;
 		if (utils->current_col == utils->cols - 1)
@@ -96,62 +97,74 @@ void	send_task(t_data *data, t_thread_c_int *utils,
 			infos.end_y = data->height;
 		else
 			infos.end_y = (utils->current_row + 1) * utils->grid_h;
-		worker_target = utils->i % (data->client_count + 1);
-		if (worker_target < data->client_count)
+		if (target_sock > 0)
 		{
-			net_task.task_id = utils->i;
+			net_task.task_id = *next_task;
 			net_task.start_x = infos.start_x;
 			net_task.end_x   = infos.end_x;
 			net_task.start_y = infos.start_y;
 			net_task.end_y   = infos.end_y;
-			send_all(data->client_sockets[worker_target], &header, sizeof(t_net_header));
-			send_all(data->client_sockets[worker_target], &net_task, sizeof(t_net_task));
+			send_all(target_sock, &header, sizeof(t_net_header));
+			send_all(target_sock, &net_task, sizeof(t_net_task));
 		}
 		else
 			add_task(data, render, infos);
-		utils->i++;
+		
+		(*next_task)++;
+		sent++;
 	}
-	for (int k = 0; k < data->client_count; k++)
+	if (target_sock > 0 && sent > 0)
 	{
 		header.type = MSG_END_TASKS;
-		send_all(data->client_sockets[k], &header, sizeof(t_net_header));
+		header.size = sizeof(t_net_header);
+		send_all(target_sock, &header, sizeof(t_net_header));
 	}
+	return (sent);
 }
 
 void	thread_calls(t_data *data)
 {
 	int				*indexs;
 	t_thread_c_int	utils;
-	int				i;
-	int client_count;
-
-	if (data->client_count > 0)
-		client_count = data->client_count + 1;
-	else
-		client_count = 1;
-	prepare_calls(data, &utils, client_count);
-	indexs = malloc(sizeof(int) * THREADS_COUNT * NB_TASK_R * client_count);
-	set_indexs(indexs, THREADS_COUNT * NB_TASK_R * client_count);
-	i = 0;
-	while (i < data->client_count) 
+	int				client_count = data->client_count > 0 ? data->client_count + 1 : 1;
+	
+	int             total_tasks = THREADS_COUNT * NB_TASK_R * client_count * 8;
+	prepare_calls(data, &utils, client_count * 8);
+	indexs = malloc(sizeof(int) * total_tasks);
+	set_indexs(indexs, total_tasks);
+	for (int i = 0; i < data->client_count; i++) 
 	{
 		if (send_scene_low(data->client_sockets[i], data) == -1)
 			ft_putstr_fd("error scene envoie\n", 2);
-		i++;
 	}
-	send_task(data, &utils, indexs, THREADS_COUNT * NB_TASK_R * client_count);
-	free(indexs);
+	int	next_task = 0;
+	int	client_pending[CLIENT_MAX] = {0};
+	int	local_assigned = 0;
+	int	remote_finished = 0;
+	int	batch_size = THREADS_COUNT;
+	int frame_baseline = 0;
+    pthread_mutex_lock(&data->finish_count);
+    frame_baseline = data->finish;
+    pthread_mutex_unlock(&data->finish_count);
+	for (int k = 0; k < data->client_count; k++)
+		client_pending[k] = send_task(data, data->client_sockets[k], &utils, indexs, total_tasks, &next_task, batch_size);
+	local_assigned += send_task(data, -1, &utils, indexs, total_tasks, &next_task, batch_size);
 	while (1)
 	{
 		pthread_mutex_lock(&data->finish_count);
 		utils.finish = data->finish;
 		pthread_mutex_unlock(&data->finish_count);
-		print_progress(utils.finish, THREADS_COUNT * NB_TASK_R * client_count);
-		if (utils.finish == THREADS_COUNT * NB_TASK_R * client_count)
+		
+		int frame_finish = utils.finish - frame_baseline;
+		int	local_finished = frame_finish - remote_finished;
+		if (local_assigned - local_finished < THREADS_COUNT && next_task < total_tasks)
+			local_assigned += send_task(data, -1, &utils, indexs, total_tasks, &next_task, batch_size);
+		print_progress(frame_finish, total_tasks);
+		if (frame_finish >= total_tasks)
 			break ;
-		fd_set  readfds;
-		int     max_sd = 0;
-		int     sd;
+		fd_set	readfds;
+		int		max_sd = 0;
+		int		sd;
 		
 		FD_ZERO(&readfds);
 		for (int k = 0; k < data->client_count; k++)
@@ -160,15 +173,13 @@ void	thread_calls(t_data *data)
 			if (sd > 0)
 			{
 				FD_SET(sd, &readfds);
-				if (sd > max_sd)
-					max_sd = sd;
+				if (sd > max_sd) max_sd = sd;
 			}
 		}
 		struct timeval tv;
 		tv.tv_sec = 0;
-		tv.tv_usec = 200;
-		int activity = select(max_sd + 1, &readfds, NULL, NULL, &tv);
-		if (activity > 0)
+		tv.tv_usec = 1000;
+		if (select(max_sd + 1, &readfds, NULL, NULL, &tv) > 0)
 		{
 			for (int k = 0; k < data->client_count; k++)
 			{
@@ -176,15 +187,22 @@ void	thread_calls(t_data *data)
 				if (sd > 0 && FD_ISSET(sd, &readfds))
 				{
 					t_net_header header;
-					
 					if (recv_all(sd, &header, sizeof(t_net_header)) == 0)
 					{
 						if (header.type == MSG_PIXELS)
 						{
 							recv_task_result(sd, data, header.size);
+							
 							pthread_mutex_lock(&data->finish_count);
 							data->finish++;
 							pthread_mutex_unlock(&data->finish_count);
+							
+							remote_finished++;
+							client_pending[k]--;
+							if (client_pending[k] == 0 && next_task < total_tasks)
+							{
+								client_pending[k] = send_task(data, sd, &utils, indexs, total_tasks, &next_task, batch_size);
+							}
 						}
 					}
 					else
@@ -196,10 +214,11 @@ void	thread_calls(t_data *data)
 				}
 			}
 		}
+		//mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
+		//mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
 	}
-	pthread_mutex_destroy(&data->finish_count);
 	draw_lines(data, utils.grid_w, utils.grid_h);
-	mlx_set_image_region(data->mlx, data->img, 0, 0,
-		data->width, data->height, data->pixels);
+	mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
 	mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
+	free(indexs);
 }

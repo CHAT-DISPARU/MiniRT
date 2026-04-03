@@ -3,76 +3,99 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:46 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 15:51:46 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/04 00:34:08 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-void	process_and_send_task(t_data *data, int sock, t_net_task task[256], int task_count)
+void	process_and_send_task(t_data *data, int sock, t_net_task *tasks, int task_count)
 {
-	t_thread_info	infos;
-	int				expected_tasks;
+	int	baseline;
 
-	expected_tasks = task_count;
 	pthread_mutex_lock(&data->finish_count);
-	data->finish = 0;
+	baseline = data->finish;
 	pthread_mutex_unlock(&data->finish_count);
+
 	int i = 0;
 	while (i < task_count)
 	{
+		t_thread_info infos;
 		infos.data = data;
-		infos.start_x = task[i].start_x;
-		infos.end_x = task[i].end_x;
-		infos.start_y = task[i].start_y;
-		infos.end_y = task[i].end_y;
+		infos.start_x = tasks[i].start_x;
+		infos.end_x = tasks[i].end_x;
+		infos.start_y = tasks[i].start_y;
+		infos.end_y = tasks[i].end_y;
 		add_task(data, render, infos);
 		i++;
 	}
 	while (1)
 	{
 		pthread_mutex_lock(&data->finish_count);
-		int finished = data->finish;
+		int finished = data->finish - baseline;
 		pthread_mutex_unlock(&data->finish_count);
 		if (task_count)
 			print_progress(finished, task_count);
-		if (finished == expected_tasks)
-			break ;
+		if (finished >= task_count)
+			break;
 		usleep(100);
 	}
-	send_task_results(sock, data, task, task_count);
+	send_task_results(sock, data, tasks, task_count);
 }
 
 void	worker_loop(t_data *data, int sock, t_net_header *header)
 {
-	t_net_task		tasks[THREADS_COUNT * NB_TASK_R];
+	t_net_task		*tasks;
 	int				task_count;
+	int				task_capacity;
 
 	task_count = 0;
-	while (task_count < THREADS_COUNT * NB_TASK_R)
+	task_capacity = THREADS_COUNT * NB_TASK_R * 8;
+	tasks = malloc(sizeof(t_net_task) * task_capacity);
+	if (!tasks)
 	{
+		close(sock);
+		return ;
+	}
+	while (1)
+	{
+		if (header->type == MSG_END_TASKS)
+			break ;
 		if (header->type == MSG_TASK)
 		{
-			//printf("task n%d recue.\n", task_count);
+			if (task_count >= task_capacity)
+			{
+				task_capacity *= 2;
+				t_net_task *tmp = realloc(tasks, sizeof(t_net_task) * task_capacity);
+				if (!tmp)
+				{
+					free(tasks);
+					close(sock);
+					return ;
+				}
+				tasks = tmp;
+			}
 			if (recv_all(sock, &tasks[task_count], sizeof(t_net_task)) < 0)
 			{
+				free(tasks);
 				close(sock);
 				return ;
 			}
 			task_count++;
 		}
-		else if (header->type == MSG_END_TASKS)
-			break ;
 		if (recv_all(sock, header, sizeof(t_net_header)) < 0)
 		{
+			free(tasks);
 			close(sock);
 			return ;
 		}
 	}
-	process_and_send_task(data, sock, tasks, task_count);
+	if (task_count > 0)
+		process_and_send_task(data, sock, tasks, task_count);
+	free(tasks);
 }
 
 int	call_recv_right(t_data *data, int sock, bool *first_time)

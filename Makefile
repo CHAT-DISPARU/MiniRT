@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+         #
+#    By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/04/02 15:05:13 by gajanvie         ###   ########.fr        #
+#    Updated: 2026/04/03 21:03:48 by CHAT-DISPAR      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_part3_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:06:13 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 22:10:33 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/03 23:21:45 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,9 +147,9 @@ void    light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray)
 			fake_light.next = NULL;
 
 			l_h.light = &fake_light;
-			l_h.l_col.x = fake_light.color.r / 255;
-			l_h.l_col.y = fake_light.color.g / 255;
-			l_h.l_col.z = fake_light.color.b / 255;
+			l_h.l_col.x = fake_light.color.r / 255.0;
+			l_h.l_col.y = fake_light.color.g / 255.0;
+			l_h.l_col.z = fake_light.color.b / 255.0;
 			l_h.lights.diffuse = l_h.l_col;
 			box = data->obj_aabbs[id];
 			l_h.target_pos.x = box.min.x + rand_double() * (box.max.x - box.min.x);
