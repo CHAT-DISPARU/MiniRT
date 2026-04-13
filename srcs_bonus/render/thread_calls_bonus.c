@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   thread_calls_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/04 01:02:51 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/13 09:38:20 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,8 +128,8 @@ void	thread_calls(t_data *data)
 	t_thread_c_int	utils;
 	int				client_count = data->client_count > 0 ? data->client_count + 1 : 1;
 	
-	int             total_tasks = THREADS_COUNT * NB_TASK_R * client_count * 8;
-	prepare_calls(data, &utils, client_count * 8);
+	int             total_tasks = THREADS_COUNT * NB_TASK_R * client_count;
+	prepare_calls(data, &utils, client_count);
 	indexs = malloc(sizeof(int) * total_tasks);
 	set_indexs(indexs, total_tasks);
 	for (int i = 0; i < data->client_count; i++) 
