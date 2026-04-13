@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   recv.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 09:31:00 by CHAT-DISPAR       #+#    #+#             */
-/*   Updated: 2026/04/02 18:41:34 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/13 15:59:01 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,8 @@ int	recv_full_scene(int server_sock, t_data *data)
 		else
 			data->light[i].next = NULL;
 	}
+	if (base.light_count == 0)
+		data->light = NULL;
 	data->obj_aabbs = malloc(sizeof(t_aabb) * base.obj_count);
 	init_emissive_lights(data);
 	return (0);
