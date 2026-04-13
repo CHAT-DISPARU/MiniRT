@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/13 09:38:20 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/13 10:15:46 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,10 +142,6 @@ void	thread_calls(t_data *data)
 	int	local_assigned = 0;
 	int	remote_finished = 0;
 	int	batch_size = THREADS_COUNT;
-	int frame_baseline = 0;
-    pthread_mutex_lock(&data->finish_count);
-    frame_baseline = data->finish;
-    pthread_mutex_unlock(&data->finish_count);
 	for (int k = 0; k < data->client_count; k++)
 		client_pending[k] = send_task(data, data->client_sockets[k], &utils, indexs, total_tasks, &next_task, batch_size);
 	local_assigned += send_task(data, -1, &utils, indexs, total_tasks, &next_task, batch_size);
@@ -155,12 +151,11 @@ void	thread_calls(t_data *data)
 		utils.finish = data->finish;
 		pthread_mutex_unlock(&data->finish_count);
 		
-		int frame_finish = utils.finish - frame_baseline;
-		int	local_finished = frame_finish - remote_finished;
+		int	local_finished = utils.finish - remote_finished;
 		if (local_assigned - local_finished < THREADS_COUNT && next_task < total_tasks)
 			local_assigned += send_task(data, -1, &utils, indexs, total_tasks, &next_task, batch_size);
-		print_progress(frame_finish, total_tasks);
-		if (frame_finish >= total_tasks)
+		print_progress(utils.finish, total_tasks);
+		if (utils.finish >= total_tasks)
 			break ;
 		fd_set	readfds;
 		int		max_sd = 0;
