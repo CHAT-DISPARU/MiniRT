@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/13 10:15:46 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/13 17:12:24 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ void	thread_calls(t_data *data)
 	int	client_pending[CLIENT_MAX] = {0};
 	int	local_assigned = 0;
 	int	remote_finished = 0;
-	int	batch_size = THREADS_COUNT;
+	int	batch_size = THREADS_COUNT * 2;
 	for (int k = 0; k < data->client_count; k++)
 		client_pending[k] = send_task(data, data->client_sockets[k], &utils, indexs, total_tasks, &next_task, batch_size);
 	local_assigned += send_task(data, -1, &utils, indexs, total_tasks, &next_task, batch_size);
