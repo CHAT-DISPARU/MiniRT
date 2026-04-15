@@ -1,4 +1,4 @@
-<em>This project has been created as part of the 42 curriculum by gajanvie[, jodougla].</em>
+<em>This project has been created as part of the 42 curriculum by gajanvie.</em>
 
 # MiniRT — My first Ray Tracer
 
