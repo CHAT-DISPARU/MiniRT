@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/04 01:08:17 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/15 13:32:28 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@
 # define THREADS_COUNT	16
 # define MAX_BVH_DEPTH	24
 # define EPSILON		1e-4
-# define CLIENT_MAX		25
+# define CLIENT_MAX		100
 
 typedef struct s_bump_calc
 {

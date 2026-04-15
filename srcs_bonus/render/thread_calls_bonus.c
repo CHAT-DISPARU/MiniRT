@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/13 17:12:24 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/15 13:30:49 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,8 +209,8 @@ void	thread_calls(t_data *data)
 				}
 			}
 		}
-		//mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
-		//mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
+		// mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
+		// mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
 	}
 	draw_lines(data, utils.grid_w, utils.grid_h);
 	mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
