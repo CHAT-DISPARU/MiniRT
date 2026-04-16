@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 10:28:54 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 10:29:28 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/16 11:00:27 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ void	set_base_mat(t_mtl_info *mat)
 	mat->ni = -1;
 	mat->tex = NULL;
 	mat->bump = NULL;
+	mat->emission_ratio = 0;
 	mat->has_col = false;
 	mat->color = (mlx_color)(uint32_t){0xFFFFFFFF};
 	mat->reflectivity = -1.0;

@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/03 12:00:30 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 10:34:44 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/16 11:02:44 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ void	set_obj_tr(t_vars_obj *v, char **c, t_mtl_info mat, t_data *data)
 	v->new->kd = mat.kd;
 	v->new->ka = mat.ka;
 	v->new->ns = mat.ns;
+	v->new->emission_ratio = mat.emission_ratio;
 	if (mat.reflectivity >= 0.0)
 		v->new->reflectivity = mat.reflectivity;
 	if (mat.rought >= 0.0)

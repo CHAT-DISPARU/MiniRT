@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/07 16:34:13 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/12 16:48:30 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/16 11:01:25 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ void	set_new_mat(int *i,
 	(*mtl_node)->ni = 1;
 	(*mtl_node)->sb = 1;
 	(*mtl_node)->st = 1;
+	(*mtl_node)->emission_ratio = 0;
 }
 
 void	call_setters_mat(int *i,
@@ -79,6 +80,15 @@ void	call_setters_mat(int *i,
 			(*mtl_node)->opacity = 1.0;
 		if ((*mtl_node)->opacity < 0.0)
 			(*mtl_node)->opacity = 0.00001;
+	}
+	if (!ft_strncmp("e ", *ptr, 2) && *i == 1)
+	{
+		*ptr = *ptr + 2;
+		(*mtl_node)->emission_ratio = parse_double(ptr, 0);
+		if ((*mtl_node)->emission_ratio > 1.0)
+			(*mtl_node)->emission_ratio = 1.0;
+		if ((*mtl_node)->emission_ratio < 0.0)
+			(*mtl_node)->emission_ratio = 0;
 	}
 	mat_tex_bump(*i, mtl_node, ptr);
 	mat_rgb_re(*i, mtl_node, ptr);

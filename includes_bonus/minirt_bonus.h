@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/15 13:32:28 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/16 11:00:16 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,6 +259,7 @@ typedef struct s_obj
 
 typedef struct s_mtl_info
 {
+	double				emission_ratio;
 	t_vec3				ka;
 	t_texture			*bump;
 	char				*bumpc;

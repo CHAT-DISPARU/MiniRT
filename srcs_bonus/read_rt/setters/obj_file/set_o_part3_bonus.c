@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 10:31:35 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/12 17:04:51 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/16 11:01:47 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	set_new_mtlmat(t_mtl_info *mat, t_mtl_info *tmp)
 	mat->has_col = tmp->has_col;
 	mat->opacity = tmp->opacity;
 	mat->bump = tmp->bump;
+	mat->emission_ratio = tmp->emission_ratio;
 }
 
 t_mtl_info	find_mat(t_mtl_info *mtl_info, char *s)
