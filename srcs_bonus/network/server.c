@@ -6,11 +6,33 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:36 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 09:50:58 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/16 14:50:16 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
+
+#include <stdbool.h>
+
+bool	is_ip_already_connected(t_data *data, struct sockaddr_in *new_client_addr)
+{
+	struct sockaddr_in	peer_addr;
+	socklen_t			peer_len;
+	int					i;
+
+	peer_len = sizeof(peer_addr);
+	i = 0;
+	while (i < data->client_count)
+	{
+		if (getpeername(data->client_sockets[i], (struct sockaddr *)&peer_addr, &peer_len) == 0)
+		{
+			if (peer_addr.sin_addr.s_addr == new_client_addr->sin_addr.s_addr)
+				return (true);
+		}
+		i++;
+	}
+	return (false);
+}
 
 void	init_server(t_data *data)
 {
@@ -43,7 +65,14 @@ void	check_new_clients(t_data *data)
 		new_sock = accept(data->server_socket, (struct sockaddr *)&client_addr, &addr_len);
 		if (new_sock < 0)
 			break ;
-
+		#if BLOCK_SAME_IP == 1
+		if (is_ip_already_connected(data, &client_addr))
+		{
+			printf("\nUn gros plot de chantier avec cette IP est deja connecte. Rejete gros plot vivant va te laver.\n");
+			close(new_sock);
+			continue ;
+		}
+		#endif
 		if (data->client_count < CLIENT_MAX)
 		{
 			data->client_sockets[data->client_count] = new_sock;

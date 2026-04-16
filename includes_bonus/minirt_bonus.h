@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/16 11:00:16 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/16 14:50:43 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@
 # include <sys/socket.h>
 # include <arpa/inet.h>
 
+# define BLOCK_SAME_IP	1
 # define WIDTH			1500
 # define HEIGHT			1000
 # define S_PER_PIXS		1000
