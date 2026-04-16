@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:36 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/16 14:50:16 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/16 15:30:04 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ bool	is_ip_already_connected(t_data *data, struct sockaddr_in *new_client_addr)
 	i = 0;
 	while (i < data->client_count)
 	{
-		if (getpeername(data->client_sockets[i], (struct sockaddr *)&peer_addr, &peer_len) == 0)
+		if (data->client_sockets[i] != -1 && getpeername(data->client_sockets[i], (struct sockaddr *)&peer_addr, &peer_len) == 0)
 		{
 			if (peer_addr.sin_addr.s_addr == new_client_addr->sin_addr.s_addr)
 				return (true);
