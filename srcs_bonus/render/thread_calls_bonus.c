@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/15 13:30:49 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/16 15:20:50 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,9 +202,11 @@ void	thread_calls(t_data *data)
 					}
 					else
 					{
-						ft_putstr_fd("\nUn client c'est deco.\n", 2);
+						ft_putstr_fd("\nun client s'est deco.\n", 2);
 						close(sd);
 						data->client_sockets[k] = 0;
+						data->client_count--;
+						return ;
 					}
 				}
 			}
