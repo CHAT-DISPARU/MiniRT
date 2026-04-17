@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:03:53 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 11:04:26 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/17 18:37:05 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,25 +33,25 @@ t_ray	calc_ray(t_render_v rv, t_data *data)
 	return (ray);
 }
 
-t_vec3	vec_random_in_unit_sphere(void)
+t_vec3	vec_random_in_unit_sphere(unsigned int *seed)
 {
 	t_vec3	p;
 
 	while (1)
 	{
-		p.x = rand_double() * 2.0 - 1.0;
-		p.y = rand_double() * 2.0 - 1.0;
-		p.z = rand_double() * 2.0 - 1.0;
+		p.x = rand_double(seed) * 2.0 - 1.0;
+		p.y = rand_double(seed) * 2.0 - 1.0;
+		p.z = rand_double(seed) * 2.0 - 1.0;
 		if (vec_dot_scal(p, p) < 1.0)
 			return (p);
 	}
 }
 
-t_vec3	random_hemisphere_dir(t_vec3 normal)
+t_vec3	random_hemisphere_dir(t_vec3 normal, unsigned int *seed)
 {
 	t_vec3	dir;
 
-	dir = vec_random_in_unit_sphere();
+	dir = vec_random_in_unit_sphere(seed);
 	if (vec_dot_scal(dir, normal) < 0.0)
 		dir = vec_scale(dir, -1.0);
 	return (vec_normalize(dir));

@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/16 15:30:23 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/16 15:38:04 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,8 +134,11 @@ void	thread_calls(t_data *data)
 	set_indexs(indexs, total_tasks);
 	for (int i = 0; i < data->client_count; i++) 
 	{
-		if (send_scene_low(data->client_sockets[i], data) == -1)
-			ft_putstr_fd("error scene envoie\n", 2);
+		if (data->client_sockets[i] != -1)
+		{
+			if (send_scene_low(data->client_sockets[i], data) == -1)
+				ft_putstr_fd("error scene envoie\n", 2);
+		}
 	}
 	int	next_task = 0;
 	int	client_pending[CLIENT_MAX] = {0};
@@ -205,6 +208,16 @@ void	thread_calls(t_data *data)
 						ft_putstr_fd("\nun client s'est deco.\n", 2);
 						close(sd);
 						data->client_sockets[k] = -1;
+						int j = 0;
+						for (int i = 0; i < data->client_count; i++)
+						{
+							if (data->client_sockets[k] == -1)
+								j = 1;
+							if (i == data->client_count - 1)
+								data->client_sockets[k] = 0;
+							if (j == 1)
+								data->client_sockets[k] = data->client_sockets[k + 1];
+						}
 						data->client_count--;
 						return ;
 					}

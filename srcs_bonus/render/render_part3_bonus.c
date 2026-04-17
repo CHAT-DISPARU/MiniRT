@@ -3,32 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   render_part3_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
+/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:06:13 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/03 23:21:45 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/17 18:45:32 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-t_vec3	reflect(int deph, t_data *data, t_hit_r *rec, t_ray ray)
+t_vec3	reflect(int deph, t_data *data, t_hit_r *rec, t_ray ray, unsigned int *seed)
 {
 	t_ro_re	utils;
 
 	utils.r = rec->obj_ptr->reflectivity;
 	utils.perfect_reflect = vec_sub(ray.dir,
 			vec_scale(rec->normal, 2.0 * vec_dot_scal(ray.dir, rec->normal)));
-	utils.fuzz = vec_scale(vec_random_in_unit_sphere(), rec->obj_ptr->rought);
+	utils.fuzz = vec_scale(vec_random_in_unit_sphere(seed), rec->obj_ptr->rought);
 	utils.spec_ray.dir
 		= vec_normalize(vec_add(utils.perfect_reflect, utils.fuzz));
 	utils.spec_ray.origin = vec_add(rec->p, vec_scale(rec->normal, EPSILON));
-	utils.spec_color = check_hit(data, utils.spec_ray, deph - 1);
+	utils.spec_color = check_hit(data, utils.spec_ray, deph - 1, seed);
 	utils.final_spec = vec_scale(utils.spec_color, utils.r);
 	return (utils.final_spec);
 }
 
-t_vec3	rought_reflect(t_data *data, t_hit_r *rec, t_ray ray, int deph)
+t_vec3	rought_reflect(t_data *data, t_hit_r *rec, t_ray ray, int deph, unsigned int *seed)
 {
 	t_ro_re	utils;
 
@@ -36,13 +36,13 @@ t_vec3	rought_reflect(t_data *data, t_hit_r *rec, t_ray ray, int deph)
 	ft_bzero(&utils.final_diff, sizeof(t_vec3));
 	utils.r = rec->obj_ptr->reflectivity;
 	if (utils.r > 0.0)
-		utils.final_spec = reflect(deph, data, rec, ray);
+		utils.final_spec = reflect(deph, data, rec, ray, seed);
 	if (utils.r < 1.0 && data->diff_ok)
 	{
-		utils.diff_ray.dir = random_hemisphere_dir(rec->normal);
+		utils.diff_ray.dir = random_hemisphere_dir(rec->normal, seed);
 		utils.diff_ray.origin = vec_add(rec->p,
 				vec_scale(rec->normal, EPSILON));
-		utils.diff_color = check_hit(data, utils.diff_ray, deph - 1);
+		utils.diff_color = check_hit(data, utils.diff_ray, deph - 1, seed);
 		utils.obj_col.x = rec->color.r / 255.0;
 		utils.obj_col.y = rec->color.g / 255.0;
 		utils.obj_col.z = rec->color.b / 255.0;
@@ -101,7 +101,7 @@ void	light_hit_t(t_light_hit *l_h, t_hit_r *rec)
 	}
 }
 
-void    light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray)
+void    light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray, unsigned int *seed)
 {
 	t_light_hit	l_h;
 	t_obj		*obj_ptr;
@@ -122,7 +122,7 @@ void    light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray)
 		l_h.target_pos = l_h.light->origin;
 		if (l_h.light->radius > 0.0)
 		{
-			t_vec3 random_dir = vec_normalize(vec_random_in_unit_sphere());
+			t_vec3 random_dir = vec_normalize(vec_random_in_unit_sphere(seed));
 			l_h.target_pos = vec_add(l_h.light->origin, 
 								vec_scale(random_dir, l_h.light->radius));
 		}
@@ -152,9 +152,9 @@ void    light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray)
 			l_h.l_col.z = fake_light.color.b / 255.0;
 			l_h.lights.diffuse = l_h.l_col;
 			box = data->obj_aabbs[id];
-			l_h.target_pos.x = box.min.x + rand_double() * (box.max.x - box.min.x);
-			l_h.target_pos.y = box.min.y + rand_double() * (box.max.y - box.min.y);
-			l_h.target_pos.z = box.min.z + rand_double() * (box.max.z - box.min.z);
+			l_h.target_pos.x = box.min.x + rand_double(seed) * (box.max.x - box.min.x);
+			l_h.target_pos.y = box.min.y + rand_double(seed) * (box.max.y - box.min.y);
+			l_h.target_pos.z = box.min.z + rand_double(seed) * (box.max.z - box.min.z);
 			if (is_in_shadow(data, rec, l_h.target_pos) == false) 
 				light_hit_t(&l_h, rec);
 		}

@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:12:29 by titan             #+#    #+#             */
-/*   Updated: 2026/03/10 09:45:11 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/17 18:48:50 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,9 @@ void	calcul_ambient(t_data *data)
 	data->a_final.z = (data->a_color.b / 255.0) * ratio;
 }
 
-double	rand_double(void)
+double	rand_double(unsigned int *seed)
 {
-	return ((double)rand() / (double)RAND_MAX);
+	return ((double)rand_r(seed) / (double)RAND_MAX);
 }
 
 /*

@@ -6,13 +6,13 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/04/15 10:31:10 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/17 18:43:03 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
 
-void	do_samples(t_data *data, t_idxs idxs, t_render_v rv, t_vec3 *color_acc)
+void	do_samples(t_data *data, t_idxs idxs, t_render_v rv, t_vec3 *color_acc, unsigned int *seed)
 {
 	t_ray	ray;
 	t_vec3	sample_color;
@@ -27,11 +27,11 @@ void	do_samples(t_data *data, t_idxs idxs, t_render_v rv, t_vec3 *color_acc)
 		}
 		else
 		{
-			rv.u = ((double)idxs.x + rand_double()) * rv.inv_width;
-			rv.v = ((double)idxs.y + rand_double()) * rv.inv_height;
+			rv.u = ((double)idxs.x + rand_double(seed)) * rv.inv_width;
+			rv.v = ((double)idxs.y + rand_double(seed)) * rv.inv_height;
 		}
 		ray = calc_ray(rv, data);
-		sample_color = check_hit(data, ray, data->deph);
+		sample_color = check_hit(data, ray, data->deph, seed);
 		*color_acc = vec_add(*color_acc, sample_color);
 		idxs.s++;
 	}
@@ -107,8 +107,10 @@ void	render(void *arg)
 	t_data			*data;
 	t_vec3			color_acc;
 	t_render_v		rv;
+	unsigned int	seed;
 
 	info = (t_thread_info *)arg;
+	seed = (unsigned int)rand() ^ (unsigned int) info->start_y;
 	data = info->data;
 	rv.inv_width = 1.0 / (data->width - 1);
 	rv.inv_height = 1.0 / (data->height - 1);
@@ -121,7 +123,7 @@ void	render(void *arg)
 		while (rv.idxs.x < info->end_x)
 		{
 			color_acc = (t_vec3){0, 0, 0};
-			do_samples(data, rv.idxs, rv, &color_acc);
+			do_samples(data, rv.idxs, rv, &color_acc, &seed);
 			set_final_color(color_acc, data, rv.idxs, info);
 			rv.idxs.x += data->step;
 		}
