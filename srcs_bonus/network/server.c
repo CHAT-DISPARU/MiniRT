@@ -3,13 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:36 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 09:50:58 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/04 01:15:39 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <netinet/tcp.h>
 #include <minirt_bonus.h>
 
 void	init_server(t_data *data)
@@ -43,7 +44,8 @@ void	check_new_clients(t_data *data)
 		new_sock = accept(data->server_socket, (struct sockaddr *)&client_addr, &addr_len);
 		if (new_sock < 0)
 			break ;
-
+		int flag = 1;
+		setsockopt(new_sock, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
 		if (data->client_count < CLIENT_MAX)
 		{
 			data->client_sockets[data->client_count] = new_sock;

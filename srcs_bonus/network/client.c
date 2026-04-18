@@ -6,11 +6,12 @@
 /*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:46 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/04 00:34:08 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/04 01:16:25 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
+#include <netinet/tcp.h>
 
 void	process_and_send_task(t_data *data, int sock, t_net_task *tasks, int task_count)
 {
@@ -161,6 +162,8 @@ void	run_worker(t_data *data, char *master_ip)
 	serv_addr.sin_addr.s_addr = inet_addr(master_ip);
 	if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
 		clean_exit(data, 1, "Connexion au Maitre wu ninjago maitre pas reussite\n", 0);
+	int flag = 1;
+	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
 	printf("Connecte Prime!!\n");
 	data->pixels = NULL;
 	while (1)
