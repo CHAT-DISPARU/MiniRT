@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/15 13:32:28 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/17 18:48:00 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@
 # include <sys/socket.h>
 # include <arpa/inet.h>
 
+# define BLOCK_SAME_IP	1
 # define WIDTH			1500
 # define HEIGHT			1000
 # define S_PER_PIXS		1000
@@ -259,6 +260,7 @@ typedef struct s_obj
 
 typedef struct s_mtl_info
 {
+	double				emission_ratio;
 	t_vec3				ka;
 	t_texture			*bump;
 	char				*bumpc;
@@ -586,7 +588,7 @@ typedef struct s_light_hit
 
 typedef bool	(*t_calc_f)(t_obj *obj, t_ray ray, t_hit_r *rec);
 void		init_emissive_lights(t_data *data);
-t_vec3		check_hit(t_data *data, t_ray ray, int deph);
+t_vec3		check_hit(t_data *data, t_ray ray, int deph, unsigned int *seed);
 void		thread_calls(t_data *data);
 int			resize_win(t_data *data);
 void		render(void *arg);
@@ -627,7 +629,7 @@ void		set_a(t_data *data, char *line, int i);
 void		update(void *param);
 t_vec3		get_right_vector(t_vec3 dir);
 void		calcul_ambient(t_data *data);
-double		rand_double(void);
+double		rand_double(unsigned int *seed);
 void		ft_objadd_back(t_obj **lst, t_obj *new);
 void		final_diffuse(t_color_c *lights,
 				t_light *light, double diff_strength, t_vec3 kd);
@@ -742,18 +744,18 @@ void		print_m_and_gnl(t_data *data,
 void		free_texs(t_data *data);
 void		error_arg(void);
 void		re_init(t_data *data);
-t_vec3		vec_random_in_unit_sphere(void);
+t_vec3		vec_random_in_unit_sphere(unsigned int *seed);
 t_ray		calc_ray(t_render_v rv, t_data *data);
-t_vec3		random_hemisphere_dir(t_vec3 normal);
+t_vec3		random_hemisphere_dir(t_vec3 normal, unsigned int *seed);
 void		set_hit_col(t_hit_r *rec, t_data *data);
 void		debug_bvh(t_vec3 *color_acc, t_data *data, t_hit_r *rec, t_ray ray);
-void		light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray);
+void		light_hit(t_hit_r *rec, t_data *data, t_vec3 *color_acc, t_ray ray, unsigned int *seed);
 void		light_hit_t(t_light_hit *l_h, t_hit_r *rec);
 t_vec3		tint_color_acc(double fresnel,
 				t_vec3 refract_color, t_vec3 reflect_color, t_hit_r *rec);
-t_vec3		rought_reflect(t_data *data, t_hit_r *rec, t_ray ray, int deph);
-t_vec3		reflect(int deph, t_data *data, t_hit_r *rec, t_ray ray);
-t_vec3		do_opacity_refract(t_data *data, t_hit_r *rec, int deph, t_ray ray);
+t_vec3		rought_reflect(t_data *data, t_hit_r *rec, t_ray ray, int deph, unsigned int *seed);
+t_vec3		reflect(int deph, t_data *data, t_hit_r *rec, t_ray ray, unsigned int *seed);
+t_vec3		do_opacity_refract(t_data *data, t_hit_r *rec, int deph, t_ray ray, unsigned int *seed);
 void		do_opacity_refract2(t_op_ni	*op_ni, t_hit_r *rec, t_ray ray);
 t_triangle	parse_face_fast(char **s, t_vars_obj *v);
 void		percent_mtl(t_vars_obj *v, char *cursor);

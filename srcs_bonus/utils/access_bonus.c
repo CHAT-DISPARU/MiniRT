@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 10:52:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/13 10:14:07 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/16 15:34:53 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,14 @@ void	relaunch(bool *movded, t_data *data)
 		i = 0;
 		while (i < data->client_count) 
 		{
-			if (send_restart(data->client_sockets[i]) == -1)
+			if (data->client_sockets[i] != -1 && send_restart(data->client_sockets[i]) == -1)
 				ft_putstr_fd("error scene envoie\n", 2);
 			i++;
 		}
 		i = 0;
 		while (i < data->client_count) 
 		{
-			if (send_full_scene(data->client_sockets[i], data) == -1)
+			if (data->client_sockets[i] != -1 && send_full_scene(data->client_sockets[i], data) == -1)
 				ft_putstr_fd("error scene envoie\n", 2);
 			i++;
 		}

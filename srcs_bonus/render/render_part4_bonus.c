@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:08:05 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/03 00:13:27 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/17 18:47:38 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	do_opacity_refract2(t_op_ni	*op_ni, t_hit_r *rec, t_ray ray)
 		* pow(1.0 - op_ni->cos_theta_i, 5.0);
 }
 
-t_vec3	do_opacity_refract(t_data *data, t_hit_r *rec, int deph, t_ray ray)
+t_vec3	do_opacity_refract(t_data *data, t_hit_r *rec, int deph, t_ray ray, unsigned int *seed)
 {
 	t_op_ni	op_ni;
 
@@ -48,7 +48,7 @@ t_vec3	do_opacity_refract(t_data *data, t_hit_r *rec, int deph, t_ray ray)
 				vec_scale(op_ni.ot_n, 2.0
 					* vec_dot_scal(ray.dir, op_ni.ot_n))));
 	op_ni.re_ray.origin = vec_add(rec->p, vec_scale(op_ni.ot_n, EPSILON));
-	op_ni.re_col = check_hit(data, op_ni.re_ray, deph - 1);
+	op_ni.re_col = check_hit(data, op_ni.re_ray, deph - 1, seed);
 	op_ni.sin2_theta_t = op_ni.eta_ratio * op_ni.eta_ratio
 		* (1.0 - op_ni.cos_theta_i * op_ni.cos_theta_i);
 	if (op_ni.sin2_theta_t > 1.0)
@@ -62,16 +62,16 @@ t_vec3	do_opacity_refract(t_data *data, t_hit_r *rec, int deph, t_ray ray)
 		op_ni.rea_ray.dir = vec_normalize(vec_add(op_ni.r_dir_part1,
 					op_ni.r_dir_part2));
 		op_ni.rea_ray.origin = vec_sub(rec->p, vec_scale(op_ni.ot_n, EPSILON));
-		op_ni.rea_col = check_hit(data, op_ni.rea_ray, deph - 1);
+		op_ni.rea_col = check_hit(data, op_ni.rea_ray, deph - 1, seed);
 	}
 	return (tint_color_acc(op_ni.fresnel, op_ni.rea_col, op_ni.re_col, rec));
 }
 
-void	set_opacity_obj(t_data *data, t_hit_r *rec, int deph, t_ray ray)
+void	set_opacity_obj(t_data *data, t_hit_r *rec, int deph, t_ray ray, unsigned int *seed)
 {
 	t_vec3		refract_result;
 
-	refract_result = do_opacity_refract(data, rec, deph, ray);
+	refract_result = do_opacity_refract(data, rec, deph, ray, seed);
 	rec->color_acc->x = refract_result.x * (1.0 - rec->obj_ptr->opacity)
 		+ rec->color_acc->x * rec->obj_ptr->opacity;
 	rec->color_acc->y = refract_result.y * (1.0 - rec->obj_ptr->opacity)
@@ -80,7 +80,7 @@ void	set_opacity_obj(t_data *data, t_hit_r *rec, int deph, t_ray ray)
 		+ rec->color_acc->z * rec->obj_ptr->opacity;
 }
 
-t_vec3	check_hit(t_data *data, t_ray ray, int deph)
+t_vec3	check_hit(t_data *data, t_ray ray, int deph, unsigned int *seed)
 {
 	t_vec3		color_acc;
 	t_hit_r		rec;
@@ -102,15 +102,15 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph)
 			debug_bvh(&color_acc, data, &rec, ray);
 			return (color_acc);
 		}
-		light_hit(&rec, data, &color_acc, ray);
+		light_hit(&rec, data, &color_acc, ray, seed);
 		if (deph > 1)
 		{
 			rec.color_acc = &color_acc;
 			if (rec.obj_ptr->opacity < 1)
-				set_opacity_obj(data, &rec, deph, ray);
+				set_opacity_obj(data, &rec, deph, ray, seed);
 			else
 				color_acc = vec_add(color_acc,
-						rought_reflect(data, &rec, ray, deph));
+						rought_reflect(data, &rec, ray, deph, seed));
 		}
 	}
 	debug_bvh(&color_acc, data, &rec, ray);
