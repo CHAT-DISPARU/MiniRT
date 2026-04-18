@@ -6,11 +6,20 @@
 /*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/18 16:08:33 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/18 18:58:34 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minirt_bonus.h>
+#include <sys/time.h>
+
+long long	get_time_ms(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000LL) + (tv.tv_usec / 1000));
+}
 
 void	draw_lines2(t_data *data, int grid_w, int grid_h, int y)
 {
@@ -55,7 +64,6 @@ void	draw_lines(t_data *data, int grid_w, int grid_h)
 
 void	prepare_calls(t_data *data, t_thread_c_int *utils, int client_count)
 {
-	mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
 	utils->cols = sqrt(THREADS_COUNT * NB_TASK_R * client_count);
 	while (THREADS_COUNT * NB_TASK_R * client_count % utils->cols != 0)
 		utils->cols--;
@@ -63,9 +71,9 @@ void	prepare_calls(t_data *data, t_thread_c_int *utils, int client_count)
 	utils->grid_w = data->width / utils->cols;
 	utils->grid_h = data->height / utils->rows;
 	utils->i = 0;
-	data->finish = 0;
-	pthread_mutex_init(&data->finish_count, NULL);
+	ft_memset(data->pixels, 0, data->width * data->height * sizeof(mlx_color));
 	pthread_mutex_lock(&data->finish_count);
+	data->finish = 0;
 	utils->finish = data->finish;
 	pthread_mutex_unlock(&data->finish_count);
 	print_progress(utils->finish, THREADS_COUNT * NB_TASK_R * client_count);
@@ -101,9 +109,9 @@ int send_task(t_data *data, int target_sock, t_thread_c_int *utils, int *indexs,
 		{
 			net_task.task_id = *next_task;
 			net_task.start_x = infos.start_x;
-			net_task.end_x   = infos.end_x;
+			net_task.end_x = infos.end_x;
 			net_task.start_y = infos.start_y;
-			net_task.end_y   = infos.end_y;
+			net_task.end_y = infos.end_y;
 			send_all(target_sock, &header, sizeof(t_net_header));
 			send_all(target_sock, &net_task, sizeof(t_net_task));
 		}
@@ -124,111 +132,123 @@ int send_task(t_data *data, int target_sock, t_thread_c_int *utils, int *indexs,
 
 void	thread_calls(t_data *data)
 {
-	int				*indexs;
-	t_thread_c_int	utils;
-	int				client_count = data->client_count > 0 ? data->client_count + 1 : 1;
-	
-	int             total_tasks = THREADS_COUNT * NB_TASK_R * client_count;
-	prepare_calls(data, &utils, client_count);
-	indexs = malloc(sizeof(int) * total_tasks);
-	set_indexs(indexs, total_tasks);
+	int	client_count = data->client_count > 0 ? data->client_count + 1 : 1;
+
+	data->total_tasks = THREADS_COUNT * NB_TASK_R * client_count;
+	prepare_calls(data, &data->utils, client_count);
+	if (data->indexs != NULL)
+		free(data->indexs);
+	data->indexs = malloc(sizeof(int) * data->total_tasks);
+	set_indexs(data->indexs, data->total_tasks);
 	for (int i = 0; i < data->client_count; i++) 
 	{
 		if (data->client_sockets[i] != -1)
-		{
 			if (send_scene_low(data->client_sockets[i], data) == -1)
 				ft_putstr_fd("error scene envoie\n", 2);
+	}
+	data->next_task = 0;
+	data->local_assigned = 0;
+	data->remote_finished = 0;
+	data->batch_size = THREADS_COUNT * 2;
+	for (int k = 0; k < CLIENT_MAX; k++)
+		data->client_pending[k] = 0;
+	for (int k = 0; k < data->client_count; k++)
+		data->client_pending[k] = send_task(data, data->client_sockets[k], &data->utils, data->indexs, data->total_tasks, &data->next_task, data->batch_size);
+	data->local_assigned += send_task(data, -1, &data->utils, data->indexs, data->total_tasks, &data->next_task, data->batch_size);
+	data->is_rendering = true;
+	data->render_start_time = get_time_ms();
+}
+
+void	process_render(t_data *data)
+{
+	pthread_mutex_lock(&data->finish_count);
+	data->utils.finish = data->finish;
+	pthread_mutex_unlock(&data->finish_count);
+	
+	int	local_finished = data->utils.finish - data->remote_finished;
+	if (data->local_assigned - local_finished < THREADS_COUNT && data->next_task < data->total_tasks)
+		data->local_assigned += send_task(data, -1, &data->utils, data->indexs, data->total_tasks, &data->next_task, data->batch_size);
+		
+	print_progress(data->utils.finish, data->total_tasks);
+	if (data->utils.finish >= data->total_tasks)
+	{
+		mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
+		draw_lines(data, data->utils.grid_w, data->utils.grid_h);
+		mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
+		mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
+		free(data->indexs);
+		display_fps(data);
+		data->indexs = NULL;
+		data->is_rendering = false;
+		return ;
+	}
+	fd_set	readfds;
+	int		max_sd = 0;
+	int		sd;
+	
+	FD_ZERO(&readfds);
+	for (int k = 0; k < data->client_count; k++)
+	{
+		sd = data->client_sockets[k];
+		if (sd > 0)
+		{
+			FD_SET(sd, &readfds);
+			if (sd > max_sd) max_sd = sd;
 		}
 	}
-	int	next_task = 0;
-	int	client_pending[CLIENT_MAX] = {0};
-	int	local_assigned = 0;
-	int	remote_finished = 0;
-	int	batch_size = THREADS_COUNT * 2;
-	for (int k = 0; k < data->client_count; k++)
-		client_pending[k] = send_task(data, data->client_sockets[k], &utils, indexs, total_tasks, &next_task, batch_size);
-	local_assigned += send_task(data, -1, &utils, indexs, total_tasks, &next_task, batch_size);
-	while (1)
+	struct timeval tv;
+	tv.tv_sec = 0;
+	tv.tv_usec = 0;
+	if (max_sd > 0 && select(max_sd + 1, &readfds, NULL, NULL, &tv) > 0)
 	{
-		pthread_mutex_lock(&data->finish_count);
-		utils.finish = data->finish;
-		pthread_mutex_unlock(&data->finish_count);
-		
-		int	local_finished = utils.finish - remote_finished;
-		if (local_assigned - local_finished < THREADS_COUNT && next_task < total_tasks)
-			local_assigned += send_task(data, -1, &utils, indexs, total_tasks, &next_task, batch_size);
-		print_progress(utils.finish, total_tasks);
-		if (utils.finish >= total_tasks)
-			break ;
-		fd_set	readfds;
-		int		max_sd = 0;
-		int		sd;
-		
-		FD_ZERO(&readfds);
 		for (int k = 0; k < data->client_count; k++)
 		{
 			sd = data->client_sockets[k];
-			if (sd > 0)
+			if (sd > 0 && FD_ISSET(sd, &readfds))
 			{
-				FD_SET(sd, &readfds);
-				if (sd > max_sd) max_sd = sd;
-			}
-		}
-		struct timeval tv;
-		tv.tv_sec = 0;
-		tv.tv_usec = 1000;
-		if (select(max_sd + 1, &readfds, NULL, NULL, &tv) > 0)
-		{
-			for (int k = 0; k < data->client_count; k++)
-			{
-				sd = data->client_sockets[k];
-				if (sd > 0 && FD_ISSET(sd, &readfds))
+				t_net_header header;
+				if (recv_all(sd, &header, sizeof(t_net_header)) == 0)
 				{
-					t_net_header header;
-					if (recv_all(sd, &header, sizeof(t_net_header)) == 0)
+					if (header.type == MSG_PIXELS)
 					{
-						if (header.type == MSG_PIXELS)
-						{
-							recv_task_result(sd, data, header.size);
-							
-							pthread_mutex_lock(&data->finish_count);
-							data->finish++;
-							pthread_mutex_unlock(&data->finish_count);
-							
-							remote_finished++;
-							client_pending[k]--;
-							if (client_pending[k] == 0 && next_task < total_tasks)
-							{
-								client_pending[k] = send_task(data, sd, &utils, indexs, total_tasks, &next_task, batch_size);
-							}
-						}
+						recv_task_result(sd, data, header.size);
+						
+						pthread_mutex_lock(&data->finish_count);
+						data->finish++;
+						pthread_mutex_unlock(&data->finish_count);
+						
+						data->remote_finished++;
+						data->client_pending[k]--;
+						if (data->client_pending[k] == 0 && data->next_task < data->total_tasks)
+							data->client_pending[k] = send_task(data, sd, &data->utils, data->indexs, data->total_tasks, &data->next_task, data->batch_size);
 					}
-					else
+				}
+				else
+				{
+					ft_putstr_fd("\nun client s'est deco.\n", 2);
+					close(sd);
+					for (int i = k; i < data->client_count - 1; i++)
 					{
-						ft_putstr_fd("\nun client s'est deco.\n", 2);
-						close(sd);
-						data->client_sockets[k] = -1;
-						int j = 0;
-						for (int i = 0; i < data->client_count; i++)
-						{
-							if (data->client_sockets[k] == -1)
-								j = 1;
-							if (i == data->client_count - 1)
-								data->client_sockets[k] = 0;
-							if (j == 1)
-								data->client_sockets[k] = data->client_sockets[k + 1];
-						}
-						data->client_count--;
-						return ;
+						data->client_sockets[i] = data->client_sockets[i + 1];
+						data->client_pending[i] = data->client_pending[i + 1];
 					}
+					data->client_count--;
+					if (data->indexs)
+					{
+						free(data->indexs);
+						data->indexs = NULL;
+					}
+					data->is_rendering = false;
+					return ;
 				}
 			}
 		}
-		// mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
-		// mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
 	}
-	draw_lines(data, utils.grid_w, utils.grid_h);
-	mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
-	mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
-	free(indexs);
+	if (get_time_ms() - data->render_start_time > 1000)
+	{
+		mlx_clear_window(data->mlx, data->win, (mlx_color){.rgba = 0xFF000000});
+		mlx_set_image_region(data->mlx, data->img, 0, 0, data->width, data->height, data->pixels);
+		mlx_put_image_to_window(data->mlx, data->win, data->img, 0, 0);
+		// data->render_start_time = get_time_ms();
+	}
 }

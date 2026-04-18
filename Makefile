@@ -6,7 +6,7 @@
 #    By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/17 17:52:56 by gajanvie          #+#    #+#              #
-#    Updated: 2026/04/03 21:03:48 by CHAT-DISPAR      ###   ########.fr        #
+#    Updated: 2026/04/18 18:35:09 by CHAT-DISPAR      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,7 +48,7 @@ OBJ_DIR := obj_file/
 OBJECT_DIR := object/
 UTILS_DIR := utils/
 BUILD_DIR := build/
-BVH_DIR	  := bvh/
+BVH_DIR   := bvh/
 LIB_MATH_DIR := libs/lib_math
 LIB_MATH := ./libs/lib_math/gajanvielib_math.a
 LIBFT = ./libs/libft/libft.a
@@ -59,119 +59,118 @@ MLX_DIR = libs/MacroLibX
 MLX = $(MLX_DIR)/libmlx.so
 
 SRCSB := $(SRCB_DIR)main_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)pars_bonus.c \
-		$(SRCB_DIR)$(CLEAN_DIR)clean_bonus.c \
-		$(SRCB_DIR)$(CLEAN_DIR)clean_utils_bonus.c \
-		$(SRCB_DIR)$(UTILS_DIR)event_bonus.c \
-		$(SRCB_DIR)$(RENDER_DIR)render_bonus.c \
-		$(SRCB_DIR)$(RENDER_DIR)render_part2_bonus.c \
-		$(SRCB_DIR)$(RENDER_DIR)render_part3_bonus.c \
-		$(SRCB_DIR)$(RENDER_DIR)render_part4_bonus.c \
-		$(SRCB_DIR)$(LIGHT_DIR)lights_bonus.c \
-		$(SRCB_DIR)$(POOL_DIR)init_threads_p_bonus.c \
-		$(SRCB_DIR)$(POOL_DIR)stack_utils_bonus.c \
-		$(SRCB_DIR)$(BVH_DIR)box_cy_bonus.c \
-		$(SRCB_DIR)$(BVH_DIR)box_hy_bonus.c \
-		$(SRCB_DIR)$(BVH_DIR)box_sp_bonus.c \
-		$(SRCB_DIR)$(BVH_DIR)slice_cost_bonus.c \
-		$(SRCB_DIR)$(BVH_DIR)comp_coord_bonus.c \
-		$(SRCB_DIR)$(BVH_DIR)build_bvh_bonus.c \
-		$(SRCB_DIR)$(BVH_DIR)box_tr_bonus.c \
-		$(SRCB_DIR)$(BVH_DIR)box_sq_bonus.c \
-		$(SRCB_DIR)$(BVH_DIR)box_co_bonus.c \
-		$(SRCB_DIR)$(BVH_DIR)bvh_utils_bonus.c \
-		$(SRCB_DIR)$(BVH_DIR)bvh_utils_part2_bonus.c \
-		$(SRCB_DIR)$(UPDATED_DIR)update_bonus.c \
-		$(SRCB_DIR)$(UPDATED_DIR)update_rot_bonus.c \
-		$(SRCB_DIR)$(RENDER_DIR)thread_calls_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)parsing_utils_bonus.c \
-		$(SRCB_DIR)$(LIGHT_DIR)shadow_rays_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)check_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(PARS_DIR)check2_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_a_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_l_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_c_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_part2_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_part3_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_part4_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(MTL_DIR)set_mtl_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(MTL_DIR)set_mtl_utils_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_utils_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_cy_bonus.c \
-		$(SRCB_DIR)$(HIT_DIR)rec_cy_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_sp_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_tr_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_sq_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_pl_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_hy_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_co_bonus.c \
-		$(SRCB_DIR)network/client.c \
-		$(SRCB_DIR)network/server.c \
-		$(SRCB_DIR)network/recv.c \
-		$(SRCB_DIR)network/send.c \
-		$(SRCB_DIR)$(HIT_DIR)utils_co_bonus.c \
-		$(SRCB_DIR)$(HIT_DIR)hit_cy_bonus.c \
-		$(SRCB_DIR)$(HIT_DIR)hit_tr_bonus.c \
-		$(SRCB_DIR)$(HIT_DIR)hit_sp_bonus.c \
-		$(SRCB_DIR)$(HIT_DIR)hit_co_bonus.c \
-		$(SRCB_DIR)$(HIT_DIR)hit_hy_bonus.c \
-		$(SRCB_DIR)$(HIT_DIR)hit_sq_bonus.c \
-		$(SRCB_DIR)$(HIT_DIR)hit_pl_bonus.c \
-		$(SRCB_DIR)$(HIT_DIR)hit_something_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)read_rt_bonus.c \
-		$(SRCB_DIR)$(READ_DIR)read_rt_utils_bonus.c \
-		$(SRCB_DIR)$(UTILS_DIR)utils_bonus.c \
-		$(SRCB_DIR)$(UTILS_DIR)utils_part2_bonus.c \
-		$(SRCB_DIR)$(UTILS_DIR)texture_bonus.c \
-		$(SRCB_DIR)$(UTILS_DIR)checkboard_bonus.c \
-		$(SRCB_DIR)$(UTILS_DIR)access_bonus.c \
-		$(SRCB_DIR)$(UTILS_DIR)print_info_bonus.c \
-		$(SRCB_DIR)$(LIGHT_DIR)bump_bonus.c \
-		$(SRCB_DIR)$(UTILS_DIR)math_utils_bonus.c
+        $(SRCB_DIR)$(READ_DIR)$(PARS_DIR)pars_bonus.c \
+        $(SRCB_DIR)$(CLEAN_DIR)clean_bonus.c \
+        $(SRCB_DIR)$(CLEAN_DIR)clean_utils_bonus.c \
+        $(SRCB_DIR)$(UTILS_DIR)event_bonus.c \
+        $(SRCB_DIR)$(RENDER_DIR)render_bonus.c \
+        $(SRCB_DIR)$(RENDER_DIR)render_part2_bonus.c \
+        $(SRCB_DIR)$(RENDER_DIR)render_part3_bonus.c \
+        $(SRCB_DIR)$(RENDER_DIR)render_part4_bonus.c \
+        $(SRCB_DIR)$(LIGHT_DIR)lights_bonus.c \
+        $(SRCB_DIR)$(POOL_DIR)init_threads_p_bonus.c \
+        $(SRCB_DIR)$(POOL_DIR)stack_utils_bonus.c \
+        $(SRCB_DIR)$(BVH_DIR)box_cy_bonus.c \
+        $(SRCB_DIR)$(BVH_DIR)box_hy_bonus.c \
+        $(SRCB_DIR)$(BVH_DIR)box_sp_bonus.c \
+        $(SRCB_DIR)$(BVH_DIR)slice_cost_bonus.c \
+        $(SRCB_DIR)$(BVH_DIR)comp_coord_bonus.c \
+        $(SRCB_DIR)$(BVH_DIR)build_bvh_bonus.c \
+        $(SRCB_DIR)$(BVH_DIR)box_tr_bonus.c \
+        $(SRCB_DIR)$(BVH_DIR)box_sq_bonus.c \
+        $(SRCB_DIR)$(BVH_DIR)box_co_bonus.c \
+        $(SRCB_DIR)$(BVH_DIR)bvh_utils_bonus.c \
+        $(SRCB_DIR)$(BVH_DIR)bvh_utils_part2_bonus.c \
+        $(SRCB_DIR)$(UPDATED_DIR)update_bonus.c \
+        $(SRCB_DIR)$(UPDATED_DIR)update_rot_bonus.c \
+        $(SRCB_DIR)$(RENDER_DIR)thread_calls_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(PARS_DIR)parsing_utils_bonus.c \
+        $(SRCB_DIR)$(LIGHT_DIR)shadow_rays_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(PARS_DIR)check_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(PARS_DIR)check2_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_a_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_l_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_c_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_part2_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_part3_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_part4_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(MTL_DIR)set_mtl_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(MTL_DIR)set_mtl_utils_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJ_DIR)set_o_utils_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_cy_bonus.c \
+        $(SRCB_DIR)$(HIT_DIR)rec_cy_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_sp_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_tr_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_sq_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_pl_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_hy_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)$(SETTER_DIR)$(OBJECT_DIR)set_co_bonus.c \
+        $(SRCB_DIR)network/client.c \
+        $(SRCB_DIR)network/server.c \
+        $(SRCB_DIR)network/recv.c \
+        $(SRCB_DIR)network/send.c \
+        $(SRCB_DIR)$(HIT_DIR)utils_co_bonus.c \
+        $(SRCB_DIR)$(HIT_DIR)hit_cy_bonus.c \
+        $(SRCB_DIR)$(HIT_DIR)hit_tr_bonus.c \
+        $(SRCB_DIR)$(HIT_DIR)hit_sp_bonus.c \
+        $(SRCB_DIR)$(HIT_DIR)hit_co_bonus.c \
+        $(SRCB_DIR)$(HIT_DIR)hit_hy_bonus.c \
+        $(SRCB_DIR)$(HIT_DIR)hit_sq_bonus.c \
+        $(SRCB_DIR)$(HIT_DIR)hit_pl_bonus.c \
+        $(SRCB_DIR)$(HIT_DIR)hit_something_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)read_rt_bonus.c \
+        $(SRCB_DIR)$(READ_DIR)read_rt_utils_bonus.c \
+        $(SRCB_DIR)$(UTILS_DIR)utils_bonus.c \
+        $(SRCB_DIR)$(UTILS_DIR)utils_part2_bonus.c \
+        $(SRCB_DIR)$(UTILS_DIR)texture_bonus.c \
+        $(SRCB_DIR)$(UTILS_DIR)checkboard_bonus.c \
+        $(SRCB_DIR)$(UTILS_DIR)access_bonus.c \
+        $(SRCB_DIR)$(UTILS_DIR)print_info_bonus.c \
+        $(SRCB_DIR)$(LIGHT_DIR)bump_bonus.c \
+        $(SRCB_DIR)$(UTILS_DIR)math_utils_bonus.c
 
 SRCS := $(SRC_DIR)main.c \
-		$(SRC_DIR)$(READ_DIR)$(PARS_DIR)pars.c \
-		$(SRC_DIR)clean.c \
-		$(SRC_DIR)event.c \
-		$(SRC_DIR)render.c \
-		$(SRC_DIR)lights.c \
-		$(SRC_DIR)$(UPDATED_DIR)update.c \
-		$(SRC_DIR)$(UPDATED_DIR)update_rot.c \
-		$(SRC_DIR)$(READ_DIR)$(PARS_DIR)parsing_utils.c \
-		$(SRC_DIR)shadow_rays.c \
-		$(SRC_DIR)$(READ_DIR)$(PARS_DIR)check.c \
-		$(SRC_DIR)$(READ_DIR)$(PARS_DIR)check2.c \
-		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_a.c \
-		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_l.c \
-		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_c.c \
-		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_cy.c \
-		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_sp.c \
-		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_sq.c \
-		$(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_pl.c \
-		$(SRC_DIR)$(HIT_DIR)hit_cy.c \
-		$(SRC_DIR)$(HIT_DIR)hit_sp.c \
-		$(SRC_DIR)$(HIT_DIR)hit_sq.c \
-		$(SRC_DIR)$(HIT_DIR)hit_pl.c \
-		$(SRC_DIR)$(HIT_DIR)hit_something.c \
-		$(SRC_DIR)$(READ_DIR)read_rt.c \
-		$(SRC_DIR)$(UTILS_DIR)utils.c \
-		$(SRC_DIR)$(UTILS_DIR)math_utils.c
-		
-
-
+        $(SRC_DIR)$(READ_DIR)$(PARS_DIR)pars.c \
+        $(SRC_DIR)clean.c \
+        $(SRC_DIR)event.c \
+        $(SRC_DIR)render.c \
+        $(SRC_DIR)lights.c \
+        $(SRC_DIR)$(UPDATED_DIR)update.c \
+        $(SRC_DIR)$(UPDATED_DIR)update_rot.c \
+        $(SRC_DIR)$(READ_DIR)$(PARS_DIR)parsing_utils.c \
+        $(SRC_DIR)shadow_rays.c \
+        $(SRC_DIR)$(READ_DIR)$(PARS_DIR)check.c \
+        $(SRC_DIR)$(READ_DIR)$(PARS_DIR)check2.c \
+        $(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_a.c \
+        $(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_l.c \
+        $(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_c.c \
+        $(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_cy.c \
+        $(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_sp.c \
+        $(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_sq.c \
+        $(SRC_DIR)$(READ_DIR)$(SETTER_DIR)set_pl.c \
+        $(SRC_DIR)$(HIT_DIR)hit_cy.c \
+        $(SRC_DIR)$(HIT_DIR)hit_sp.c \
+        $(SRC_DIR)$(HIT_DIR)hit_sq.c \
+        $(SRC_DIR)$(HIT_DIR)hit_pl.c \
+        $(SRC_DIR)$(HIT_DIR)hit_something.c \
+        $(SRC_DIR)$(READ_DIR)read_rt.c \
+        $(SRC_DIR)$(UTILS_DIR)utils.c \
+        $(SRC_DIR)$(UTILS_DIR)math_utils.c
+        
 OBJ := $(patsubst $(SRC_DIR)%.c, $(BUILD_DIR)%.o, $(SRCS))
 DEP := $(patsubst $(SRC_DIR)%.c, $(BUILD_DIR)%.d, $(SRCS))
 OBJB := $(patsubst $(SRCB_DIR)%.c, $(BUILD_DIR)%.o, $(SRCSB))
 DEPB := $(patsubst $(SRCB_DIR)%.c, $(BUILD_DIR)%.d, $(SRCSB))
 
-
-HEADERS := includes/
-HEADERSB := includes/ -I includes_bonus/
+HEADERS := -I includes/
+HEADERSB := -I includes/ -I includes_bonus/
 
 CC := clang
 
-FLAGS := -Wall -Werror -Wextra -g -I libs/MacroLibX/includes -O3 -mavx2 -mfma -march=native -mtune=native -funroll-loops -fvectorize -ffp-contract=fast  -freciprocal-math -ffast-math -fstrict-aliasing  -fomit-frame-pointer -flto=full -mprefer-vector-width=256 -MMD -MP
+OPT_FLAGS := -O3 -march=native -ffast-math -funroll-loops -flto -mprefer-vector-width=256
+CFLAGS := -Wall -Werror -Wextra $(OPT_FLAGS) -I libs/MacroLibX/includes -MMD -MP -pthread
+LDFLAGS := $(OPT_FLAGS) -lm -lSDL2 -pthread
 
 all: $(LIB) header ${NAME}
 
@@ -194,11 +193,11 @@ header_bonus:
 
 $(NAME): $(LIBFT) $(LIB_MATH) ${OBJ}
 	@echo "$(TEXT_NEON_GREEN)✅ Compilation of MiniRT finished !$(RESET)"
-	@${CC} -o ${NAME} -I ${HEADERS} ${OBJ} ${LIBFT} $(MLX) $(LIB_MATH) ${FLAGS} -lm -lSDL2
+	@${CC} ${OBJ} ${LIBFT} $(MLX) $(LIB_MATH) -o ${NAME} ${LDFLAGS}
 
 $(NAME_BONUS) : $(LIBFT) $(LIB_MATH) ${OBJB}
 	@echo "$(TEXT_NEON_GREEN)✅ Compilation of MiniRT Bonus finished !$(RESET)"
-	@${CC} -o ${NAME_BONUS} -I ${HEADERSB} ${OBJB} ${LIBFT} $(MLX) $(LIB_MATH) ${FLAGS} -lm -lSDL2
+	@${CC} ${OBJB} ${LIBFT} $(MLX) $(LIB_MATH) -o ${NAME_BONUS} ${LDFLAGS}
 
 $(LIB):
 	@git clone https://github.com/seekrs/MacroLibX.git -b v2.2.2 libs/MacroLibX --depth=1
@@ -207,11 +206,11 @@ $(LIB):
 
 ${BUILD_DIR}%.o: ${SRC_DIR}%.c
 	@mkdir -p $(dir $@)
-	@${CC} -o $@ -I ${HEADERS} -c $< ${FLAGS}
+	@${CC} ${CFLAGS} ${HEADERS} -c $< -o $@
 
 ${BUILD_DIR}%.o: ${SRCB_DIR}%.c
 	@mkdir -p $(dir $@)
-	@${CC} -o $@ -I ${HEADERSB} -c $< ${FLAGS}
+	@${CC} ${CFLAGS} ${HEADERSB} -c $< -o $@
 
 $(LIBFT):
 	@make --no-print-directory -C $(LIBFT_DIR)
@@ -236,8 +235,8 @@ fclean: clean
 	@rm -f ${NAME_BONUS}
 
 re: fclean all
-re_bonus:	fclean bonus
+re_bonus: fclean bonus
 
-.PHONY: clean fclean re all libft header
+.PHONY: clean fclean re all libft header bonus header_bonus
 
 -include $(DEP) $(DEPB)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   update_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:11:09 by titan             #+#    #+#             */
-/*   Updated: 2026/03/31 15:18:11 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/18 18:58:30 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,20 +114,36 @@ void	update(void *param)
 	check_new_clients(data);
 	forward = data->cam.dir;
 	right = get_right_vector(forward);
-	update_samples(data, &movded);
-	change_speed(data, &movded);
-	update_rot(data, right, &movded);
-	update_move(data, &movded, forward, right);
-	update_fov(&movded, data);
-	update2(&movded, data);
-	relaunch(&movded, data);
-	if (data->key_table[15] && !data->old_key_table[15])
-		data->lines = !data->lines;
-	if (data->key_table[15] && !data->old_key_table[15])
-		movded = true;
-	if (movded)
+	if (!data->is_rendering)
+	{
+		update_samples(data, &movded);
+		change_speed(data, &movded);
+		update_rot(data, right, &movded);
+		update_move(data, &movded, forward, right);
+		update_fov(&movded, data);
+		update2(&movded, data);
+		relaunch(&movded, data);
+		if (data->key_table[15] && !data->old_key_table[15])
+		{
+			data->lines = !data->lines;
+			movded = true;
+		}
+	}
+	if (movded && !data->is_rendering)
+	{
 		thread_calls(data);
-	if (movded)
-		display_fps(data);
+	}
+	if (data->is_rendering)
+	{
+		if (data->step > 1)
+        {
+            while (data->is_rendering)
+                process_render(data);
+        }
+        else
+        {
+            process_render(data);
+        }
+	}
 	ft_memcpy(data->old_key_table, data->key_table, sizeof(data->key_table));
 }

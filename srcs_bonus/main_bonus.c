@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/01 15:03:10 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/18 17:30:19 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	set_data_base(t_data *data)
 	data->scene_fd = -1;
 	data->light_count = 0;
 	data->scene_line = NULL;
+	data->is_rendering = false;
 	data->objs = NULL;
 	data->light = NULL;
 	srand(time(NULL));
@@ -65,6 +66,7 @@ void	init_data(t_data *data, mlx_window_create_info info, char **av, int ac)
 	data->mlx = mlx_init();
 	if (!data->mlx)
 		clean_exit(data, 1, "Error init MLX\n", 0);
+	pthread_mutex_init(&data->finish_count, NULL);
 	data->filename = av[1];
 	init_thread_p(data);
 	read_rt(data);
@@ -105,6 +107,7 @@ int	main(int ac, char **av)
 		if (!data)
 			return (perror("Malloc fail"), 1);
 		data->isclient = true;
+		pthread_mutex_init(&data->finish_count, NULL);
 		run_worker(data, av[2]); 
 		free(data);
 		return (0);

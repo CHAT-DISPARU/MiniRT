@@ -6,7 +6,7 @@
 /*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 14:18:36 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/18 16:08:27 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/18 16:31:32 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,6 @@ void	check_new_clients(t_data *data)
 		new_sock = accept(data->server_socket, (struct sockaddr *)&client_addr, &addr_len);
 		if (new_sock < 0)
 			break ;
-<<<<<<< HEAD
-		int flag = 1;
-		setsockopt(new_sock, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
-=======
 		#if BLOCK_SAME_IP == 1
 		if (is_ip_already_connected(data, &client_addr))
 		{
@@ -78,7 +74,6 @@ void	check_new_clients(t_data *data)
 			continue ;
 		}
 		#endif
->>>>>>> refs/remotes/origin/main
 		if (data->client_count < CLIENT_MAX)
 		{
 			data->client_sockets[data->client_count] = new_sock;

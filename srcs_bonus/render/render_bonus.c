@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/04/17 18:43:03 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/18 18:06:54 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,13 @@ void	render(void *arg)
 	t_vec3			color_acc;
 	t_render_v		rv;
 	unsigned int	seed;
+	unsigned int	w;
+	unsigned int	h;
+	unsigned int	total;
+	unsigned int	p2;
+	unsigned int	mask;
+	unsigned int	lcg;
+	unsigned int	rendered;
 
 	info = (t_thread_info *)arg;
 	seed = (unsigned int)rand() ^ (unsigned int) info->start_y;
@@ -116,18 +123,30 @@ void	render(void *arg)
 	rv.inv_height = 1.0 / (data->height - 1);
 	rv.cam_m = look_at(data->cam.origin, data->cam.dir, data->cam.up_guide);
 	rv.cam_origin = mat4_mult_vec3(&rv.cam_m, (t_vec3){0, 0, 0}, 1.0);
-	rv.idxs.y = info->start_y;
-	while (rv.idxs.y < info->end_y)
+
+	w = (info->end_x - info->start_x + data->step - 1) / data->step;
+	h = (info->end_y - info->start_y + data->step - 1) / data->step;
+	total = w * h;
+	p2 = 1;
+	while (p2 < total)
+		p2 <<= 1;
+	mask = p2 - 1;
+	lcg = 0;
+	rendered = 0;
+	while (rendered < total)
 	{
-		rv.idxs.x = info->start_x;
-		while (rv.idxs.x < info->end_x)
+		lcg = (lcg * 1664525 + 1013904223) & mask;
+		if (lcg < total)
 		{
+			rv.idxs.x = info->start_x + (lcg % w) * data->step;
+			rv.idxs.y = info->start_y + (lcg / w) * data->step;
+
 			color_acc = (t_vec3){0, 0, 0};
 			do_samples(data, rv.idxs, rv, &color_acc, &seed);
 			set_final_color(color_acc, data, rv.idxs, info);
-			rv.idxs.x += data->step;
+			
+			rendered++;
 		}
-		rv.idxs.y += data->step;
 	}
 	add_finish(data);
 }

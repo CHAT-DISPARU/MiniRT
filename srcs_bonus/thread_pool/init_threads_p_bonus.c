@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_threads_p_bonus.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 11:32:20 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 10:59:03 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/18 16:59:39 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@ void	*routine(void	*arg)
 			lunch_task(data);
 		else
 			pthread_mutex_unlock(&data->mutex_stack);
-		usleep(100);
+		if (!data->stack)			
+			usleep(100);
 	}
 	return (NULL);
 }

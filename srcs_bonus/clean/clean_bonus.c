@@ -6,7 +6,7 @@
 /*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 22:10:27 by titan             #+#    #+#             */
-/*   Updated: 2026/04/02 18:50:35 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/18 17:03:57 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,5 +105,6 @@ void	clean_exit(t_data *data, int exit_code, char *mess_eror, int i)
 	stop_threads(data);
 	print_m_and_gnl(data, mess_eror, exit_code, i);
 	clean(data);
+	pthread_mutex_destroy(&data->finish_count);
 	free_data_struct(data, exit_code);
 }

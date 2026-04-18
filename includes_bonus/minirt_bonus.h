@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt_bonus.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/17 18:48:00 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/18 18:12:04 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -394,6 +394,18 @@ typedef struct s_vars_obj
 	int			c_vt;
 }				t_vars_obj;
 
+typedef struct s_thread_c_int
+{
+	int	i;
+	int	cols;
+	int	rows;
+	int	grid_w;
+	int	finish;
+	int	grid_h;
+	int	current_col;
+	int	current_row;
+}				t_thread_c_int;
+
 typedef struct s_data
 {
 	int						*emissive_ids;
@@ -459,6 +471,16 @@ typedef struct s_data
 	int						scale;
 	t_vars_obj				*v_obj;
 	struct s_thread_p		*stack;
+	bool					is_rendering;
+	int						*indexs;
+	int						total_tasks;
+	int						next_task;
+	int						local_assigned;
+	int						remote_finished;
+	int						batch_size;
+	int						client_pending[CLIENT_MAX];
+	long long				render_start_time;
+	t_thread_c_int			utils;
 }				t_data;
 
 typedef struct s_thread_info
@@ -506,18 +528,6 @@ typedef struct s_ply_prop
 	int			offset;
 	int			size;
 }	t_ply_prop;
-
-typedef struct s_thread_c_int
-{
-	int	i;
-	int	cols;
-	int	rows;
-	int	grid_w;
-	int	finish;
-	int	grid_h;
-	int	current_col;
-	int	current_row;
-}				t_thread_c_int;
 
 typedef struct s_ply_header
 {
@@ -759,6 +769,7 @@ t_vec3		do_opacity_refract(t_data *data, t_hit_r *rec, int deph, t_ray ray, unsi
 void		do_opacity_refract2(t_op_ni	*op_ni, t_hit_r *rec, t_ray ray);
 t_triangle	parse_face_fast(char **s, t_vars_obj *v);
 void		percent_mtl(t_vars_obj *v, char *cursor);
+void		process_render(t_data *data);
 
 # include "network.h"
 

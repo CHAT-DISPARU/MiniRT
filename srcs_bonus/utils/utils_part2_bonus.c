@@ -6,7 +6,7 @@
 /*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 10:55:32 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/02 18:32:12 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/18 16:49:10 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 int	resize_win(t_data *data)
 {
+	if (data->is_rendering)
+		return (0);
 	if (data->img)
 	{
 		mlx_destroy_image(data->mlx, data->img);
