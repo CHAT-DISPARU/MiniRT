@@ -6,7 +6,7 @@
 /*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/31 21:57:53 by titan             #+#    #+#             */
-/*   Updated: 2026/04/18 18:06:54 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/19 10:51:29 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,59 @@ void	add_finish(t_data *data)
 
 	couleur spec ​=C light​⋅ks​⋅(max(0,V⋅R)) exposant α
 */
+
+
+// style mais moins rapide ...
+// void	render(void *arg)
+// {
+// 	t_thread_info	*info;
+// 	t_data			*data;
+// 	t_vec3			color_acc;
+// 	t_render_v		rv;
+// 	unsigned int	seed;
+// 	unsigned int	w;
+// 	unsigned int	h;
+// 	unsigned int	total;
+// 	unsigned int	p2;
+// 	unsigned int	mask;
+// 	unsigned int	lcg;
+// 	unsigned int	rendered;
+
+// 	info = (t_thread_info *)arg;
+// 	seed = (unsigned int)rand() ^ (unsigned int) info->start_y;
+// 	data = info->data;
+// 	rv.inv_width = 1.0 / (data->width - 1);
+// 	rv.inv_height = 1.0 / (data->height - 1);
+// 	rv.cam_m = look_at(data->cam.origin, data->cam.dir, data->cam.up_guide);
+// 	rv.cam_origin = mat4_mult_vec3(&rv.cam_m, (t_vec3){0, 0, 0}, 1.0);
+
+// 	w = (info->end_x - info->start_x + data->step - 1) / data->step;
+// 	h = (info->end_y - info->start_y + data->step - 1) / data->step;
+// 	total = w * h;
+// 	p2 = 1;
+// 	while (p2 < total)
+// 		p2 <<= 1;
+// 	mask = p2 - 1;
+// 	lcg = 0;
+// 	rendered = 0;
+// 	while (rendered < total)
+// 	{
+// 		lcg = (lcg * 1664525 + 1013904223) & mask;
+// 		if (lcg < total)
+// 		{
+// 			rv.idxs.x = info->start_x + (lcg % w) * data->step;
+// 			rv.idxs.y = info->start_y + (lcg / w) * data->step;
+
+// 			color_acc = (t_vec3){0, 0, 0};
+// 			do_samples(data, rv.idxs, rv, &color_acc, &seed);
+// 			set_final_color(color_acc, data, rv.idxs, info);
+			
+// 			rendered++;
+// 		}
+// 	}
+// 	add_finish(data);
+// }
+
 void	render(void *arg)
 {
 	t_thread_info	*info;
@@ -108,45 +161,32 @@ void	render(void *arg)
 	t_vec3			color_acc;
 	t_render_v		rv;
 	unsigned int	seed;
-	unsigned int	w;
-	unsigned int	h;
-	unsigned int	total;
-	unsigned int	p2;
-	unsigned int	mask;
-	unsigned int	lcg;
-	unsigned int	rendered;
+	int				x;
+	int				y;
 
 	info = (t_thread_info *)arg;
-	seed = (unsigned int)rand() ^ (unsigned int) info->start_y;
+	seed = (unsigned int)rand() ^ (unsigned int)info->start_y; 
 	data = info->data;
 	rv.inv_width = 1.0 / (data->width - 1);
 	rv.inv_height = 1.0 / (data->height - 1);
 	rv.cam_m = look_at(data->cam.origin, data->cam.dir, data->cam.up_guide);
 	rv.cam_origin = mat4_mult_vec3(&rv.cam_m, (t_vec3){0, 0, 0}, 1.0);
-
-	w = (info->end_x - info->start_x + data->step - 1) / data->step;
-	h = (info->end_y - info->start_y + data->step - 1) / data->step;
-	total = w * h;
-	p2 = 1;
-	while (p2 < total)
-		p2 <<= 1;
-	mask = p2 - 1;
-	lcg = 0;
-	rendered = 0;
-	while (rendered < total)
+	y = info->start_y;
+	while (y < info->end_y)
 	{
-		lcg = (lcg * 1664525 + 1013904223) & mask;
-		if (lcg < total)
+		x = info->start_x;
+		while (x < info->end_x)
 		{
-			rv.idxs.x = info->start_x + (lcg % w) * data->step;
-			rv.idxs.y = info->start_y + (lcg / w) * data->step;
-
+			rv.idxs.x = x;
+			rv.idxs.y = y;
 			color_acc = (t_vec3){0, 0, 0};
+			
 			do_samples(data, rv.idxs, rv, &color_acc, &seed);
 			set_final_color(color_acc, data, rv.idxs, info);
 			
-			rendered++;
+			x += data->step;
 		}
+		y += data->step;
 	}
 	add_finish(data);
 }

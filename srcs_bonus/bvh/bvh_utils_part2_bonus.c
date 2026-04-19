@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   bvh_utils_part2.c                                  :+:      :+:    :+:   */
+/*   bvh_utils_part2_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 10:40:53 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/03/11 10:43:47 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/19 11:15:20 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,4 +83,106 @@ void	set_tcoords(t_aabb_edge *utils, t_ray ray, t_aabb box, t_vec3 inv_dir)
 	utils->tz2 = (box.max.z - ray.origin.z) * inv_dir.z;
 	utils->tmin = fmax(utils->tmin, fmin(utils->tz1, utils->tz2));
 	utils->tmax = fmin(utils->tmax, fmax(utils->tz1, utils->tz2));
+}
+
+void	put_pixel_safe(t_data *data, int x, int y, t_vec3 color)
+{
+	int	idx;
+
+	if (x >= 0 && x < data->width && y >= 0 && y < data->height)
+	{
+		idx = y * data->width + x;
+		data->pixels[idx].rgba = ((int)(color.x * 255.99) << 24) |
+								 ((int)(color.y * 255.99) << 16) |
+								 ((int)(color.z * 255.99) << 8)  | 0xFF;
+	}
+}
+
+void	draw_line(t_data *data, t_point2d p0, t_point2d p1, t_vec3 color)
+{
+	int	dx = abs(p1.x - p0.x);
+	int	dy = abs(p1.y - p0.y);
+	int	sx = p0.x < p1.x ? 1 : -1;
+	int	sy = p0.y < p1.y ? 1 : -1;
+	int	err = (dx > dy ? dx : -dy) / 2;
+	int	e2;
+
+	while (1)
+	{
+		put_pixel_safe(data, p0.x, p0.y, color);
+		if (p0.x == p1.x && p0.y == p1.y)
+			break;
+		e2 = err;
+		if (e2 > -dx) { err -= dy; p0.x += sx; }
+		if (e2 < dy)  { err += dx; p0.y += sy; }
+	}
+}
+
+t_point2d	project_point(t_data *data, t_vec3 pt)
+{
+	t_point2d	p2d;
+	t_vec3		cam_to_pt;
+	t_vec3		right;
+	t_vec3		true_up;
+	double		z;
+	double		x;
+	double		y;
+	double		fov_scale;
+
+	cam_to_pt = vec_sub(pt, data->cam.origin);
+	z = vec_dot_scal(cam_to_pt, data->cam.dir);
+	if (z <= 0.001) 
+	{
+		p2d.z_valid = 0;
+		return (p2d);
+	}
+	right = get_right_vector(data->cam.dir);
+	true_up = vec_normalize(vec_cross(right, data->cam.dir));
+	x = vec_dot_scal(cam_to_pt, right);
+	y = vec_dot_scal(cam_to_pt, true_up);
+	fov_scale = (data->width / 2.0) / tan(data->cam.fov * 0.5 * PI / 180.0);
+	p2d.x = (int)((x / z) * fov_scale + (data->width / 2.0));
+	p2d.y = (int)((data->height / 2.0) - (y / z) * fov_scale); 
+	p2d.z_valid = 1;
+	return (p2d);
+}
+
+void	draw_aabb_lines(t_data *data, t_aabb box, t_vec3 color)
+{
+	t_vec3		c[8];
+	t_point2d	p[8];
+	int			i;
+
+	// Definition des 8 coins
+	c[0] = (t_vec3){box.min.x, box.min.y, box.min.z};
+	c[1] = (t_vec3){box.max.x, box.min.y, box.min.z};
+	c[2] = (t_vec3){box.max.x, box.max.y, box.min.z};
+	c[3] = (t_vec3){box.min.x, box.max.y, box.min.z};
+	c[4] = (t_vec3){box.min.x, box.min.y, box.max.z};
+	c[5] = (t_vec3){box.max.x, box.min.y, box.max.z};
+	c[6] = (t_vec3){box.max.x, box.max.y, box.max.z};
+	c[7] = (t_vec3){box.min.x, box.max.y, box.max.z};
+	for (i = 0; i < 8; i++)
+		p[i] = project_point(data, c[i]);
+	//point derriere dessine rien flemme de cliper les lignes
+	for (i = 0; i < 8; i++)
+	{
+		if (!p[i].z_valid)
+			return;
+	}
+	//avant
+	draw_line(data, p[0], p[1], color);
+	draw_line(data, p[1], p[2], color);
+	draw_line(data, p[2], p[3], color);
+	draw_line(data, p[3], p[0], color);
+	// arrière
+	draw_line(data, p[4], p[5], color);
+	draw_line(data, p[5], p[6], color);
+	draw_line(data, p[6], p[7], color);
+	draw_line(data, p[7], p[4], color);
+	// Connexions face
+	draw_line(data, p[0], p[4], color);
+	draw_line(data, p[1], p[5], color);
+	draw_line(data, p[2], p[6], color);
+	draw_line(data, p[3], p[7], color);
 }

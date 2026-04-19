@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_part2_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:03:53 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/17 18:37:05 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/19 11:18:08 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,5 +107,22 @@ void	debug_bvh(t_vec3 *color_acc, t_data *data, t_hit_r *rec, t_ray ray)
 			}
 			k++;
 		}
+	}
+}
+
+void	fdf_debug_bvh(t_data *data)
+{
+	int			k;
+	t_bvh_node	*node;
+
+	if (!data->debug || !data->bvh_nodes)
+		return ;
+	k = 0;
+	while (k < data->nodes_used)
+	{
+		node = &data->bvh_nodes[k];
+		if (node->depth <= data->debug_depth)
+			draw_aabb_lines(data, node->box, node->debug_color);
+		k++;
 	}
 }

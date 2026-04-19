@@ -6,7 +6,7 @@
 /*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 13:59:22 by titan             #+#    #+#             */
-/*   Updated: 2026/04/18 18:58:34 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/19 10:34:47 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,9 +166,10 @@ void	process_render(t_data *data)
 	pthread_mutex_unlock(&data->finish_count);
 	
 	int	local_finished = data->utils.finish - data->remote_finished;
-	if (data->local_assigned - local_finished < THREADS_COUNT && data->next_task < data->total_tasks)
+	if (data->client_count == 0 && data->next_task < data->total_tasks)
+		data->local_assigned += send_task(data, -1, &data->utils, data->indexs, data->total_tasks, &data->next_task, data->total_tasks);
+	else if (data->local_assigned - local_finished < THREADS_COUNT && data->next_task < data->total_tasks)
 		data->local_assigned += send_task(data, -1, &data->utils, data->indexs, data->total_tasks, &data->next_task, data->batch_size);
-		
 	print_progress(data->utils.finish, data->total_tasks);
 	if (data->utils.finish >= data->total_tasks)
 	{

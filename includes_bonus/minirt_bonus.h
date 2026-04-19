@@ -6,7 +6,7 @@
 /*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/18 18:12:04 by CHAT-DISPAR      ###   ########.fr       */
+/*   Updated: 2026/04/19 11:10:40 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,13 @@
 # define MAX_BVH_DEPTH	24
 # define EPSILON		1e-4
 # define CLIENT_MAX		100
+
+typedef struct s_point2d
+{
+    int	x;
+    int	y;
+    int	z_valid;
+}				t_point2d;
 
 typedef struct s_bump_calc
 {
@@ -597,6 +604,8 @@ typedef struct s_light_hit
 }				t_light_hit;
 
 typedef bool	(*t_calc_f)(t_obj *obj, t_ray ray, t_hit_r *rec);
+void		fdf_debug_bvh(t_data *data);
+void	draw_aabb_lines(t_data *data, t_aabb box, t_vec3 color);
 void		init_emissive_lights(t_data *data);
 t_vec3		check_hit(t_data *data, t_ray ray, int deph, unsigned int *seed);
 void		thread_calls(t_data *data);

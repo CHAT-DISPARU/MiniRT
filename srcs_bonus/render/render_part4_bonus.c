@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_part4_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: CHAT-DISPARU <CHAT-DISPARU@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 11:08:05 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/17 18:47:38 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/19 11:17:36 by CHAT-DISPAR      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,5 +114,6 @@ t_vec3	check_hit(t_data *data, t_ray ray, int deph, unsigned int *seed)
 		}
 	}
 	debug_bvh(&color_acc, data, &rec, ray);
+	//fdf_debug_bvh(data); marche pas ...
 	return (color_acc);
 }
