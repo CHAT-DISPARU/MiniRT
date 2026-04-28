@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/16 14:56:16 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/01/17 18:21:34 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/24 17:19:26 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ t_mat4	mat4_mult(t_mat4 *a, t_mat4 *b)
 		j = 0;
 		while (j < 4)
 		{
-			tmp.m[i][j] = 0.0f;
+			tmp.m[i][j] = 0.0;
 			k = 0;
 			while (k < 4)
 			{
