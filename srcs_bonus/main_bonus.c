@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:41:49 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/28 17:27:41 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/30 11:35:03 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,6 @@ int	main(int ac, char **av)
 
 	if (ac >= 3 && ft_strncmp(av[1], "--client", 9) == 0)
 	{
-		ft_tiben();
 		data = ft_calloc(sizeof(t_data), 1);
 		if (!data)
 			return (perror("Malloc fail"), 1);

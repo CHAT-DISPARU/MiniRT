@@ -6,7 +6,7 @@
 /*   By: gajanvie <gajanvie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:42:01 by gajanvie          #+#    #+#             */
-/*   Updated: 2026/04/28 17:27:24 by gajanvie         ###   ########.fr       */
+/*   Updated: 2026/04/30 11:34:56 by gajanvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -630,7 +630,6 @@ void		check_positive(t_data *data, double val, int i);
 void		clean_exit(t_data *data, int exit_code, char *mess_eror, int i);
 void		window_hook(int event, void *param);
 void		key_down(int key, void *param);
-void		ft_tiben();
 void		key_up(int key, void *param);
 bool		hit_sphere(t_obj *sp, t_ray ray, t_hit_r *rec);
 bool		hit_plane(t_obj *pl, t_ray ray, t_hit_r *rec);
